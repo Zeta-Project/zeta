@@ -7,22 +7,26 @@
                     <span class="md-list-item-text">Meta-Information</span>
                     <md-list slot="md-expand">
                         <md-list-item class="md-inset">
-                            <md-field>
+                            <md-field
+                                    v-if="edge.labels"
+                                    v-for="(label, index) in edge.labels"
+                                    :key="`${edge.name}-labels-${index}`"
+                            >
                                 <label>Name</label>
-                                <md-input v-model="edge.name"/>
+                                <md-input :value="label.text" @input="name => $emit('on-edge-name-change', edge, name)"/>
                             </md-field>
                         </md-list-item>
                         <md-list-item class="md-inset">
                             <md-field>
                                 <label>Description</label>
-                                <md-input v-model="edge.description" />
+                                <md-input v-model="edge.tag.description" />
                             </md-field>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.sourceDeletionDeletesTarget" value="1">sourceDeletionDeletesTarget</md-checkbox>
+                            <md-checkbox v-model="edge.tag.sourceDeletionDeletesTarget" value="1">sourceDeletionDeletesTarget</md-checkbox>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.targetDeletionDeletesSource" value="1">targetDeletionDeletesSource</md-checkbox>
+                            <md-checkbox v-model="edge.tag.targetDeletionDeletesSource" value="1">targetDeletionDeletesSource</md-checkbox>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
@@ -31,21 +35,21 @@
                     <span class="md-list-item-text">Attributes</span>
                     <md-list slot="md-expand">
                         <md-list-item
-                                v-if="edge.attributes"
-                                v-for="(attribute, index) in edge.attributes"
-                                :key="`${edge.name}-properties-attributes-${index}`"
+                                v-if="edge.tag.attributes"
+                                v-for="(attribute, index) in edge.tag.attributes"
+                                :key="`${edge.tag.name}-properties-attributes-${index}`"
                                 class="md-inset"
                         >
                             <md-field>
                                 <label>Name</label>
                                 <md-input v-model="attribute.name"/>
                             </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', edge, attribute.name)">
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', edge.tag, attribute.name)">
                                 <md-icon class="fa fa-trash" />
                             </md-button>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', edge, 'default')">Add Attribute</md-button>
+                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', edge.tag, 'default')">Add Attribute</md-button>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
@@ -54,23 +58,23 @@
                     <span class="md-list-item-text">Operations</span>
                     <md-list slot="md-expand">
                         <md-list-item
-                                v-if="edge.operations"
-                                v-for="(operation, index) in edge.operations"
-                                :key="`${edge.name}-properties-operations-${index}`"
+                                v-if="edge.tag.operations"
+                                v-for="(operation, index) in edge.tag.operations"
+                                :key="`${edge.tag.name}-properties-operations-${index}`"
                                 class="md-inset"
                         >
                             <md-field>
                                 <label>Name</label>
                                 <md-input v-model="operation.name" />
                             </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', edge, operation.name)">
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', edge.tag, operation.name)">
                                 <md-icon
                                         class="fa fa-trash"
                                 />
                             </md-button>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-operation', edge, 'default')">Add Operation</md-button>
+                            <md-button class="md-raised md-primary" @click="$emit('add-operation', edge.tag, 'default')">Add Operation</md-button>
                         </md-list-item>
                     </md-list>
                 </md-list-item>

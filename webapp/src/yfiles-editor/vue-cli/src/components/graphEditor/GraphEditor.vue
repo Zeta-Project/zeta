@@ -21,7 +21,7 @@
                     v-if="graphComponent"
                     :graph-component="graphComponent"
                     :is-expanded="isDndExpanded"
-            :passive-supported="true"/>
+                    :passive-supported="true"/>
         </aside>
         <aside
                 class="md-scrollbar property-panel"
@@ -41,7 +41,7 @@
                     @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
                     @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
                     @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
-                    @change-name="(edge) => changeName(edge)"
+                    @on-edge-name-change="(edge, name) => updateEdgeLabel(edge, name)"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -67,7 +67,7 @@
         OrthogonalEdgeEditingContext,
         PolylineEdgeRouterData, Rect,
         Size, TreeBuilder,
-        ShowFocusPolicy
+        ShowFocusPolicy, DashStyle
     } from 'yfiles'
     // Custom components
     import Toolbar from '../toolbar/Toolbar'
@@ -78,7 +78,14 @@
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getDefaultGraphEditorInputMode, getEdgesFromReferences, getNodesFromClasses} from "./GraphEditorUtils";
+    import {
+        addEdgeStyleToEdges,
+        addNodeStyleToNodes,
+        executeLayout,
+        getDefaultGraphEditorInputMode,
+        getEdgesFromReferences,
+        getNodesFromClasses, getStyleForEdge
+    } from "./GraphEditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
@@ -87,8 +94,9 @@
     import {Grid} from "../../../../layout/grid/Grid";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
     import VuejsEdgeStyle from "../../uml/edges/styles/VuejsEdgeStyle";
+    import {UMLEdgeModel} from "../../uml/edges/UMLEdgeModel";
 
-    License.value = licenseData
+    License.value = licenseData;
 
     export default {
         name: 'GraphEditorComponent',
@@ -101,9 +109,9 @@
         },
         mounted() {
             this.initGraphComponent().then(response => {
-                this.isGraphComponentLoaded = response
+                this.isGraphComponentLoaded = response;
                 // Set the current edit mode to view only
-                this.$graphComponent.inputMode = new GraphViewerInputMode()
+                this.$graphComponent.inputMode = new GraphViewerInputMode();
             }).catch(error => {
                 // TODO add snackbar error
                 console.error(error)
@@ -142,12 +150,12 @@
                     this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
                     this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent);
                     this.initializeDefaultStyles();
-                    this.initGrid()
+                    this.initGrid();
 
                     // Load graph from definition
                     // TODO replace with actual api call in future
                     getDefaultGraph().then(response => {
-                        this.concept = response.concept
+                        this.concept = response.concept;
                         this.plotDefaultGraph(response.concept);
                         this.executeLayout()
                             .then(() => {
@@ -163,17 +171,17 @@
                 const NodeConstructor = Vue.extend(Node);
                 const EdgeConstructor = Vue.extend(Edge);
                 //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
-                this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor)
+                this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor);
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
-                this.$graphComponent.graph.nodeDefaults.size = new Size(150, 250)
-               // this.$graphComponent.graph.
-               // this.$graphComponent.setNodeLayout(node, new Rect(layout.x, layout.y, 500, 50))
+                this.$graphComponent.graph.nodeDefaults.size = new Size(150, 250);
+                // this.$graphComponent.graph.
+                // this.$graphComponent.setNodeLayout(node, new Rect(layout.x, layout.y, 500, 50))
                 //this.$graphComponent.graph.size = nodeData.size || [50, 50]
                 this.$graphComponent.graph.nodeDefaults.labels.style = new DefaultLabelStyle({
                     textFill: '#fff',
                     font: new Font('Robot, sans-serif', 14)
-                })
-                this.$graphComponent.graph.edgeDefaults.style = new VuejsEdgeStyle(EdgeConstructor);
+                });
+                this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
                 this.$graphComponent.graph.undoEngineEnabled = true
             },
 
@@ -181,8 +189,8 @@
              * Initializes the grid. Makes use of the yFiles Grid.
              */
             initGrid() {
-                this.grid = new Grid(this.$graphComponent)
-                this.grid.initializeGrid()
+                this.grid = new Grid(this.$graphComponent);
+                this.grid.initializeGrid();
                 this.grid.grid.visible = false;
             },
 
@@ -213,17 +221,17 @@
                     graphNodes,
                     childBinding: 'subordinates',
                     nodesSource: nodes
-                })
+                });
 
                 // use the VuejsNodeStyle, which uses a Vue component to display nodes
-                treeBuilder.graph.nodeDefaults.style = graph.nodeDefaults.style
-                treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size
-                treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style
-                treeBuilder.buildGraph()
+                treeBuilder.graph.nodeDefaults.style = graph.nodeDefaults.style;
+                treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size;
+                treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style;
+                treeBuilder.buildGraph();
                 /*graph.nodes.forEach(node => {
                     node.style.adjustSize(node, this.$graphComponent.inputMode)
                 })*/
-                return graphNodes
+                return graphNodes;
             },
 
             /**
@@ -234,23 +242,32 @@
             plotEdges(concept, graphNodes) {
                 // Get the node constructor from the node component
                 const graph = this.$graphComponent.graph;
-                let edges = getEdgesFromReferences(graph, concept.references, graphNodes)
-                // edges = addEdgeStyleToEdges(edges);
+                let edges = getEdgesFromReferences(graph, concept.references, graphNodes);
                 edges.forEach(edge => {
                     const graphEdge = graph.createEdge({
                         tag: edge,
                         source: edge.source,
-                        target: edge.target
+                        target: edge.target,
+                        style: getStyleForEdge(edge)
                     });
-                    console.log(graphEdge)
                     graph.addLabel(graphEdge, edge.name)
                 });
             },
 
-            changeName(edge) {
-                const selectedEdges = this.$graphComponent.selection.selectedEdges
-                const graph = this.$graphComponent.graph
-                console.log(this.selectedItem, edge, selectedEdges)
+            /**
+             * It is possible for a single edge to have multiple labels but only one tag. In our use case
+             * the name property on the tag object of an edge determines the label name.
+             */
+            updateEdgeLabel(edge, name) {
+                const selectedEdges = this.$graphComponent.selection.selectedEdges;
+
+                selectedEdges.forEach(edge => {
+                    edge.labels.forEach(label => {
+                        this.$graphComponent.graph.setLabelText(label, name)
+                    })
+                });
+
+                console.log(selectedEdges)
             },
 
             /**
@@ -259,24 +276,25 @@
             getInputMode(graphComponent) {
                 const mode = getDefaultGraphEditorInputMode();
                 // Add buttons that appear above a selected node for the creation of a new edge
-                const umlContextButtonsInputMode = new UMLContextButtonsInputMode()
-                umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1
-                mode.add(umlContextButtonsInputMode)
+                const umlContextButtonsInputMode = new UMLContextButtonsInputMode();
+                umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
+                mode.add(umlContextButtonsInputMode);
                 // execute a layout after certain gestures
-                mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
-                mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
+                mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
+                mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
                 mode.addCanvasClickedListener(() => this.handleCanvasClicked());
                 mode.addItemClickedListener((src, args) => {
-                    if(args.item.tag && args.item.style && args.item.style instanceof VuejsEdgeStyle)
+                    console.log(args.item)
+                    if (args.item.tag && args.item.style && args.item.style instanceof UMLEdgeStyle)
                         this.handleItemClicked(args, args.item.tag, args.item.style)
-                }) // For edges only
+                }); // For edges only
                 // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
-                this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS
+                this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS;
                 this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
                     if (this.$graphComponent.focusIndicatorManager.focusedItem)
                         this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem, this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
-                }) // For nodes only
+                }); // For nodes only
 
                 return mode
             },
@@ -286,9 +304,9 @@
              * This is used when a selection of nodes is moved or resized.
              */
             routeEdgesAtSelectedNodes() {
-                const edgeRouter = new EdgeRouter()
-                edgeRouter.minimumNodeToEdgeDistance = 100 //Distance increased
-                edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES
+                const edgeRouter = new EdgeRouter();
+                edgeRouter.minimumNodeToEdgeDistance = 100; //Distance increased
+                edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES;
 
                 const layoutExecutor = new LayoutExecutor({
                     graphComponent: this.$graphComponent,
@@ -298,7 +316,7 @@
                     }),
                     duration: '0.5s',
                     updateContentRect: false
-                })
+                });
                 layoutExecutor.start()
             },
 
@@ -321,11 +339,12 @@
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
             handleItemClicked(args, tag, type) {
-                if(type instanceof VuejsNodeStyle){
+                console.log(args)
+                if (type instanceof VuejsNodeStyle) {
                     this.sharedData.focusedNodeData = tag;
                     this.sharedData.focusedEdgeData = null;
-                } else if(type instanceof VuejsEdgeStyle){
-                    this.sharedData.focusedEdgeData = tag;
+                } else if (type instanceof UMLEdgeStyle) {
+                    this.sharedData.focusedEdgeData = args.item;
                     this.sharedData.focusedNodeData = null;
                 }
                 this.selectedItem = args;
@@ -366,9 +385,9 @@
              * @param isEnabled
              */
             toggleGrid(isEnabled) {
-                this.$graphComponent.inputMode.labelSnapContext.enabled = isEnabled
-                this.$graphComponent.inputMode.snapContext.enabled = isEnabled
-                this.grid.grid.visible = isEnabled
+                this.$graphComponent.inputMode.labelSnapContext.enabled = isEnabled;
+                this.$graphComponent.inputMode.snapContext.enabled = isEnabled;
+                this.grid.grid.visible = isEnabled;
                 this.$graphComponent.invalidate()
             },
 
@@ -395,7 +414,7 @@
              * @param node: node the attribute should be added to.
              * @param name: name of the attribute to add.
              */
-            addAttributeToNode(node, name){
+            addAttributeToNode(node, name) {
                 node.attributes = node.attributes.concat({name: name});
             },
 
@@ -408,7 +427,7 @@
              * @param node: node the attribute should be deleted from.
              * @param name: name of the attribute to delete.
              */
-            deleteAttributeFromNode(node, name){
+            deleteAttributeFromNode(node, name) {
                 node.attributes = node.attributes.filter(attribute => attribute.name !== name);
             },
 
@@ -418,7 +437,7 @@
              * @param node: node the operation should be added to.
              * @param name: name of the operation to add.
              */
-            addOperationToNode(node, name){
+            addOperationToNode(node, name) {
                 node.methods = node.methods.concat({name: name});
             },
 
@@ -431,7 +450,7 @@
              * @param node: node the operation should be deleted from.
              * @param name: name of the operation to delete
              */
-            deleteOperationFromNode(node, name){
+            deleteOperationFromNode(node, name) {
                 node.methods = node.methods.filter(attribute => attribute.name !== name);
             },
 
@@ -441,7 +460,7 @@
              * @param edge: edge the attribute should be added to.
              * @param name: name of the attribute to add.
              */
-            addAttributeToEdge(edge, name){
+            addAttributeToEdge(edge, name) {
                 edge.attributes = edge.attributes.concat({name: name});
             },
 
@@ -454,7 +473,7 @@
              * @param edge: edge the attribute should be deleted from.
              * @param name: name of the attribute to delete.
              */
-            deleteAttributeFromEdge(edge, name){
+            deleteAttributeFromEdge(edge, name) {
                 edge.attributes = edge.attributes.filter(attribute => attribute.name !== name);
             },
 
@@ -464,7 +483,7 @@
              * @param edge: edge the operation should be added to.
              * @param name: name of the operation to add.
              */
-            addOperationToEdge(edge, name){
+            addOperationToEdge(edge, name) {
                 edge.operations = edge.operations.concat({name: name});
             },
 
@@ -477,7 +496,7 @@
              * @param edge: edge the operation should be deleted from.
              * @param name: name of the operation to delete
              */
-            deleteOperationFromEdge(edge, name){
+            deleteOperationFromEdge(edge, name) {
                 edge.operations = edge.operations.filter(attribute => attribute.name !== name);
             },
         }
@@ -534,13 +553,5 @@
         line-height: 150%;
         right: 0;
         overflow-y: auto;
-    }
-
-    .collapsedDnd {
-        width: 100px
-    }
-
-    .expandedDnd {
-        width: 200px;
     }
 </style>

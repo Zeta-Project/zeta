@@ -1,13 +1,13 @@
 import {
-  Arrow,
-  ArrowType,
-  DashStyle,
-  Fill,
-  Stroke
+    Arrow,
+    ArrowType,
+    DashStyle,
+    Fill,
+    Stroke
 } from 'yfiles'
-import { UMLEdgeStyle } from './UMLEdgeStyle'
+import {UMLEdgeStyle} from './UMLEdgeStyle'
 import VuejsEdgeStyle from './VuejsEdgeStyle'
-import { UMLEdgeModel } from '../UMLEdgeModel'
+import {UMLEdgeModel} from '../UMLEdgeModel'
 import Vue from "vue";
 import Edge from "../../../components/edges/Edge";
 
@@ -15,105 +15,103 @@ import Edge from "../../../components/edges/Edge";
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
 export function createAssociationStyle() {
-  const EdgeConstructor = Vue.extend(Edge);
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: false,
+        targetDeletionDeletesSource: false
+    });
 
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: false,
-    targetDeletionDeletesSource: false
-  })
-
-  return new VuejsEdgeStyle(EdgeConstructor)
+    return new UMLEdgeStyle(model)
 }
 
-export function createDirectedAssociationStyle () {
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: false,
-    targetDeletionDeletesSource: false
-  })
+export function createDirectedAssociationStyle() {
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: false,
+        targetDeletionDeletesSource: false
+    });
 
-  return new UMLEdgeStyle(model,{
-    targetArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.BLACK,
-      type: ArrowType.DEFAULT
+    return new UMLEdgeStyle(model, {
+        targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.BLACK,
+            type: ArrowType.DEFAULT
+        })
     })
-  })
 }
 
-export function createRealizationStyle () {
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: true,
-    targetDeletionDeletesSource: false
-  })
-
-  return new UMLEdgeStyle(model,{
-    stroke: new Stroke({
-      dashStyle: DashStyle.DASH
-    }),
-    sourceArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.WHITE,
-      type: ArrowType.TRIANGLE
+export function createRealizationStyle() {
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: true,
+        targetDeletionDeletesSource: false
     })
-  })
+
+    return new UMLEdgeStyle(model, {
+        stroke: new Stroke({
+            dashStyle: DashStyle.DASH
+        }),
+        sourceArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.WHITE,
+            type: ArrowType.TRIANGLE
+        })
+    })
 }
 
-export function createCompositionStyle () {
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: true,
-    targetDeletionDeletesSource: true
-  })
-
-  return new UMLEdgeStyle(model, {
-    targetArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.BLACK,
-      type: ArrowType.DIAMOND
+export function createCompositionStyle() {
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: true,
+        targetDeletionDeletesSource: true
     })
-  })
+
+    return new UMLEdgeStyle(model, {
+        targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.BLACK,
+            type: ArrowType.DIAMOND
+        })
+    })
 }
 
-export function createGeneralizationStyle () {
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: false,
-    targetDeletionDeletesSource: true
-  })
-
-  return new UMLEdgeStyle(model,{
-    targetArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.WHITE,
-      type: ArrowType.TRIANGLE
+export function createGeneralizationStyle() {
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: false,
+        targetDeletionDeletesSource: true
     })
-  })
+
+    return new UMLEdgeStyle(model, {
+        targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.WHITE,
+            type: ArrowType.TRIANGLE
+        })
+    })
 }
 
-export function createAggregationStyle () {
-  const model = new UMLEdgeModel({
-    sourceDeletionDeletesTarget: true,
-    targetDeletionDeletesSource: false
-  })
-
-  return new UMLEdgeStyle(model, {
-    targetArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.WHITE,
-      type: ArrowType.DIAMOND
+export function createAggregationStyle() {
+    const model = new UMLEdgeModel({
+        sourceDeletionDeletesTarget: true,
+        targetDeletionDeletesSource: false
     })
-  })
+
+    return new UMLEdgeStyle(model, {
+        targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.WHITE,
+            type: ArrowType.DIAMOND
+        })
+    })
 }
 
-export function createDependencyStyle () {
-  return new UMLEdgeStyle({
-    stroke: new Stroke({
-      dashStyle: DashStyle.DASH
-    }),
-    targetArrow: new Arrow({
-      stroke: Stroke.BLACK,
-      fill: Fill.BLACK,
-      type: ArrowType.DEFAULT
+export function createDependencyStyle() {
+    return new UMLEdgeStyle({
+        stroke: new Stroke({
+            dashStyle: DashStyle.DASH
+        }),
+        targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.BLACK,
+            type: ArrowType.DEFAULT
+        })
     })
-  })
 }
 
 /**
@@ -121,8 +119,8 @@ export function createDependencyStyle () {
  * @param style
  * @returns {boolean}
  */
-export function isInheritance (style) {
-  return isGeneralization(style) || isRealization(style)
+export function isInheritance(style) {
+    return isGeneralization(style) || isRealization(style)
 }
 
 /**
@@ -130,11 +128,11 @@ export function isInheritance (style) {
  * @param style
  * @returns {boolean}
  */
-export function isGeneralization (style) {
-  if (!style.stroke || !style.sourceArrow) {
-    return false
-  }
-  return style.stroke.dashStyle === DashStyle.SOLID && style.sourceArrow.type === ArrowType.TRIANGLE
+export function isGeneralization(style) {
+    if (!style.stroke || !style.sourceArrow) {
+        return false
+    }
+    return style.stroke.dashStyle === DashStyle.SOLID && style.sourceArrow.type === ArrowType.TRIANGLE
 }
 
 /**
@@ -142,9 +140,9 @@ export function isGeneralization (style) {
  * @param style
  * @returns {boolean}
  */
-export function isRealization (style) {
-  if (!style.stroke || !style.sourceArrow) {
-    return false
-  }
-  return style.stroke.dashStyle === DashStyle.DASH && style.sourceArrow.type === ArrowType.TRIANGLE
+export function isRealization(style) {
+    if (!style.stroke || !style.sourceArrow) {
+        return false
+    }
+    return style.stroke.dashStyle === DashStyle.DASH && style.sourceArrow.type === ArrowType.TRIANGLE
 }
