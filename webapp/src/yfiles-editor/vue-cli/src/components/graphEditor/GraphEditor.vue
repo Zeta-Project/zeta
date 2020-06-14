@@ -41,6 +41,7 @@
                     @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
                     @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
                     @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
+                    @change-name="(edge) => changeName(edge)"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -158,14 +159,6 @@
                 })
             },
 
-            /**
-             * Sets default styles for the graph.
-             */
-
-            adjustNodeSize(height, width) {
-
-            },
-
             initializeDefaultStyles() {
                 const NodeConstructor = Vue.extend(Node);
                 const EdgeConstructor = Vue.extend(Edge);
@@ -207,16 +200,13 @@
              * @param concept: concept definition
              **/
             plotNodes(concept) {
-                // Get the node constructor from the node component
-                const NodeConstructor = Vue.extend(Node);
                 // Get the graph from graph component
                 const graph = this.$graphComponent.graph;
                 // Map data from the concept to uml classes
                 let nodes = getNodesFromClasses(graph, concept.classes);
                 // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
-                    tag: node,
-                    style: new VuejsNodeStyle(NodeConstructor)
+                    tag: node
                 }));
 
                 const treeBuilder = new TreeBuilder({
@@ -247,13 +237,20 @@
                 let edges = getEdgesFromReferences(graph, concept.references, graphNodes)
                 // edges = addEdgeStyleToEdges(edges);
                 edges.forEach(edge => {
-                    const tempEdge = graph.createEdge({
+                    const graphEdge = graph.createEdge({
                         tag: edge,
                         source: edge.source,
                         target: edge.target
                     });
-                    graph.addLabel(tempEdge, edge.name)
+                    console.log(graphEdge)
+                    graph.addLabel(graphEdge, edge.name)
                 });
+            },
+
+            changeName(edge) {
+                const selectedEdges = this.$graphComponent.selection.selectedEdges
+                const graph = this.$graphComponent.graph
+                console.log(this.selectedItem, edge, selectedEdges)
             },
 
             /**
@@ -270,15 +267,15 @@
                 mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.addCanvasClickedListener(() => this.handleCanvasClicked());
                 mode.addItemClickedListener((src, args) => {
-                    if(args.item.tag && args.item.style && args.item.style instanceof UMLEdgeStyle)
-                        this.handleItemClicked(args.item.tag, args.item.style)
+                    if(args.item.tag && args.item.style && args.item.style instanceof VuejsEdgeStyle)
+                        this.handleItemClicked(args, args.item.tag, args.item.style)
                 }) // For edges only
                 // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
                 this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS
                 this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
                     if (this.$graphComponent.focusIndicatorManager.focusedItem)
-                        this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
+                        this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem, this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
                 }) // For nodes only
 
                 return mode
@@ -323,7 +320,7 @@
             /**
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
-            handleItemClicked(tag, type) {
+            handleItemClicked(args, tag, type) {
                 if(type instanceof VuejsNodeStyle){
                     this.sharedData.focusedNodeData = tag;
                     this.sharedData.focusedEdgeData = null;
@@ -331,7 +328,7 @@
                     this.sharedData.focusedEdgeData = tag;
                     this.sharedData.focusedNodeData = null;
                 }
-                this.selectedItem = tag;
+                this.selectedItem = args;
             },
 
             /**

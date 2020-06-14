@@ -87,6 +87,9 @@
         },
         watch: {
             edge: function (newVal, oldVal) { // watch it
+                if(newVal.name !== oldVal.name){
+                    console.log("name changed");
+                }
                 console.log('Prop changed: ', newVal, ' | was: ', oldVal)
             }
         },
