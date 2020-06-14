@@ -6,18 +6,23 @@ import {
   Stroke
 } from 'yfiles'
 import { UMLEdgeStyle } from './UMLEdgeStyle'
+import VuejsEdgeStyle from './VuejsEdgeStyle'
 import { UMLEdgeModel } from '../UMLEdgeModel'
+import Vue from "vue";
+import Edge from "../../../components/edges/Edge";
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
 export function createAssociationStyle() {
+  const EdgeConstructor = Vue.extend(Edge);
+
   const model = new UMLEdgeModel({
     sourceDeletionDeletesTarget: false,
     targetDeletionDeletesSource: false
   })
 
-  return new UMLEdgeStyle(model)
+  return new VuejsEdgeStyle(EdgeConstructor)
 }
 
 export function createDirectedAssociationStyle () {

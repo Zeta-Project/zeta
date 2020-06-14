@@ -1,7 +1,7 @@
 <template>
     <g v-if="tag" class="vue-edge-style-edge uml-edge">       
-        <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"></path>
-
+        <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"/>
+        <text text-anchor="middle" :x="arrowPosition[0]-15" :y="arrowPosition[1]-15">{{tag.name}}</text>
         <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
 
         <!--
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-    import {DashStyle, ArrowType} from 'yfiles'
+    import {DashStyle, ArrowType, ILabel} from 'yfiles'
 
     export default {
         name: 'edge',
@@ -76,8 +76,6 @@
                 }
                 //console.log(penultimatePoint)
                 //console.log(lastPoint)
-                console.log(pathSVGArray)
-                console.log(rotation)
                 //console.log(0 == rotation.localeCompare('down'))
                 return rotation //should return the actual transfromation
             },
