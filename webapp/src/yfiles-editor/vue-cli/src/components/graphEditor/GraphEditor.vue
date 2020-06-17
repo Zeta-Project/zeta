@@ -245,7 +245,6 @@
                 let edges = getEdgesFromReferences(graph, concept.references, graphNodes);
                 edges.forEach(edge => {
                     const graphEdge = graph.createEdge({
-                        tag: edge,
                         source: edge.source,
                         target: edge.target,
                         style: getStyleForEdge(edge)
@@ -266,8 +265,6 @@
                         this.$graphComponent.graph.setLabelText(label, name)
                     })
                 });
-
-                console.log(selectedEdges)
             },
 
             /**
@@ -284,8 +281,7 @@
                 mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
                 mode.addCanvasClickedListener(() => this.handleCanvasClicked());
                 mode.addItemClickedListener((src, args) => {
-                    console.log(args.item)
-                    if (args.item.tag && args.item.style && args.item.style instanceof UMLEdgeStyle)
+                    if (args.item.style && args.item.style instanceof UMLEdgeStyle)
                         this.handleItemClicked(args, args.item.tag, args.item.style)
                 }); // For edges only
                 // Configure input mode for dndPanel actions
@@ -339,11 +335,11 @@
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
             handleItemClicked(args, tag, type) {
-                console.log(args)
                 if (type instanceof VuejsNodeStyle) {
                     this.sharedData.focusedNodeData = tag;
                     this.sharedData.focusedEdgeData = null;
                 } else if (type instanceof UMLEdgeStyle) {
+                    console.log(args.item);
                     this.sharedData.focusedEdgeData = args.item;
                     this.sharedData.focusedNodeData = null;
                 }

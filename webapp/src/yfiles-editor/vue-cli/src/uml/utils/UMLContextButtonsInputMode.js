@@ -108,6 +108,7 @@ export default class UMLContextButtonsInputMode extends InputModeBase {
             const dummyEdgeGraph = createEdgeInputMode.dummyEdgeGraph
             const dummyEdge = createEdgeInputMode.dummyEdge
             dummyEdgeGraph.setStyle(dummyEdge, umlEdgeType)
+            dummyEdgeGraph.addLabel(dummyEdge, "")
             dummyEdgeGraph.edgeDefaults.style = umlEdgeType
 
             // start edge creation and hide buttons until the edge is finished

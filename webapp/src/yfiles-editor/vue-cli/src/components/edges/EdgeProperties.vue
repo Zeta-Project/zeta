@@ -19,14 +19,14 @@
                         <md-list-item class="md-inset">
                             <md-field>
                                 <label>Description</label>
-                                <md-input v-model="edge.tag.description" />
+                                <md-input v-model="edge.style.model.description" />
                             </md-field>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.tag.sourceDeletionDeletesTarget" value="1">sourceDeletionDeletesTarget</md-checkbox>
+                            <md-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget" value="1">sourceDeletionDeletesTarget</md-checkbox>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.tag.targetDeletionDeletesSource" value="1">targetDeletionDeletesSource</md-checkbox>
+                            <md-checkbox v-model="edge.style.model.targetDeletionDeletesSource" value="1">targetDeletionDeletesSource</md-checkbox>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
@@ -35,16 +35,16 @@
                     <span class="md-list-item-text">Attributes</span>
                     <md-list slot="md-expand">
                         <md-list-item
-                                v-if="edge.tag.attributes"
-                                v-for="(attribute, index) in edge.tag.attributes"
-                                :key="`${edge.tag.name}-properties-attributes-${index}`"
+                                v-if="edge.style.model.attributes"
+                                v-for="(attribute, index) in edge.style.model.attributes"
+                                :key="`${edge.style.model.name}-properties-attributes-${index}`"
                                 class="md-inset"
                         >
                             <md-field>
                                 <label>Name</label>
                                 <md-input v-model="attribute.name"/>
                             </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', edge.tag, attribute.name)">
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', edge.style.model, attribute.name)">
                                 <md-icon class="fa fa-trash" />
                             </md-button>
                         </md-list-item>
@@ -58,23 +58,23 @@
                     <span class="md-list-item-text">Operations</span>
                     <md-list slot="md-expand">
                         <md-list-item
-                                v-if="edge.tag.operations"
-                                v-for="(operation, index) in edge.tag.operations"
-                                :key="`${edge.tag.name}-properties-operations-${index}`"
+                                v-if="edge.style.model.operations"
+                                v-for="(operation, index) in edge.style.model.operations"
+                                :key="`${edge.style.model.name}-properties-operations-${index}`"
                                 class="md-inset"
                         >
                             <md-field>
                                 <label>Name</label>
                                 <md-input v-model="operation.name" />
                             </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', edge.tag, operation.name)">
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', edge.style.model, operation.name)">
                                 <md-icon
                                         class="fa fa-trash"
                                 />
                             </md-button>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-operation', edge.tag, 'default')">Add Operation</md-button>
+                            <md-button class="md-raised md-primary" @click="$emit('add-operation', edge.style.model, 'default')">Add Operation</md-button>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
