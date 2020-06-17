@@ -23,10 +23,10 @@
                             </md-field>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget" value="1">sourceDeletionDeletesTarget</md-checkbox>
+                            <md-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget" @change="$emit('on-edge-style-change', edge)">sourceDeletionDeletesTarget</md-checkbox>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.style.model.targetDeletionDeletesSource" value="1">targetDeletionDeletesSource</md-checkbox>
+                            <md-checkbox v-model="edge.style.model.targetDeletionDeletesSource" @change="$emit('on-edge-style-change', edge)">targetDeletionDeletesSource</md-checkbox>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
@@ -49,7 +49,7 @@
                             </md-button>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', edge.tag, 'default')">Add Attribute</md-button>
+                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', edge.style.model, 'default')">Add Attribute</md-button>
                         </md-list-item>
                     </md-list>
                 </md-list-item>

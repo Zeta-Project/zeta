@@ -42,6 +42,7 @@
                     @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
                     @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
                     @on-edge-name-change="(edge, name) => updateEdgeLabel(edge, name)"
+                    @on-edge-style-change="edge => updateEdgeStyle(edge)"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -67,7 +68,8 @@
         OrthogonalEdgeEditingContext,
         PolylineEdgeRouterData, Rect,
         Size, TreeBuilder,
-        ShowFocusPolicy, DashStyle
+        ShowFocusPolicy, DashStyle,
+        ArrowType
     } from 'yfiles'
     // Custom components
     import Toolbar from '../toolbar/Toolbar'
@@ -268,6 +270,14 @@
             },
 
             /**
+             * Updates the edge style for the given edge
+             */
+            updateEdgeStyle(edge) {
+                const newStyle = getStyleForEdge(edge.style.model)
+                this.$graphComponent.graph.setStyle(edge, newStyle)
+            },
+
+            /**
              * Returns the default zeta input mode
              */
             getInputMode(graphComponent) {
@@ -339,7 +349,6 @@
                     this.sharedData.focusedNodeData = tag;
                     this.sharedData.focusedEdgeData = null;
                 } else if (type instanceof UMLEdgeStyle) {
-                    console.log(args.item);
                     this.sharedData.focusedEdgeData = args.item;
                     this.sharedData.focusedNodeData = null;
                 }

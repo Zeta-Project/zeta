@@ -14,6 +14,7 @@
                          @delete-attribute="(e, attributeName) => $emit('delete-attribute-from-edge', e, attributeName)"
                          @delete-operation="(e, operationName) => $emit('delete-operation-from-edge', e, operationName)"
                          @on-edge-name-change="(e, name) => $emit('on-edge-name-change', e, name)"
+                         @on-edge-style-change="e => $emit('on-edge-style-change', e)"
         />
     </div>
     <div v-else>
