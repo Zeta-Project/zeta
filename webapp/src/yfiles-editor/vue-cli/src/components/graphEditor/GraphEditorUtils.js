@@ -266,29 +266,22 @@ export function getEdgesFromReferences(graph, references, nodes) {
 
 /**
  *  Adds the default zeta edge style to every edge given
- * @param edges
  * @returns {*}
+ * @param edge
  */
-export function addEdgeStyleToEdges(edges) {
-    return edges.map(edge => {
-        let edgeStyle;
-        if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === true) {
-            edgeStyle = createCompositionStyle();
-        } else if (edge.sourceDeletionDeletesTarget === false && edge.targetDeletionDeletesSource === true) {
-            edgeStyle = createGeneralizationStyle();
-        } else if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === false) {
-            edgeStyle = createAggregationStyle();
-        } else {
-            edgeStyle = createAssociationStyle();
-        }
+export function getStyleForEdge(edge) {
+    let edgeStyle;
+    if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === true) {
+        edgeStyle = createCompositionStyle();
+    } else if (edge.sourceDeletionDeletesTarget === false && edge.targetDeletionDeletesSource === true) {
+        edgeStyle = createGeneralizationStyle();
+    } else if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === false) {
+        edgeStyle = createAggregationStyle();
+    } else {
+        edgeStyle = createAssociationStyle();
+    }
 
-        edgeStyle.model = edge;
-
-        return {
-            ...edge,
-            style: edgeStyle
-        };
-    })
+    return edgeStyle
 }
 
 

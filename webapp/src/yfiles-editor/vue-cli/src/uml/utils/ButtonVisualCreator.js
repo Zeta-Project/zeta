@@ -290,7 +290,11 @@ class ButtonIconRenderer {
     graph.createNode(new Rect(-15, -15, 30, 30), style)
     const src = graph.createNode(new Rect(-10, 0, 1, 1), VoidNodeStyle.INSTANCE)
     const tgt = graph.createNode(new Rect(10, 0, 1, 1), VoidNodeStyle.INSTANCE)
-    graph.createEdge(src, tgt, edgeStyle)
+    graph.createEdge({
+      source: src,
+      target: tgt,
+      style: edgeStyle
+    })
     const svgExport = new SvgExport(new Rect(-18, -18, 36, 36))
     return svgExport.exportSvg(this.gc)
   }
