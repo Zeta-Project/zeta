@@ -14,13 +14,21 @@
                         <image v-if="attributes_open==true"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" y="70" :style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
-                    <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="$emit('add-attribute', node, 'default')"/>
+                    <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
                     <g v-if="attributes_open">
-                        <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
-                            :style="{ fontSize:'16px', fill: 'black' }"
-                            :transform="`translate(${0} ${(index + 2)*25})`">
-                            {{attribute.name}}
-                        </text>
+                        <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
+                            <text x="20" y="50"  
+                                :style="{ fontSize:'16px', fill: 'black' }"
+                                :transform="`translate(${0} ${(index + 2)*25})`">
+                                {{attribute.name}}
+                            </text>
+                            <image :x="layout.width - 22" 
+                                y="48" 
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="18" 
+                                xlink:href="../../assets/delete-sign.svg" 
+                                v-on:click="()=>methods.deleteAttributeFromNode(tag, attribute.name)"/>
+                        </g>
                     </g>
                 </g>
 
@@ -32,14 +40,21 @@
                         <image v-if="operations_open==true"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{  fontSize: '16px', fill: 'black' }" >Operation:</text>
-                    <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="$emit('add-attribute', node, 'default')"/>
+                    <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
                     <g v-if="operations_open">
-                        <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" v-for="(method, index) in tag.methods" :key="method.name" 
-                            :style="{fontSize: '16px', fill: 'black' }"
-                            :transform="`translate(${0} ${(index + 2)*25})`">
-                            {{method.name}}
-                            {{style}}
-                        </text>
+                        <g v-for="(method, index) in tag.methods" :key="method.name" > 
+                            <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"  
+                                :style="{fontSize: '16px', fill: 'black' }"
+                                :transform="`translate(${0} ${(index + 2)*25})`">
+                                {{method.name}}
+                            </text>
+                             <image :x="layout.width - 22" 
+                                :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" 
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="18" 
+                                xlink:href="../../assets/delete-sign.svg" 
+                                v-on:click="()=>methods.deleteOperationFromNode(tag, method.name)"/>
+                        </g>
                     </g>
                 </g>
             </g>
@@ -74,13 +89,18 @@
                 }
         },
         // the node tag is passed as a prop
-        props: ['tag','layout'],
+        props: ['tag','layout', 'node','methods'],
 
         created(){
             console.log("created" + this.tag)
         },
 
     watch: {
+        layout: function() {
+            console.log(this.methods)
+            console.log(this.methods.addAttributeToNode)
+        },
+
         tag: function () {
            this.tag
         },
@@ -100,6 +120,11 @@
 
             total_size(tag) {
 
+            },
+            test(value) {
+                console.log(this.addAttribute, typeof this.addAttribute)
+
+                this.addAttribute(value)
             }
         },
 
