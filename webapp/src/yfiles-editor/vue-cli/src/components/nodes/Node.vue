@@ -23,7 +23,7 @@
                                 {{attribute.name}}
                             </text>
                             <image :x="layout.width - 22" 
-                                y="48" 
+                                y="45" 
                                 :transform="`translate(${0} ${(index + 2)*25})`"
                                 width="18" 
                                 xlink:href="../../assets/delete-sign.svg" 
