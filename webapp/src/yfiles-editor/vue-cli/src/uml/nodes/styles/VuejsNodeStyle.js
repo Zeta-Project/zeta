@@ -27,6 +27,7 @@
  **
  ***************************************************************************/
 import {Fill, INode, IRenderContext, NodeStyleBase, Rect, Size, SvgVisual} from 'yfiles'
+import {UMLClassModel} from "../UMLClassModel";
 
 
 /**
@@ -57,6 +58,7 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         // Populate it with the node data.
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
+        node.tag = node.tag ? node.tag : new UMLClassModel()
         component.$props.tag = node.tag
         component.$props.layout = node.layout
         //component.$props.tag = node.tag

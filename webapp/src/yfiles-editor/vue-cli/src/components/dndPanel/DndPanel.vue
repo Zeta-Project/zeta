@@ -36,6 +36,7 @@
     import Node from "../nodes/Node";
     import {getNodesFromClasses} from "../graphEditor/GraphEditorUtils";
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
+    import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
 
     export default {
         name: 'DndPanel',
@@ -62,7 +63,7 @@
                 const node = new SimpleNode();
                 node.layout = new Rect(0, 0, 150, 100);
                 // Set the style of the node in the dnd panel
-                node.style = new UMLNodeStyle();
+                node.style = new VuejsNodeStyle(NodeConstructor);
                 return [{element: node, tooltip: 'Node'}]
             },
 
@@ -154,7 +155,7 @@
                 // Create nodes that can be appended to the graph by the builder
                 const node = graph.createNode({
                     style: originalNode.style,
-                    tag: originalNode.tag
+                    tag: new UMLClassModel()
                 })
                 originalNode.labels.forEach(label => {
                     graph.addLabel(
