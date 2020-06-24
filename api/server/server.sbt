@@ -36,6 +36,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "filters-helpers" % ZetaBuild.playVersion,
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-typed" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-sharding" % ZetaBuild.akkaVersion,
     // "com.mohiva" %% "play-silhouette-testkit" % ZetaBuild.silhouetteVersion % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing

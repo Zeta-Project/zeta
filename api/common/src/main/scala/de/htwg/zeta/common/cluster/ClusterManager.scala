@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 /**
  */
 object ClusterManager {
-  val clusterPathPrefix = "akka.tcp://ClusterSystem@"
+  val clusterPathPrefix = "akka://ClusterSystem@"
 
   def getJournalPath(port: Int, seeds: List[String]): ActorPath = {
     seeds.headOption match {
@@ -21,22 +21,27 @@ object ClusterManager {
 
   def getClusterJoinConfig(roles: List[String], seeds: List[String], port: Int = 0): Config = {
     val formattedSeeds = (s"${HostIP.load()}:${port}" :: seeds).map {
-      address => s"""akka.cluster.seed-nodes += "$clusterPathPrefix${HostIP.lookupNodeAddress(address)}\""""
+      address => s"""\"$clusterPathPrefix${HostIP.lookupNodeAddress(address)}\""""
     }.mkString("\n")
 
     val formattedRoles = roles.mkString(",")
 
     val content =
       s"""akka.cluster.roles = [ ${formattedRoles} ]
-        |${formattedSeeds}""".stripMargin
+        |akka.cluster {
+        | downing-provider-class = "akka.cluster.sbr.SplitBrainResolverProvider"
+        | jmx.multi-mbeans-in-same-jvm = on
+        |}
+        |akka.cluster.seed-nodes = [${formattedSeeds}]
+        |""".stripMargin
 
     ConfigFactory.parseString(content).withFallback(getLocalNettyConfig(port))
   }
 
   def getLocalNettyConfig(port: Int): Config = {
     val content =
-      s"""akka.remote.netty.tcp.port=${port}
-        |akka.remote.netty.tcp.hostname=${HostIP.load()}""".stripMargin
+      s"""akka.remote.artery.canonical.port=${port}
+        |akka.remote.artery.canonical.hostname=${HostIP.load()}""".stripMargin
 
     ConfigFactory.parseString(content)
   }
