@@ -2,8 +2,6 @@ package de.htwg.zeta.server.start
 
 import java.io.File
 
-import scala.collection.convert.WrapAsScala
-
 import com.google.inject.Guice
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
@@ -16,6 +14,9 @@ import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import grizzled.slf4j.Logging
 import javax.inject.Singleton
+
+import scala.collection.JavaConverters
+
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.bind
@@ -97,7 +98,7 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     Option(mergedConfig.getStringList("zeta.actor.cluster")) match {
       case None => Nil
       case Some(javaList) =>
-        val list = WrapAsScala.iterableAsScalaIterable(javaList).toList
+        val list = JavaConverters.iterableAsScalaIterable(javaList).toList
         list.map(HostIP.lookupNodeAddress)
     }
   }
