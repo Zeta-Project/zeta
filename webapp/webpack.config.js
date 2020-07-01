@@ -1,13 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const prodMode = process.env.NODE_ENV === "production";
-const extractLess = new ExtractTextPlugin({
-  filename: "[name].bundle.css",
-});
 
 console.log("Production mode " + (prodMode ? "enabled" : "disabled"));
 
@@ -35,7 +32,9 @@ module.exports = {
       NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false
     }),
-      extractLess,
+      new MiniCssExtractPlugin({
+        filename: "[name].bundle.css"
+      }),
       new UglifyJSPlugin({
         parallel: true,
         sourceMap: !prodMode
@@ -63,14 +62,9 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: extractLess.extract({
-          use: [
-            {
-              loader: "css-loader",
-              options: {
-                minimize: prodMode
-              }
-            },
+        use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
             {
               loader: "less-loader",
               options: {
@@ -81,10 +75,8 @@ module.exports = {
                 strictImports: true,
               }
             }
-          ],
+          ]
           // use style-loader in development
-          fallback: "style-loader"
-        })
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -118,15 +110,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: extractLess.extract({
-          fallback: "style-loader",
-          use: {
-            loader: 'css-loader',
-            options: {
-              minimize: prodMode
-            }
-          }
-        })
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -144,6 +128,7 @@ module.exports = {
     ]
   },
   devServer: {
+    inline: false,
     contentBase: path.join(__dirname, './src/yfiles-editor'),
     compress: true,
     port: 9003
