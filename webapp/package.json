@@ -49,7 +49,6 @@
     "dotenv-webpack": "^1.7.0",
     "exports-loader": "0",
     "express": "4",
-    "mini-css-extract-plugin": "0.9.0",
     "file-loader": "1",
     "file-saver": "^2.0.2",
     "gulp": "^3.9.1",
@@ -58,13 +57,14 @@
     "jest": "21",
     "less": "2",
     "less-loader": "4",
+    "mini-css-extract-plugin": "0.9.0",
     "object-assign-deep": "0.4.0",
     "regenerator-runtime": "^0.11.1",
     "string-replace-loader": "2.3.0",
     "style-loader": "0",
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
-    "webpack": "4.4.0",
+    "webpack": "4.43.0",
     "webpack-dev-server": "3.11.0"
   },
   "jest": {
