@@ -38,18 +38,17 @@
     "zxcvbn": "4.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.42",
+    "@babel/core": "^7.10.0",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.42",
     "@babel/preset-env": "^7.0.0-beta.42",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^23.0.0-alpha.4",
-    "babel-loader": "7",
+    "babel-loader": "8.0.0",
     "babel-preset-env": "^2.0.0-alpha.20",
     "browser-sync": "^2.13.0",
     "dotenv-webpack": "^1.7.0",
     "exports-loader": "0",
     "express": "4",
-    "extract-text-webpack-plugin": "3",
     "file-loader": "1",
     "file-saver": "^2.0.2",
     "gulp": "^3.9.1",
@@ -58,14 +57,15 @@
     "jest": "21",
     "less": "2",
     "less-loader": "4",
+    "mini-css-extract-plugin": "0.9.0",
     "object-assign-deep": "0.4.0",
     "regenerator-runtime": "^0.11.1",
-    "string-replace-loader": "1",
+    "string-replace-loader": "2.3.0",
     "style-loader": "0",
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
-    "webpack": "3",
-    "webpack-dev-server": "2"
+    "webpack": "4.43.0",
+    "webpack-dev-server": "3.11.0"
   },
   "jest": {
     "cacheDirectory": "./node_modules/.cache/jest"

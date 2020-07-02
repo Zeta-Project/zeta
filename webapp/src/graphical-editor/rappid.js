@@ -7,7 +7,7 @@ import 'rappid/css/joint.ui.halo.css';
 import 'rappid/css/joint.format.print.css';
 
 // Load Rappid (jointjs extensions)
-import 'imports-loader?exports=>false&joint&_=lodash!string-replace-loader?search=require&replace=false&flags=g!rappid/dist/joint.shapes.uml';
+import 'imports-loader?exports=>false&joint&_=lodash!string-replace-loader?search=require&replace="false"&flags=g!rappid/dist/joint.shapes.uml';
 import 'imports-loader?joint&Backbone=backbone1.0&V=>joint.V&g=>joint.g!string-replace-loader?search=this\\["joint"\\]&replace=joint&flags=g!rappid/dist/joint.ui.halo';
 import 'imports-loader?joint&g=>joint.g!rappid/dist/joint.dia.freeTransform';
 import 'imports-loader?joint&Backbone=backbone1.0&g=>joint.g!string-replace-loader?search=this\\["joint"\\]&replace=joint&flags=g!rappid/dist/joint.ui.freeTransform';
