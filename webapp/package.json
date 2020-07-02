@@ -30,7 +30,7 @@
     "polymer-cli": "1",
     "rappid": "file:./rappid.tar.gz",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "yfiles": "file:../yFiles-for-html",
+    "yfiles": "file:../../yFiles-for-html",
     "zxcvbn": "4.2.0"
   },
   "devDependencies": {

@@ -15,7 +15,7 @@ RUN if [ "$YFILES_ACCESS" = "" ] ; \
             git clone https://$YFILES_ACCESS@github.com/Zeta-Project/yFiles-dev-key.git && \
             git clone https://$YFILES_ACCESS@github.com/Zeta-Project/yFiles-for-html.git ; \
     fi
-WORKDIR /src
+WORKDIR /zeta/webapp
 COPY . .
 RUN yarn install
 EXPOSE 8080
