@@ -17,11 +17,16 @@
                     <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
                     <g v-if="attributes_open">
                         <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
-                            <text x="20" y="50"  
+                            <!--text x="20" y="50"  
                                 :style="{ fontSize:'16px', fill: 'black' }"
                                 :transform="`translate(${0} ${(index + 2)*25})`">
                                 {{attribute.name}}
-                            </text>
+                            </text-->
+                            <foreignObject x="20" y="38"  
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="100%" height=" 50 ">
+                                <VueInlineTextEditor :value.sync="attribute.name" />
+                            </foreignObject>                            
                             <image :x="layout.width - 22" 
                                 y="45" 
                                 :transform="`translate(${0} ${(index + 2)*25})`"
@@ -82,7 +87,6 @@ import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
         name: 'node',
         components: {
             VueInlineTextEditor,
-            NodeInputField
         },
         data: function () {
             return {
