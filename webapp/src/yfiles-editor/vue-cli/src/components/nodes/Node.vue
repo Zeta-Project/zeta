@@ -99,12 +99,16 @@ import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
                 }
         },
         // the node tag is passed as a prop
+<<<<<<< HEAD
         props: ['tag','layout', 'node','methods'],
 
         created(){
             //console.log("created" + this.tag)
         },
 
+=======
+        props: ['tag','layout'],
+>>>>>>> refactoring
     watch: {
         layout: function() {
          //   console.log(this.methods)
