@@ -43,11 +43,11 @@
                     <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
                     <g v-if="operations_open">
                         <g v-for="(method, index) in tag.methods" :key="method.name" > 
-                            <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"  
-                                :style="{fontSize: '16px', fill: 'black' }"
-                                :transform="`translate(${0} ${(index + 2)*25})`">
-                                {{method.name}}
-                            </text>
+                            <foreignObject x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"  
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="100%" height=" 50 ">
+                                <VueInlineTextEditor :value.sync="method.name" />
+                            </foreignObject>
                              <image :x="layout.width - 22" 
                                 :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" 
                                 :transform="`translate(${0} ${(index + 2)*25})`"
@@ -60,7 +60,6 @@
             </g>
 
             <rect fill="none" x="0" y="0" stroke="black" stroke-width="3" width="100%" height="100%" />
-
         </svg>
     </g>
 
@@ -69,6 +68,9 @@
 </template>
 
 <script>
+
+import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
+
     const statusColors = {
         present: '#55B757',
         busy: '#E7527C',
@@ -78,6 +80,10 @@
 
     export default {
         name: 'node',
+        components: {
+            VueInlineTextEditor,
+            NodeInputField
+        },
         data: function () {
             return {
                 attributes_open : false ,
@@ -92,13 +98,13 @@
         props: ['tag','layout', 'node','methods'],
 
         created(){
-            console.log("created" + this.tag)
+            //console.log("created" + this.tag)
         },
 
     watch: {
         layout: function() {
-            console.log(this.methods)
-            console.log(this.methods.addAttributeToNode)
+         //   console.log(this.methods)
+           // console.log(this.methods.addAttributeToNode)
         },
 
         tag: function () {
@@ -122,7 +128,7 @@
 
             },
             test(value) {
-                console.log(this.addAttribute, typeof this.addAttribute)
+                //console.log(this.addAttribute, typeof this.addAttribute)
 
                 this.addAttribute(value)
             }

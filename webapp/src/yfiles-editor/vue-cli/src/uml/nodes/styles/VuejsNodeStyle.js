@@ -43,7 +43,7 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         super()
         this.$vueComponentConstructor = vueComponentConstructor;
         this.methods = methods;
-        console.log("methods", methods)
+        //console.log("methods", methods)
         //console.log(this.addAttribute, typeof addAttribute)
     }
 
@@ -68,8 +68,8 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         component.$props.tag = node.tag
         //console.log(node.layout)
         component.$props.layout = node.layout
-        console.log("methods in create visual", this.methods)
-        console.log("addAttributeToNode in create visual", this.methods.addAttributeToNode)
+        //console.log("methods in create visual", this.methods)
+        //console.log("addAttributeToNode in create visual", this.methods.addAttributeToNode)
         component.$props.methods = this.methods
         //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
