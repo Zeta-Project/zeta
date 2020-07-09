@@ -214,9 +214,17 @@
                 const graph = this.$graphComponent.graph;
                 // Map data from the concept to uml classes
                 let nodes = getNodesFromClasses(graph, concept.classes);
+
+                let methods = {}
+                methods.addAttributeToNode = this.addAttributeToNode;
+                methods.addOperationToNode = this.addOperationToNode;
+                methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
+                methods.deleteOperationFromNode = this.deleteOperationFromNode;
+
                 // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
-                    tag: node
+                    tag: node,
+                    style: new VuejsNodeStyle(NodeConstructor, methods),
                 }));
 
                 const treeBuilder = new TreeBuilder({
