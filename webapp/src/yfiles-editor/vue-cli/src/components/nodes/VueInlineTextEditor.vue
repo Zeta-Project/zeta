@@ -238,9 +238,6 @@ export default {
     cursor: text;
 }
 
-.editing{
-        max-width:100%;
-}
 .value-display{
     font-size: 15px;
 }
