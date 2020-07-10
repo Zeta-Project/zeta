@@ -170,6 +170,11 @@
             },
 
             initializeDefaultStyles() {
+                let methods = {}
+                methods.addAttributeToNode = this.addAttributeToNode;
+                methods.addOperationToNode = this.addOperationToNode;
+                methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
+                methods.deleteOperationFromNode = this.deleteOperationFromNode;
                 const NodeConstructor = Vue.extend(Node);
                 const EdgeConstructor = Vue.extend(Edge);
                 //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
