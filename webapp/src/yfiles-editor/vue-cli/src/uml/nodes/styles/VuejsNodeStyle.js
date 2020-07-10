@@ -43,7 +43,7 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         super()
         this.$vueComponentConstructor = vueComponentConstructor;
         this.methods = methods;
-        console.log("methods", methods)
+        //console.log("methods in vue JD", methods)
         //console.log(this.addAttribute, typeof addAttribute)
     }
 

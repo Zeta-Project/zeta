@@ -178,7 +178,7 @@
                 const NodeConstructor = Vue.extend(Node);
                 const EdgeConstructor = Vue.extend(Edge);
                 //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
-                this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor);
+                this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor, methods);
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
                 this.$graphComponent.graph.nodeDefaults.size = new Size(150, 250);
                 // this.$graphComponent.graph.
@@ -219,13 +219,12 @@
                 const graph = this.$graphComponent.graph;
                 // Map data from the concept to uml classes
                 let nodes = getNodesFromClasses(graph, concept.classes);
-
+                const NodeConstructor = Vue.extend(Node);
                 let methods = {}
                 methods.addAttributeToNode = this.addAttributeToNode;
                 methods.addOperationToNode = this.addOperationToNode;
                 methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
                 methods.deleteOperationFromNode = this.deleteOperationFromNode;
-
                 // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
                     tag: node,

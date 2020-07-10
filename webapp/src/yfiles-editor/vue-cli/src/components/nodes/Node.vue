@@ -91,11 +91,6 @@
         // the node tag is passed as a prop
         props: ['tag','layout'],
     watch: {
-        layout: function() {
-            console.log(this.methods)
-            console.log(this.methods.addAttributeToNode)
-        },
-
         tag: function () {
            this.tag
         },
