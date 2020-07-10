@@ -230,21 +230,22 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 
 
 .inline-editor{
     display: inline-block;
     cursor: text;
-    &:not(.editing){
+}
+
+.editing{
         max-width:100%;
-    }
-    .value-display{
-        font-size: 15px;
-    }
-    .content-field{
-        background-color: white;
-        font-size: 15px;
-    }
+}
+.value-display{
+    font-size: 15px;
+}
+.content-field{
+    background-color: white;
+    font-size: 15px;
 }
 </style>
