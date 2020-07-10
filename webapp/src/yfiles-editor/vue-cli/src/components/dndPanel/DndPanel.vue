@@ -59,11 +59,11 @@
             getPanelItems(graphComponent) {
                 const NodeConstructor = Vue.extend(Node);
                 // Create node and push them into the itemContainer
-                const Node1 = new SimpleNode();
-                Node1.layout = new Rect(0, 0, 150, 100);
+                const node = new SimpleNode();
+                node.layout = new Rect(0, 0, 150, 100);
                 // Set the style of the node in the dnd panel
-                Node1.style = new UMLNodeStyle();
-                return [{element: Node1, tooltip: 'Node'}]
+                node.style = new UMLNodeStyle();
+                return [{element: node, tooltip: 'Node'}]
             },
 
             /**
