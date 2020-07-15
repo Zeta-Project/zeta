@@ -28,7 +28,7 @@
     "jquery-ui": "1.12.1",
     "jquery-ui-themes": "1.12.0",
     "keyboardjs": "0.4.1",
-    "lodash": "3.10.1",
+    "lodash": "4.17.19",
     "object-assign-deep": "0.4.0",
     "polymer-cli": "1",
     "rappid": "file:./rappid.tar.gz",
