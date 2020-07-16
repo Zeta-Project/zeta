@@ -19,7 +19,8 @@
                             </md-field>
                         </md-list-item>
                         <md-list-item class="md-inset">
-                            <md-checkbox v-model="node.stereotype" value="1">Is Abstract?</md-checkbox>
+                            <input type="checkbox" id="checkbox" v-model="node.abstractness">
+                            <label for="checkbox" class="abstractLable">Is Abstract?</label>
                         </md-list-item>
                     </md-list>
                 </md-list-item>
@@ -97,6 +98,10 @@
 </script>
 
 <style scoped>
+    .abstractLable {
+        width: 600px;
+    }
+
     .full-control {
         display: flex;
         flex-direction: row;
