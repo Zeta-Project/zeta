@@ -39,9 +39,12 @@ export default class VuejsNodeStyle extends NodeStyleBase {
      * @param {Fill?} fill The background fill of the header sections.
      * @param {Fill?} highlightFill The background fill of the selected entry.
      */
-    constructor(vueComponentConstructor, fill, highlightFill) {
+    constructor(vueComponentConstructor, methods, fill, highlightFill) {
         super()
         this.$vueComponentConstructor = vueComponentConstructor;
+        this.methods = methods;
+        //console.log("methods", methods)
+        //console.log(this.addAttribute, typeof addAttribute)
     }
 
     /**
@@ -51,14 +54,22 @@ export default class VuejsNodeStyle extends NodeStyleBase {
      * @param {INode} node
      * @return {SvgVisual}
      */
+    test(value){
+        console.log(value)
+    }
+
     createVisual(context, node) {
         // create the Vue component
         const component = new this.$vueComponentConstructor()
         // Populate it with the node data.
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
+        component.$props.node = node
         component.$props.tag = node.tag
         component.$props.layout = node.layout
+        console.log("methods in create visual", this.methods)
+        console.log("addAttributeToNode in create visual", this.methods.addAttributeToNode)
+        component.$props.methods = this.methods
         //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
         // mount the component without passing in a DOM element
