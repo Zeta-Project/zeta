@@ -103,25 +103,15 @@ import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
         props: ['tag','layout','node','methods','inputMode'],
 
         created(){
-            //console.log("created" + this.tag)
         },
 
     watch: {
-        attributes_open: function() {
-            console.log("content")
-            console.log(this.inputMode)
-           // console.log(this.methods.addAttributeToNode)
-        },
-        inputMode: function(){
-            console.log(this.inputMode)
-        },
-
         tag: function () {
            this.tag
         },
 
     },
-        //console.log(tag.attributes),
+
         methods: {
             change_status(status) {
                 if (status) {
@@ -129,14 +119,6 @@ import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
                 } 
                 return true;
             },
-            size_element(element){
-
-            },
-
-            total_size(tag) {
-
-            },
-
         },
 
 

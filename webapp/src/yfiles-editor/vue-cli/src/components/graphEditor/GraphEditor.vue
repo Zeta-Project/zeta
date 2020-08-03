@@ -45,8 +45,7 @@
                     @on-edge-style-change="edge => updateEdgeStyle(edge)"
             />
         </aside>
-        <div class="graph-component-container" ref="GraphComponentElement" @change-input-mode="(newInputMode) => changeInputMode(newInputMode)"                        
-                                ></div>
+        <div class="graph-component-container" ref="GraphComponentElement"></div>
     </div>
 </template>
 
@@ -152,8 +151,6 @@
                 return new Promise((resolve, reject) => {
                     this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
                     this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent);
-                    //defaultInputMode = this.$graphComponent.inputMode;
-                    //console.log("init Graphcomponent", this.$graphComponent.inputMode)
                     this.initializeDefaultStyles();
                     this.initGrid();
 
@@ -231,7 +228,6 @@
                 methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
                 methods.deleteOperationFromNode = this.deleteOperationFromNode;
                 methods.changeInputMode = this.changeInputMode;
-                console.log("Plot Nodes",  this.$graphComponent.inputMode)
                 // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
                     tag: node,

@@ -28,12 +28,6 @@
  ***************************************************************************/
 import {Fill, INode, IRenderContext, NodeStyleBase, Rect, Size, SvgVisual} from 'yfiles'
 
-export function changeInputMode(newInputMode){
-    $emit(change-input-mode, newInputMode)
-    console.log("JS NodeStyle")
-}
-
-
 /**
  * A node style which uses a Vuejs component to display a node.
  */
@@ -72,14 +66,9 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         component.$props.node = node
         component.$props.tag = node.tag
         component.$props.layout = node.layout
-        console.log("methods in create visual", this.methods)
-        console.log("addAttributeToNode in create visual", this.methods.addAttributeToNode)
         component.$props.methods = this.methods
-       // component.$props.methods.changeInputMode = changeInputMode
         component.$props.inputMode = this.inputMode
-        //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
-        // mount the component without passing in a DOM element
         component.$mount()
 
         const svgElement = component.$el

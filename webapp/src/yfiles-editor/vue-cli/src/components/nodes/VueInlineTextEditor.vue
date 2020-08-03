@@ -103,7 +103,7 @@ export default {
             editingValue: null,
             internalValue: this.value,
             currentlyEditing: false,
-            savedInputMode: null //JSON.parse(JSON.stringify(this.inputMode)) //deep copy of original input mode
+            savedInputMode: null
         }
     },
     computed: {
@@ -130,18 +130,6 @@ export default {
         }
     },
     watch: {
-        internalValue (newValue) {
-           // console.log(newValue)
-            this.$emit('update:value', newValue)
-        },
-        selectValue (newValue) {
-            console.log(newValue)
-            this.internalSelectValue = newValue
-        },
-        value (newValue) {
-            console.log(newValue)
-            this.internalValue = newValue
-        },
     },
     mounted () {
         // If this field is required, but is empty, open the editor
@@ -163,27 +151,20 @@ export default {
             this.editingValue = null
             this.$emit('close')
             this.originalSelectValue = null
-            console.log("close", this.inputMode)
         },
         clickHandler(){          
             this.currentlyEditing = true;
             this.lockInputMode();
-            console.log("click input", this.inputMode)
-            console.log("click saved", this.savedInputMode)
             this.editValue()
         },
         
         lockInputMode(){
-            //        console.log("click saved")
-            this.savedInputMode = this.inputMode //JSON.parse(JSON.stringify(this.inputMode)) //deep copy of original input mode
+            this.savedInputMode = this.inputMode 
             this.$emit('change-input-mode', null);
-            //this.inputMode = null;
         },
 
         unlockInputMode(){
             this.$emit('change-input-mode', this.savedInputMode);
-//            this.$emit('inputMode', this.savedInputMode);
-//            this.inputMode = this.savedInputMode;
         },
 
         editValue () {
@@ -233,11 +214,6 @@ export default {
                 // ignore
             }
         },
-
-        greetings () {
-            alert("I am an alert box!");
-        },
-
         updateValue () {
             let isChanged = false
             if (this.internalValue !== this.editingValue) {
@@ -251,8 +227,6 @@ export default {
             }
             this.closeEditor()
         },
-
-
     }
 }
 </script>
