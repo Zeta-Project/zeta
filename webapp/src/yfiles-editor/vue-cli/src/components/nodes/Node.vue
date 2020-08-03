@@ -14,37 +14,57 @@
                         <image v-if="attributes_open==true"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" y="70" :style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
-
+                    <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
                     <g v-if="attributes_open">
-                        <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
-                            :style="{ fontSize:'16px', fill: 'black' }"
-                            :transform="`translate(${0} ${(index + 2)*25})`">
-                            {{attribute.name}}
-                        </text>
+                        <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
+                            <foreignObject x="20" y="38"  
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="100%" height=" 50 ">
+                                <VueInlineTextEditor 
+                                @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"                        
+                                :inputMode="inputMode"                                
+                                :value.sync="attribute.name" />
+                            </foreignObject>                            
+                            <image :x="layout.width - 22" 
+                                y="45" 
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="18" 
+                                xlink:href="../../assets/delete-sign.svg" 
+                                v-on:click="()=>methods.deleteAttributeFromNode(tag, attribute.name)"/>
+                        </g>
                     </g>
                 </g>
 
                 <g>
-                    <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />
-                
+                    <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />              
                     <g v-on:click="operations_open=change_status(operations_open)">
                         <image v-if="operations_open==false" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="operations_open==true"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{  fontSize: '16px', fill: 'black' }" >Operation:</text>
+                    <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
                     <g v-if="operations_open">
-                        <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" v-for="(method, index) in tag.methods" :key="method.name" 
-                            :style="{fontSize: '16px', fill: 'black' }"
-                            :transform="`translate(${0} ${(index + 2)*25})`">
-                            {{method.name}}
-                            {{style}}
-                        </text>
+                        <g v-for="(method, index) in tag.methods" :key="method.name" > 
+                            <foreignObject x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"  
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="100%" height=" 50 ">
+                                <VueInlineTextEditor 
+                                @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"                        
+                                :inputMode="inputMode"
+                                :value.sync="method.name"  />
+                            </foreignObject>
+                             <image :x="layout.width - 22" 
+                                :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" 
+                                :transform="`translate(${0} ${(index + 2)*25})`"
+                                width="18" 
+                                xlink:href="../../assets/delete-sign.svg" 
+                                v-on:click="()=>methods.deleteOperationFromNode(tag, method.name)"/>
+                        </g>
                     </g>
                 </g>
             </g>
 
             <rect fill="none" x="0" y="0" stroke="black" stroke-width="3" width="100%" height="100%" />
-
         </svg>
     </g>
 
@@ -53,6 +73,10 @@
 </template>
 
 <script>
+
+import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
+import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
+
     const statusColors = {
         present: '#55B757',
         busy: '#E7527C',
@@ -62,6 +86,9 @@
 
     export default {
         name: 'node',
+        components: {
+            VueInlineTextEditor,
+        },
         data: function () {
             return {
                 attributes_open : false ,
@@ -73,14 +100,18 @@
                 }
         },
         // the node tag is passed as a prop
-        props: ['tag','layout'],
+        props: ['tag','layout','node','methods','inputMode'],
+
+        created(){
+        },
+
     watch: {
         tag: function () {
            this.tag
         },
 
     },
-        //console.log(tag.attributes),
+
         methods: {
             change_status(status) {
                 if (status) {
@@ -88,13 +119,6 @@
                 } 
                 return true;
             },
-            size_element(element){
-
-            },
-
-            total_size(tag) {
-
-            }
         },
 
 
