@@ -13,21 +13,23 @@ export function getDefaultGraph() {
     const args = process.argv.slice(2);
 
     return new Promise((resolve, reject) => {
-        if(process.env.NODE_ENV === 'remote') {
+        if (process.env.NODE_ENV === 'remote') {
             const zetaApiWrapper = new ZetaApiWrapper();
             zetaApiWrapper.rootUrl = process.env.ZETA_DEV_ROOT_URL;
             zetaApiWrapper.email = process.env.ZETA_DEV_USER_EMAIL;
             zetaApiWrapper.password = process.env.ZETA_DEV_USER_PASSWORD;
             uuid = process.env.ZETA_DEV_PROJECT_UUID;
-            zetaApiWrapper.getConceptDefinition(uuid).then(data => {
-                const loadedMetaModel = {
-                    uuid: uuid,
-                    name: "petrinet",
-                    concept: data
-                };
+            zetaApiWrapper.getConceptDefinition(uuid)
+                .then(data => {
+                    const loadedMetaModel = {
+                        uuid: uuid,
+                        name: "petrinet",
+                        concept: data
+                    };
 
-                resolve(loadedMetaModel)
-            }).catch(error => reject(error));
+                    resolve(loadedMetaModel)
+                })
+                .catch(error => reject(error));
 
             // override rootUrl for later save model calls
             ZetaApiWrapper.prototype.rootUrl = process.env.ZETA_DEV_ROOT_URL;

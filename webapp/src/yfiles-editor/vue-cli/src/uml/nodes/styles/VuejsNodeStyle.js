@@ -27,6 +27,7 @@
  **
  ***************************************************************************/
 import {Fill, INode, IRenderContext, NodeStyleBase, Rect, Size, SvgVisual} from 'yfiles'
+import {UMLClassModel} from "../UMLClassModel";
 
 /**
  * A node style which uses a Vuejs component to display a node.
@@ -53,22 +54,20 @@ export default class VuejsNodeStyle extends NodeStyleBase {
      * @param {INode} node
      * @return {SvgVisual}
      */
-    test(value){
-        console.log(value)
-    }
-
     createVisual(context, node) {
         // create the Vue component
         const component = new this.$vueComponentConstructor()
         // Populate it with the node data.
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
+        node.tag = node.tag ? node.tag : new UMLClassModel()
         component.$props.node = node
         component.$props.tag = node.tag
         component.$props.layout = node.layout
         component.$props.methods = this.methods
         component.$props.inputMode = this.inputMode
         component.$data.zoom = context.zoom
+        // mount the component without passing in a DOM element
         component.$mount()
 
         const svgElement = component.$el
