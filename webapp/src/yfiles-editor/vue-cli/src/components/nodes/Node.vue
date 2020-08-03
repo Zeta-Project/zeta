@@ -3,8 +3,8 @@
         <svg :width="layout.width" :height="layout.height">
             <rect fill="white"  width="100%" height="100%" />
 
-            <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(205, 40, 40)' :'rgb(147, 176, 255)' )}" >           
-                <rect x="0%" y="0%" width="100%" :height="40" />
+            <g :style="{ fontSize: '10px', fontColor: 'white', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(220, 20, 60)' :'rgb(96, 125, 139)' )}" >
+                <rect x="0%" y="0%" width="100%" :height="45" />
                 <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
                 
                 <g>
