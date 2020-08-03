@@ -17,15 +17,13 @@
                     <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
                     <g v-if="attributes_open">
                         <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
-                            <!--text x="20" y="50"  
-                                :style="{ fontSize:'16px', fill: 'black' }"
-                                :transform="`translate(${0} ${(index + 2)*25})`">
-                                {{attribute.name}}
-                            </text-->
                             <foreignObject x="20" y="38"  
                                 :transform="`translate(${0} ${(index + 2)*25})`"
                                 width="100%" height=" 50 ">
-                                <VueInlineTextEditor :value.sync="attribute.name" />
+                                <VueInlineTextEditor 
+                                @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"                        
+                                :inputMode="inputMode"                                
+                                :value.sync="attribute.name" />
                             </foreignObject>                            
                             <image :x="layout.width - 22" 
                                 y="45" 
@@ -38,8 +36,7 @@
                 </g>
 
                 <g>
-                    <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />
-                
+                    <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />              
                     <g v-on:click="operations_open=change_status(operations_open)">
                         <image v-if="operations_open==false" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="operations_open==true"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
@@ -51,7 +48,10 @@
                             <foreignObject x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"  
                                 :transform="`translate(${0} ${(index + 2)*25})`"
                                 width="100%" height=" 50 ">
-                                <VueInlineTextEditor :value.sync="method.name" />
+                                <VueInlineTextEditor 
+                                @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"                        
+                                :inputMode="inputMode"
+                                :value.sync="method.name"  />
                             </foreignObject>
                              <image :x="layout.width - 22" 
                                 :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" 
@@ -75,6 +75,7 @@
 <script>
 
 import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
+import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
 
     const statusColors = {
         present: '#55B757',
@@ -99,24 +100,18 @@ import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
                 }
         },
         // the node tag is passed as a prop
-        props: ['tag','layout', 'node','methods'],
+        props: ['tag','layout','node','methods','inputMode'],
 
         created(){
-            //console.log("created" + this.tag)
         },
 
     watch: {
-        layout: function() {
-         //   console.log(this.methods)
-           // console.log(this.methods.addAttributeToNode)
-        },
-
         tag: function () {
            this.tag
         },
 
     },
-        //console.log(tag.attributes),
+
         methods: {
             change_status(status) {
                 if (status) {
@@ -124,18 +119,6 @@ import VueInlineTextEditor from "../nodes/VueInlineTextEditor";
                 } 
                 return true;
             },
-            size_element(element){
-
-            },
-
-            total_size(tag) {
-
-            },
-            test(value) {
-                //console.log(this.addAttribute, typeof this.addAttribute)
-
-                this.addAttribute(value)
-            }
         },
 
 

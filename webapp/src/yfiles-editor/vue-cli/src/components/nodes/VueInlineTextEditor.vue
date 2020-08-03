@@ -34,6 +34,7 @@ https://github.com/causelabs/vue-inline-text-editor
                 @blur="emitBlur"
                 @keyup.enter="updateValue"
                 @keyup.esc="cancelEdit"
+                greetings
                 :placeholder="placeholder"
                 :required="required"
                 ref="input"
@@ -90,6 +91,9 @@ export default {
                 return ['text', 'number', 'currency', 'percentage'].indexOf(value) > -1
             }
         },
+        inputMode:{
+            required: true
+        },
         value: {
             required: true
         }
@@ -98,7 +102,8 @@ export default {
         return {
             editingValue: null,
             internalValue: this.value,
-            currentlyEditing: false
+            currentlyEditing: false,
+            savedInputMode: null
         }
     },
     computed: {
@@ -125,18 +130,6 @@ export default {
         }
     },
     watch: {
-        internalValue (newValue) {
-           // console.log(newValue)
-            this.$emit('update:value', newValue)
-        },
-        selectValue (newValue) {
-            console.log(newValue)
-            this.internalSelectValue = newValue
-        },
-        value (newValue) {
-            console.log(newValue)
-            this.internalValue = newValue
-        },
     },
     mounted () {
         // If this field is required, but is empty, open the editor
@@ -153,6 +146,7 @@ export default {
             this.closeEditor()
         },
         closeEditor () {
+            this.unlockInputMode();
             this.currentlyEditing = false;
             this.editingValue = null
             this.$emit('close')
@@ -160,7 +154,17 @@ export default {
         },
         clickHandler(){          
             this.currentlyEditing = true;
+            this.lockInputMode();
             this.editValue()
+        },
+        
+        lockInputMode(){
+            this.savedInputMode = this.inputMode 
+            this.$emit('change-input-mode', null);
+        },
+
+        unlockInputMode(){
+            this.$emit('change-input-mode', this.savedInputMode);
         },
 
         editValue () {
@@ -210,7 +214,6 @@ export default {
                 // ignore
             }
         },
-
         updateValue () {
             let isChanged = false
             if (this.internalValue !== this.editingValue) {
@@ -224,8 +227,6 @@ export default {
             }
             this.closeEditor()
         },
-
-
     }
 }
 </script>
