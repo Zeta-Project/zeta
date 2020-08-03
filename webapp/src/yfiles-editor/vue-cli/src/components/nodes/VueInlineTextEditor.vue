@@ -34,6 +34,7 @@ https://github.com/causelabs/vue-inline-text-editor
                 @blur="emitBlur"
                 @keyup.enter="updateValue"
                 @keyup.esc="cancelEdit"
+                greetings
                 :placeholder="placeholder"
                 :required="required"
                 ref="input"
@@ -90,6 +91,9 @@ export default {
                 return ['text', 'number', 'currency', 'percentage'].indexOf(value) > -1
             }
         },
+        inputMode:{
+            required: true
+        },
         value: {
             required: true
         }
@@ -98,7 +102,8 @@ export default {
         return {
             editingValue: null,
             internalValue: this.value,
-            currentlyEditing: false
+            currentlyEditing: false,
+            savedInputMode: null //JSON.parse(JSON.stringify(this.inputMode)) //deep copy of original input mode
         }
     },
     computed: {
@@ -153,14 +158,32 @@ export default {
             this.closeEditor()
         },
         closeEditor () {
+            this.unlockInputMode();
             this.currentlyEditing = false;
             this.editingValue = null
             this.$emit('close')
             this.originalSelectValue = null
+            console.log("close", this.inputMode)
         },
         clickHandler(){          
             this.currentlyEditing = true;
+            this.lockInputMode();
+            console.log("click input", this.inputMode)
+            console.log("click saved", this.savedInputMode)
             this.editValue()
+        },
+        
+        lockInputMode(){
+            //        console.log("click saved")
+            this.savedInputMode = this.inputMode //JSON.parse(JSON.stringify(this.inputMode)) //deep copy of original input mode
+            this.$emit('change-input-mode', null);
+            //this.inputMode = null;
+        },
+
+        unlockInputMode(){
+            this.$emit('change-input-mode', this.savedInputMode);
+//            this.$emit('inputMode', this.savedInputMode);
+//            this.inputMode = this.savedInputMode;
         },
 
         editValue () {
@@ -209,6 +232,10 @@ export default {
             } catch (ignore) {
                 // ignore
             }
+        },
+
+        greetings () {
+            alert("I am an alert box!");
         },
 
         updateValue () {
