@@ -11,8 +11,8 @@
                 @toggle-grid="toggleGrid"
         />
         <aside
-                class="demo-sidebar demo-description"
-                :class="isDndExpanded ? 'expandedDnd' : 'collapsedDnd'"
+                class="demo-description"
+                :class="isDndExpanded ? 'expandedDnd demo-sidebar-extended' : 'demo-sidebar-collapsed collapsedDnd'"
                 @mouseover="!isDndExpanded && toggleDnd()"
                 @mouseleave="isDndExpanded && toggleDnd()"
                 v-show="isEditEnabled"
@@ -29,7 +29,7 @@
         >
             <PropertyPanel
                     :item="selectedItem"
-                    :is-open="selectedItem != null"
+                    :is-open="selectedItem !== null"
                     :node="sharedData.focusedNodeData"
                     :edge="sharedData.focusedEdgeData"
                     @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
@@ -86,7 +86,7 @@
         executeLayout,
         getDefaultGraphEditorInputMode,
         getEdgesFromReferences,
-        getNodesFromClasses, getStyleForEdge
+        getNodesFromClasses, getStyleForEdge, saveGraph
     } from "./GraphEditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
@@ -99,6 +99,13 @@
     import {UMLEdgeModel} from "../../uml/edges/UMLEdgeModel";
 
     License.value = licenseData;
+
+    /**
+     * Comment from y-Files: Be aware not to pass y-Files properties (such as graphComponent) to other vue components.
+     * This might result in performance issues.
+     * Extensive refactoring would take to long for Team WS19/20-SS20.
+     */
+
 
     export default {
         name: 'GraphEditorComponent',
@@ -156,22 +163,23 @@
 
                     // Load graph from definition
                     // TODO replace with actual api call in future
-                    getDefaultGraph().then(response => {
-                        this.concept = response.concept;
-                        this.plotDefaultGraph(response.concept);
-                        this.executeLayout()
-                            .then(() => {
-                                const isLoaded = true;
-                                resolve(isLoaded);
-                            })
-                            .catch(error => reject(error))
-                    }).catch(error => reject(error));
+                    getDefaultGraph()
+                        .then(response => {
+                            this.concept = response;
+                            this.plotDefaultGraph(this.concept.concept);
+                            this.executeLayout()
+                                .then(() => {
+                                    const isLoaded = true;
+                                    resolve(isLoaded);
+                                })
+                                .catch(error => reject(error))
+                        })
+                        .catch(error => reject(error));
                 })
             },
 
             initializeDefaultStyles() {
                 const NodeConstructor = Vue.extend(Node);
-                const EdgeConstructor = Vue.extend(Edge);
                 //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
                 this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor);
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
@@ -345,14 +353,16 @@
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
             handleItemClicked(args, tag, type) {
-                if (type instanceof VuejsNodeStyle) {
-                    this.sharedData.focusedNodeData = tag;
-                    this.sharedData.focusedEdgeData = null;
-                } else if (type instanceof UMLEdgeStyle) {
-                    this.sharedData.focusedEdgeData = args.item;
-                    this.sharedData.focusedNodeData = null;
+                if (tag || (type instanceof UMLEdgeStyle && type.model)) {
+                    if (type instanceof VuejsNodeStyle) {
+                        this.sharedData.focusedNodeData = tag;
+                        this.sharedData.focusedEdgeData = null;
+                    } else if (type instanceof UMLEdgeStyle) {
+                        this.sharedData.focusedEdgeData = args.item;
+                        this.sharedData.focusedNodeData = null;
+                    }
+                    this.selectedItem = args;
                 }
-                this.selectedItem = args;
             },
 
             /**
@@ -397,8 +407,7 @@
             },
 
             saveGraph() {
-                console.log("save")
-                //saveGraph(this.$graphComponent, this.concept)
+                saveGraph(this.$graphComponent, this.concept)
             },
 
             /**
@@ -534,7 +543,20 @@
         bottom: 0;
     }
 
-    .demo-sidebar {
+    .demo-sidebar-collapsed {
+        position: absolute;
+        top: 101px;
+        bottom: 0;
+        width: 100px;
+        box-sizing: border-box;
+        background: #f7f7f7;
+        z-index: 15;
+        line-height: 150%;
+        left: 0;
+        overflow-y: auto;
+    }
+
+    .demo-sidebar-extended {
         position: absolute;
         top: 101px;
         bottom: 0;

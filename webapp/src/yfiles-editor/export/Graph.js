@@ -1,4 +1,5 @@
 import {UMLNodeStyle} from "../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
+import VuejsNodeStyle from "../vue-cli/src/uml/nodes/styles/VuejsNodeStyle";
 
 /*
   Wrapper class around the internal yfiles graph.
@@ -13,23 +14,21 @@ export default (function () {
       Returns all nodes (which are nodes of type UMLSNodeStyle).
      */
     Graph.prototype.getNodes = function () {
-        return this.graph.nodes.filter(node => node.style instanceof UMLNodeStyle)
+        return this.graph.nodes.filter(node => node.style instanceof VuejsNodeStyle)
     };
 
     /*
       Returns the names of all nodes.
      */
-    Graph.prototype.getNodeNames = function () {
-        return this.getNodes().map(node => {
-            return node.style.model.className
-        })
+    Graph.prototype.getNodeNames = function() {
+        return this.getNodes().map(node => node.tag.name);
     };
 
     /*
     Returns the name of the given node.
    */
     Graph.prototype.getNodeName = function (node) {
-        let result = node.style.model.className;
+        let result = node.tag.name;
         if (typeof result !== 'string') {
             return "";
         } else {
@@ -41,7 +40,7 @@ export default (function () {
       Returns the description of the given node.
      */
     Graph.prototype.getNodeDescription = function (node) {
-        let result = node.style.model.description;
+        let result = node.tag.description;
         if (typeof result !== 'string') {
             return "";
         }
@@ -52,7 +51,7 @@ export default (function () {
       Checks whether the element is abstract.
      */
     Graph.prototype.isAbstract = function (node) {
-        return node.style.model.abstract;
+        return node.tag.abstractness;
     };
 
     /*
@@ -70,16 +69,16 @@ export default (function () {
     };
 
     Graph.prototype.getNodeAttributes = function (node) {
-        if (node.style.model.attributes !== null) {
-            return node.style.model.attributes
+        if (node.tag.attributes !== null) {
+            return node.tag.attributes
         } else {
             return []
         }
     };
 
     Graph.prototype.getNodeMethods = function (node) {
-        if (node.style.model.operations !== null) {
-            return node.style.model.operations
+        if (node.tag.methods !== null) {
+            return node.tag.methods
         } else {
             return []
         }
@@ -124,9 +123,7 @@ export default (function () {
        TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
      */
     Graph.prototype.getReferenceNames = function () {
-        return this.getReferences().map(reference => {
-            return reference.style.model.name;
-        });
+        return this.getReferences().flatMap(r => r.labels.map(l => l.text));
     };
 
     /*
@@ -169,14 +166,14 @@ export default (function () {
       Returns all source classes of the reference.
      */
     Graph.prototype.getSourceClassName = function (reference) {
-        return reference.sourceNode.style.model.className
+        return reference.sourceNode.tag.name
     };
 
     /*
       Returns all target classes of the reference.
      */
     Graph.prototype.getTargetClassName = function (reference) {
-        return reference.targetNode.style.model.className
+        return reference.targetNode.tag.name
     };
 
     Graph.prototype.getReferenceAttributes = function (reference) {
@@ -226,7 +223,6 @@ export default (function () {
                 keys.push(key);
             }
         });
-
         return duplicateKeys;
     };
 
