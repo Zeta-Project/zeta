@@ -239,7 +239,6 @@
                 methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
                 methods.deleteOperationFromNode = this.deleteOperationFromNode;
                 methods.changeInputMode = this.changeInputMode;
-                console.log("Plot Nodes",  this.$graphComponent.inputMode)
                 // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
                     tag: node,
