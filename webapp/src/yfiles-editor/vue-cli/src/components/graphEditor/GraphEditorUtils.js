@@ -89,9 +89,7 @@ export function saveGraph(graphComponent, loadedMetaModel) {
 
         const exporter = new Exporter(graph);
         const exportedMetaModel = exporter.export();
-
         if (exportedMetaModel.isValid()) {
-
             const data = JSON.stringify({
                 name: loadedMetaModel.name,
                 classes: exportedMetaModel.getClasses(),
@@ -102,11 +100,14 @@ export function saveGraph(graphComponent, loadedMetaModel) {
                 uiState: JSON.stringify({"empty": "value"})
             });
 
-            ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
-                showSnackbar("Meta model saved successfully!")
-            }).catch(reason => {
-                showSnackbar("Problem to save meta model: " + reason)
-            });
+            ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data)
+                .then(isSuccessStatus)
+                .then(() => {
+                    showSnackbar("Meta model saved successfully!")
+                })
+                .catch(reason => {
+                    showSnackbar("Problem to save meta model: " + reason)
+                });
 
         } else {
             let errorMessage = "";

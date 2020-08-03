@@ -23,6 +23,7 @@ export class UMLEdgeModel {
         this.targetUpperBounds = (data && data.targetUpperBounds) || -1;
         this.operations = (data && data.operations) || []
         this.attributes = (data && data.attributes) || []
+        this.labels = (data && data.labels) || []
 
     }
 /* maybe some kind of clone is needed for edge handling
