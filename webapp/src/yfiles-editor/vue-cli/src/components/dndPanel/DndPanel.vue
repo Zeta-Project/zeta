@@ -70,8 +70,7 @@
                 const node = new SimpleNode();
                 node.layout = new Rect(0, 0, 150, 250);
                 // Set the style of the node in the dnd panel
-                console.log(methods)
-                node.style = new VuejsNodeStyle(NodeConstructor, methods, this.graphComponent.inputMode);
+                node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
                 return [{element: node, tooltip: 'Node'}]
             },
 

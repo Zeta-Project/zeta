@@ -186,7 +186,6 @@
 
             initializeDefaultStyles() {
                 let methods = {}
-                console.log("initializeDefaultStyles", this.$graphComponent.inputMode)
                 methods.addAttributeToNode = this.addAttributeToNode;
                 methods.addOperationToNode = this.addOperationToNode;
                 methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
