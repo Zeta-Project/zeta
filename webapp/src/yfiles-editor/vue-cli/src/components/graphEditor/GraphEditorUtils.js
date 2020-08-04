@@ -90,6 +90,7 @@ export function saveGraph(graphComponent, loadedMetaModel) {
         const exporter = new Exporter(graph);
         const exportedMetaModel = exporter.export();
         if (exportedMetaModel.isValid()) {
+            console.log(exportedMetaModel)
             const data = JSON.stringify({
                 name: loadedMetaModel.name,
                 classes: exportedMetaModel.getClasses(),

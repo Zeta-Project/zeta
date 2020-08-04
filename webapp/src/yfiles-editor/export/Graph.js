@@ -1,4 +1,3 @@
-import {UMLNodeStyle} from "../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
 import VuejsNodeStyle from "../vue-cli/src/uml/nodes/styles/VuejsNodeStyle";
 
 /*
@@ -123,7 +122,7 @@ export default (function () {
        TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
      */
     Graph.prototype.getReferenceNames = function () {
-        return this.getReferences().flatMap(r => r.labels.map(l => l.text));
+        return this.getReferences().flatMap(r => r.labels.map(l => l.text || '')).map(r => r ? r : '');
     };
 
     /*
@@ -215,6 +214,7 @@ export default (function () {
         let keys = [];
         let duplicateKeys = [];
         let elements = this.getNodeNames().concat(this.getReferenceNames());
+        elements = elements.map(e => e ? e : '')
 
         elements.forEach(key => {
             if (keys.includes(key)) {
