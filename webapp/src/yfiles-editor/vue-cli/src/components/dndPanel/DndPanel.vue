@@ -37,6 +37,7 @@
     import {getNodesFromClasses} from "../graphEditor/GraphEditorUtils";
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
+    import GraphEditor from "../graphEditor/GraphEditor";
 
     export default {
         name: 'DndPanel',
@@ -58,12 +59,19 @@
              * Return panel items
              **/
             getPanelItems(graphComponent) {
+                let methods = {}
+                methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
+                methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
+                methods.deleteAttributeFromNode = (node, attribute) => this.$emit('delete-attribute-from-node', node, attribute);
+                methods.deleteOperationFromNode = (node, attribute) => this.$emit('delete-operation-from-node', node, attribute);
+                methods.changeInputMode = () => this.$emit('change-input-mode');
                 const NodeConstructor = Vue.extend(Node);
                 // Create node and push them into the itemContainer
                 const node = new SimpleNode();
-                node.layout = new Rect(0, 0, 150, 100);
+                node.layout = new Rect(0, 0, 150, 250);
                 // Set the style of the node in the dnd panel
-                node.style = new VuejsNodeStyle(NodeConstructor);
+                console.log(methods)
+                node.style = new VuejsNodeStyle(NodeConstructor, methods, this.graphComponent.inputMode);
                 return [{element: node, tooltip: 'Node'}]
             },
 

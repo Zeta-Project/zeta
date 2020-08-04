@@ -21,7 +21,13 @@
                     v-if="graphComponent"
                     :graph-component="graphComponent"
                     :is-expanded="isDndExpanded"
-                    :passive-supported="true"/>
+                    :passive-supported="true"
+                    @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
+                    @add-operation-to-node="(node, operationName) => addOperationToNode(node, operationName)"
+                    @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"
+                    @delete-operation-from-node="(node, operationName) => deleteOperationFromNode(node, operationName)"
+                    @change-input-mode="() => changeInputMode()"
+            />
         </aside>
         <aside
                 class="md-scrollbar property-panel"
@@ -530,7 +536,6 @@
             },
 
             changeInputMode(newInputMode){
-                console.log("hello from Graph Editor")
                  this.$graphComponent.inputMode = newInputMode;
             }
         }
