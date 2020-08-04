@@ -57,7 +57,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   /**
     * Configures the module.
     */
-  def configure(): Unit = {
+  override def configure(): Unit = {
     bind[AccessRestrictedFilePersistence]
     bind[AccessRestrictedGdslProjectRepository]
     bind[AccessRestrictedLogRepository]
