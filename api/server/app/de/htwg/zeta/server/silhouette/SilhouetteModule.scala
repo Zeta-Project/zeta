@@ -66,7 +66,7 @@ class SilhouetteModule extends ScalaModule {
   /**
    * Configures the module.
    */
-  def configure(): Unit = {
+  override def configure(): Unit = {
     bind[Silhouette[ZetaEnv]].to[SilhouetteProvider[ZetaEnv]]
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]

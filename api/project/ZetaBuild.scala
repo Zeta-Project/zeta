@@ -23,11 +23,11 @@ object ZetaBuild {
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.7"
   val playVersion = "2.6.25"
-  val akkaVersion = "2.6.6"
+  val akkaVersion = "2.6.8"
   val javaFxVersion = "11"
   val scalaFxVersion = "11-R16"
 
-  val scalaVersionNumber = "2.12.11"
+  val scalaVersionNumber = "2.12.12"
   val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(
@@ -35,8 +35,7 @@ object ZetaBuild {
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
     "-unchecked", // Enable additional warnings where generated code depends on assumptions.
     // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
-    // FIXME This is a confirmed Scala bug in 2.12 Xlint will produce Position.point on NoPosition Error
-    // "-Xlint", // Enable recommended additional warnings.
+    "-Xlint", // Enable recommended additional warnings.
     "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
     "-Ywarn-dead-code", // Warn when dead code is identified.
     "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
@@ -68,7 +67,7 @@ object ZetaBuild {
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
-    "net.codingwell" %% "scala-guice" % "4.1.1",
+    "net.codingwell" %% "scala-guice" % "4.2.11",
     // test
     "org.scalatest" %% "scalatest" % "3.1.2" % "test",
     // logging

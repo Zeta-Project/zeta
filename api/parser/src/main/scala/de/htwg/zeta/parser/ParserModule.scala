@@ -6,7 +6,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 class ParserModule extends AbstractModule with ScalaModule with Logging {
 
-  def configure(): Unit = {
+  override def configure(): Unit = {
     bind[GraphicalDSLParser]
   }
 
