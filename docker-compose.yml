@@ -18,6 +18,10 @@ services:
       - ./webapp:/src
    api:
      image: api:latest
+     deploy:
+       resources:
+         limits:
+           memory: 4096M
      build: ./api/.
      volumes:
        - ./api:/app
@@ -28,7 +32,7 @@ services:
        - ZETA_DEPLOYMENT=production
      stdin_open: true
      ports:
-       - 80:9000
+       - 9000:9000
      depends_on:
        - "mongodb"
        - "webapp"
