@@ -104,6 +104,7 @@ class SignUpController @Inject()(
       token <- tokenCache.create(user.id)
     } yield {
       val url = routes.ScalaRoutes.getAccountActivate(token).absoluteURL()(request)
+      println(Some(views.txt.silhouette.emails.signUp(user, url, messages).body))
       mailerClient.send(Email(
         subject = messages("email.sign.up.subject"),
         from = messages("email.from"),
