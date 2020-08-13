@@ -26,15 +26,85 @@
  ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **
  ***************************************************************************/
-import Vue from 'vue'
-import App from '../vue-cli/src/App.vue'
-import {enableWorkarounds} from '../utils/Workarounds'
-
-// enable browser-bug workarounds
-enableWorkarounds();
-
-Vue.config.productionTip = false
-
-new Vue({
-    render: h => h(App)
-}).$mount('#app')
+.demo-content {
+  position: absolute;
+  top: 0;
+  left: 320px;
+  right: 320px;
+  bottom: 0;
+}
+.demo-header {
+  position: absolute;
+  top: 0;
+  height: 60px;
+  left: 0;
+  right: 0;
+  background-color: #336699;
+  color: white;
+}
+.demo-y-logo {
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  padding: 5px;
+  box-sizing: border-box;
+  border-color: transparent;
+}
+.demo-header a {
+  display: inline-block;
+  height: 60px;
+  text-decoration: none;
+  color: white;
+  line-height: 60px;
+  padding: 0 5px;
+  vertical-align: top;
+  font-size: 1.5em;
+}
+.demo-title {
+  display: inline-block;
+  padding: 0 5px 0 30px;
+  height: 60px;
+  line-height: 60px;
+  color: white;
+  cursor: default;
+  font-size: 1.5em;
+  letter-spacing: 1px;
+  background: url('./assets/header-angle.svg') no-repeat 5px 50%;
+  background-size: 20px 20px;
+  vertical-align: top;
+}
+.demo-sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  box-sizing: border-box;
+  background: #f7f7f7;
+  z-index: 15;
+  line-height: 150%;
+  overflow-y: auto;
+}
+.demo-sidebar.left {
+  left: 0;
+}
+.demo-sidebar.right {
+  right: 0;
+}
+@media screen and (max-height: 500px) {
+  .demo-header {
+    height: 30px;
+    font-size: 10px;
+  }
+  .demo-header .demo-y-logo {
+    height: 30px;
+    line-height: 30px;
+  }
+  .demo-header a {
+    height: 30px;
+    line-height: 30px;
+  }
+  .demo-title {
+    height: 30px;
+    line-height: 30px;
+  }
+}

@@ -6,28 +6,29 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const { options } = require('less');
 
 const prodMode = process.env.NODE_ENV === "production";
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 console.log("Production mode " + (prodMode ? "enabled" : "disabled"));
 
 module.exports = {
-	entry: {
-      "code-editor": "./src/code-editor.js",
-      "code-editor-simple": "./src/code-editor-simple.js",
-      "diagramm-overview": "./src/diagram-overview.js",
-      "webpage": "./src/webpage.js",
-      "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
-      "graphical-model-editor": "./src/graphical-model-editor.js",
-      "silhouette": "./src/silhouette.js",
-      "yfiles-editor": "./src/yfiles-editor/concept-editor.js",
-      "yfiles-editor-dev": "./src/yfiles-editor/devEnv/app-dev.js"
-    },
-	output: {
-		path: path.join(__dirname, "dist"),
-		filename: "[name].bundle.js",
-		chunkFilename: "[id].chunk.js",
+  entry: {
+    "code-editor": "./src/code-editor.js",
+    "code-editor-simple": "./src/code-editor-simple.js",
+    "diagramm-overview": "./src/diagram-overview.js",
+    "webpage": "./src/webpage.js",
+    "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
+    "graphical-model-editor": "./src/graphical-model-editor.js",
+    "silhouette": "./src/silhouette.js",
+    "yfiles-editor": "./src/yfiles-editor/concept-editor.js",
+    "yfiles-editor-dev": "./src/yfiles-editor/devEnv/app-dev.js"
+  },
+  output: {
+    path: path.join(__dirname, "dist"),
+    filename: "[name].bundle.js",
+    chunkFilename: "[id].chunk.js",
     publicPath: '/static/'
   },
   devtool: prodMode ? 'nosources-source-map' : 'cheap-module-eval-source-map',
-	plugins: [
+  plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false
@@ -43,7 +44,8 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery',
     }),
-    new Dotenv()
+    new Dotenv(),
+    new VueLoaderPlugin()
   ],
   resolve: {
     alias: {
@@ -58,6 +60,12 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',
+        }
+      },
+      {
+        test: /\.vue$/,
+        use: {
+          loader: 'vue-loader'
         }
       },
       {
@@ -115,7 +123,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|gif)$/,
-        include: /(node_modules|src)/,        
+        include: /(node_modules|src)/,
         use: [
           {
             loader: 'url-loader',
@@ -130,7 +138,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader, 
+          MiniCssExtractPlugin.loader,
           'css-loader'
         ]
       },
