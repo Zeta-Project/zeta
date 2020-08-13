@@ -1,4 +1,4 @@
-version: '3.7'
+version: '2.1'
 services:
    mongodb:
      image: mongo:3.4.13
@@ -18,11 +18,9 @@ services:
       - ./webapp:/src
    api:
      image: api:latest
-     deploy:
-       resources:
-         limits:
-           memory: 4096M
      build: ./api/.
+     # Enabled for Windows Users
+     mem_limit: 4g
      volumes:
        - ./api:/app
        - ./sbt/server:/root
