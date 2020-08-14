@@ -5,19 +5,19 @@
                 <h1 class="demo-title">Vue Zeta</h1>
             </div>
 
-            <GraphEditorComponent ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditorComponent>
+            <GraphEditor ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditor>
 
         </div>
     </div>
 </template>
 
 <script>
-    import GraphEditorComponent from './components/graphEditor/GraphEditor.vue'
+    import GraphEditor from './components/graphEditor/GraphEditor.vue'
 
     export default {
         name: 'app',
         components: {
-            GraphEditorComponent,
+            GraphEditor,
         },
         data: function () {
             return {

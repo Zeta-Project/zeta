@@ -9,6 +9,7 @@ import {UMLEdgeStyle} from './UMLEdgeStyle'
 import VuejsEdgeStyle from './VuejsEdgeStyle'
 import {UMLEdgeModel} from '../UMLEdgeModel'
 import Vue from "vue";
+import Edge from "../../../components/edges/Edge.vue";
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.
