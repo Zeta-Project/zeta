@@ -1,7 +1,7 @@
 import '../webpage'
-import {YFilesZeta} from "./scripts/app";
-import {ZetaApiWrapper} from "./scripts/ZetaApiWrapper";
-import {showSnackbar} from "./scripts/utils/AppStyle";
+import {YFilesZeta} from "./app";
+import {ZetaApiWrapper} from "./utils/ZetaApiWrapper";
+import {showSnackbar} from "./utils/Snackbar";
 
 let loadedMetaModel = {};
 loadedMetaModel.uuid = window.loadedMetaModel.uuid;
