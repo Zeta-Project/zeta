@@ -39,6 +39,8 @@ enableWorkarounds()
 
 Vue.config.productionTip = false
 
-new Vue({
+const root = new Vue({
   render: h => h(App)
-}).$mount('#app')
+}).$mount()
+
+document.body.appendChild(root.$el)
