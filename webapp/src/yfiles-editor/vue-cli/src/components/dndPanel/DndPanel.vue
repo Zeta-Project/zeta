@@ -42,8 +42,9 @@
     export default {
         name: 'DndPanel',
         mounted() {
-            this.panelItems = this.getPanelItems(this.graphComponent);
-            this.div = document.getElementById("drag-and-drop-panel");
+            this.panelItems = this.getPanelItems(this.graphComponent)
+            const nodes = document.querySelectorAll('#drag-and-drop-panel')
+            this.div = nodes[nodes.length - 1]
             // Append svg images as draggable nodes to the drag-and-drop-panel
             this.appendVisuals(this.panelItems)
         },
