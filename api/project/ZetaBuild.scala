@@ -59,7 +59,7 @@ object ZetaBuild {
     // test
     "org.scalatest" %% "scalatest" % "3.0.4" % "test",
     // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.3.2"
+    "org.clapper" %% "grizzled-slf4j" % "1.3.4"
   )
 
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(
