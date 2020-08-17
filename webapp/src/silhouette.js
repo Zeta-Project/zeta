@@ -42,4 +42,3 @@ $(function() {
     password.change(showFeedback);
     password.keyup(showFeedback);
 });
-  

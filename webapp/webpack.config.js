@@ -70,23 +70,6 @@ module.exports = {
       },
       {
         test: /\.(less)$/,
-        /*use: extractLess.extract({
-          use: [
-            {
-              loader: "css-loader",
-              options: {
-                minimize: prodMode
-              }
-            },
-            {
-              loader: "less-loader",
-              options: {
-                strictImports: true
-              }
-            }
-          ],
-          fallback: "style-loader"
-        }),*/
         use: [
           {
             loader: MiniCssExtractPlugin.loader
