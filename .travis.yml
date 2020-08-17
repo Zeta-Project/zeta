@@ -8,7 +8,7 @@ script:
   - export JAVA_HOME=$HOME/openjdk8
   - cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 before_install:
-  - sudo apt-get update && apt-get install -y openjfx
+  - sudo apt-get update && sudo apt-get install -y openjfx
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 addons:
