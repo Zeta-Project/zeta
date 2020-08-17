@@ -4,5 +4,10 @@ scala:
 env:
   - BUILD_DIR=api
 script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
+before_install:
+  - sudo apt install openjdk-8-jdk openjfx -y
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+addons:
+  apt:
+    update: true
