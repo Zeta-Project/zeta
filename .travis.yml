@@ -1,11 +1,12 @@
 language: scala
 scala:
-  - 2.12.4
+  - 2.12.11
+jdk: openjdk8
 env:
   - BUILD_DIR=api
 script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 before_install:
-  - sudo apt install openjdk-8-jdk openjfx -y
+  - sudo apt-get update && apt-get install -y --no-install-recommends openjfx
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 addons:
