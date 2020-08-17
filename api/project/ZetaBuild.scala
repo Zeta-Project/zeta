@@ -21,10 +21,10 @@ object ZetaBuild {
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.3"
-  val playVersion = "2.6.25"
+  val playVersion = "2.6.10"
   val akkaVersion = "2.5.8"
 
-  val scalaVersionNumber = "2.12.4"
+  val scalaVersionNumber = "2.12.12"
   val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(

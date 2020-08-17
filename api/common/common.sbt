@@ -5,7 +5,7 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
 
   libraryDependencies ++= Seq(
     // play json
-    "com.typesafe.play" %% "play-json" % "2.6.8",
+    "com.typesafe.play" %% "play-json" % "2.6.10",
     // akka actor
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % ZetaBuild.akkaVersion,
