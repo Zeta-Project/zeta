@@ -5,7 +5,7 @@ resolvers += Resolver.sbtPluginRepo("releases")
 
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-releases/"
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.10")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.12")
 
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 

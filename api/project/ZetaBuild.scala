@@ -21,7 +21,7 @@ object ZetaBuild {
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.3"
-  val playVersion = "2.6.10"
+  val playVersion = "2.6.12"
   val akkaVersion = "2.5.8"
 
   val scalaVersionNumber = "2.12.4"
