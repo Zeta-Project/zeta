@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
    mongodb:
      image: mongo:3.4.13
@@ -17,6 +17,7 @@ services:
    api:
      image: zeta-sbt:1.0.6
      build: ./api
+     mem_limit: 4g
      volumes:
        - ./api:/app
        - ./sbt/server:/root

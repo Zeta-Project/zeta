@@ -3,7 +3,7 @@ logLevel := Level.Warn
 resolvers += Resolver.sbtPluginRepo("releases")
 
 
-resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-releases/"
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.10")
 
@@ -19,6 +19,5 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.3")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.3.13")
+addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.3.16")

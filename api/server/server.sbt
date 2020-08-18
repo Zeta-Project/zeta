@@ -22,8 +22,8 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.mohiva" %% "play-silhouette-crypto-jca" % ZetaBuild.silhouetteVersion,
 
     //typesafe
-    "org.webjars" %% "webjars-play" % "2.6.2",
-    "com.iheart" %% "ficus" % "1.4.3",
+    "org.webjars" %% "webjars-play" % "2.6.3",
+    "com.iheart" %% "ficus" % "1.4.7",
     "com.typesafe.play" %% "play-mailer" % "6.0.1",
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
     "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,
@@ -43,7 +43,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
+    "com.softwaremill.quicklens" %% "quicklens" % "1.4.13",
 
     // test mock framework
     "org.scalamock" %% "scalamock" % "4.1.0" % Test

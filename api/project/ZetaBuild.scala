@@ -24,7 +24,7 @@ object ZetaBuild {
   val playVersion = "2.6.10"
   val akkaVersion = "2.5.8"
 
-  val scalaVersionNumber = "2.12.4"
+  val scalaVersionNumber = "2.12.12"
   val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(
@@ -59,7 +59,7 @@ object ZetaBuild {
     // test
     "org.scalatest" %% "scalatest" % "3.0.4" % "test",
     // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.3.2"
+    "org.clapper" %% "grizzled-slf4j" % "1.3.4"
   )
 
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(
