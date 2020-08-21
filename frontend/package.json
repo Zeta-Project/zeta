@@ -19,7 +19,8 @@
     "string-replace-loader": "2.3.0",
     "typescript": "^3.9.7",
     "vue": "^3.0.0-0",
-    "vue-router": "^4.0.0-alpha.4"
+    "vue-router": "^4.0.0-alpha.4",
+    "yfiles": "file:../../yFiles-for-html"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -29,6 +30,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
+    "file-saver": "^2.0.2",
     "less": "2",
     "less-loader": "4"
   }
