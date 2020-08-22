@@ -98,7 +98,7 @@ class CodeEditor {
   }
 
   loadSourceCode() {
-    fetch(`/rest/v1/meta-models/${this.metaModelId}`, {
+    fetch(`http://localhost:9000/rest/v1/meta-models/${this.metaModelId}`, {
       method: 'GET',
       credentials: 'same-origin'
     })
@@ -114,7 +114,7 @@ class CodeEditor {
   }
 
   saveSourceCode(code) {
-    fetch(`/rest/v1/meta-models/${this.metaModelId}/${this.dslType}`, {
+    fetch(`http://localhost:9000/rest/v1/meta-models/${this.metaModelId}/${this.dslType}`, {
       headers: {
         'Content-Type': 'application/json'
       },
