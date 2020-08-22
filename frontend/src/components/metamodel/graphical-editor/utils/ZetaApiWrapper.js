@@ -1,7 +1,7 @@
 export class ZetaApiWrapper {
 
     constructor() {
-        this.rootUrl = "";
+        this.rootUrl = "http://localhost:9000";
         this.email = "";
         this.password = "";
     }
