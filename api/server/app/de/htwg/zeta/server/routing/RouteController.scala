@@ -77,13 +77,13 @@ class ScalaRoutes @Inject()(
 
   def getSignout: Action[AnyContent] = AuthenticatedGet(applicationController.signOut _)
 
-  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(signUpController.view _)
+  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(signUpController.csrf _)
 
-  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit _)
+  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit_json _)
 
-  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(signInController.view _)
+  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(signInController.csrf _)
 
-  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit _)
+  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit_json _)
 
   def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(forgotPasswordController.view _)
 
