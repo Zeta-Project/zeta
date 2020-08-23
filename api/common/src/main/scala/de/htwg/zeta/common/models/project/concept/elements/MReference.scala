@@ -4,6 +4,8 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 
 /** The MReference implementation
  *
@@ -27,7 +29,23 @@ case class MReference(
     targetUpperBounds: Int,
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends AttributeMap with MethodMap
+) extends AttributeMap with MethodMap {
+
+  def asJson: JsObject = Json.obj(
+    "name" -> name,
+    "description" -> description,
+    "sourceDeletionDeletesTarget" -> sourceDeletionDeletesTarget,
+    "targetDeletionDeletesSource" -> targetDeletionDeletesSource,
+    "sourceClassName" -> sourceClassName,
+    "targetClassName" -> targetClassName,
+    "sourceLowerBounds" -> sourceLowerBounds,
+    "sourceUpperBounds" -> sourceUpperBounds,
+    "targetLowerBounds" -> targetLowerBounds,
+    "targetUpperBounds" -> targetUpperBounds,
+    "attributes" -> attributes.map(_.asJson),
+    "methods" -> methods.map(_.asJson)
+  )
+}
 
 object MReference {
 

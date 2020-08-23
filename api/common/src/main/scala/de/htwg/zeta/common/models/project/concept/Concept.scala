@@ -14,6 +14,8 @@ import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.elements.MReference.ReferenceMap
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 
 
 /**
@@ -36,6 +38,15 @@ case class Concept(
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)
+
+  def asJson: JsObject = Json.obj(
+    "classes" -> classes.map(_.asJson),
+    "references" -> references.map(_.asJson),
+    "enums" -> enums.map(_.asJson),
+    "attributes" -> attributes.map(_.asJson),
+    "methods" -> methods.map(_.asJson),
+    "uiState" -> uiState
+  )
 
 }
 

@@ -3,12 +3,15 @@ package de.htwg.zeta.common.models.project.concept.elements
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 
 
 sealed trait AttributeType {
 
   val asString: String
 
+  def asJson: JsObject = Json.obj("asString" -> asString)
 }
 
 object AttributeType {
@@ -63,6 +66,11 @@ object AttributeType {
 
     val valueMap: Map[String, EnumValue] = values.map(symbol => (symbol.valueName, symbol)).toMap
 
+    def asJson: JsObject = Json.obj(
+      "typ" -> typ.asJson,
+      "values" -> values.map(_.asJson),
+      "valueMap" -> valueMap.mapValues(_.asJson)
+    )
   }
 
   object MEnum {

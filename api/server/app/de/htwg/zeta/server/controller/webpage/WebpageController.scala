@@ -1,18 +1,23 @@
 package de.htwg.zeta.server.controller.webpage
 
 import java.util.UUID
-
 import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.common.format.ProjectShortInfo
+import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
+import play.api.libs.json.JsNull
+import play.api.libs.json.Json
+import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -47,11 +52,29 @@ class WebpageController @Inject()(
     }
   }
 
+  private def asJson(
+      user: Option[User],
+      metaModels: Seq[ProjectShortInfo],
+      gdslProject: Option[GdslProject],
+      modelInstances: Seq[GraphicalDslInstanceShortInfo]) = {
+    Json.obj(
+      "user" -> unwrapOrNull(user).fold(r => r,l => l.asJson),
+      "metaModels" -> metaModels,
+      "gdslProject" -> unwrapOrNull(gdslProject).fold(r => r,l => l.asJson),
+      "modelInstances" -> modelInstances
+    )
+  }
+
+  private def unwrapOrNull[A](input: Option[A]): Either[JsValue, A] = input match {
+    case Some(value) => Right(value)
+    case None => Left(JsNull)
+  }
+
   def diagramsOverviewShortInfo(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val result = for {
       metaModels <- getMetaModels(request)
     } yield {
-      Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity.user), metaModels, None, Seq[GraphicalDslInstanceShortInfo]()))
+      Ok(asJson(Some(request.identity.user),metaModels, None,Seq[GraphicalDslInstanceShortInfo]()))
     }
 
     result.recover {
@@ -69,7 +92,7 @@ class WebpageController @Inject()(
         models <- getModels(id, request)
         metaModel <- metaModelEntityRepo.restrictedTo(request.identity.id).read(id)
       } yield {
-        Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity.user), metaModels, Some(metaModel), models))
+        Ok(asJson(Some(request.identity.user),metaModels, Some(metaModel),Seq[GraphicalDslInstanceShortInfo]()))
       }
 
       result.recover {
