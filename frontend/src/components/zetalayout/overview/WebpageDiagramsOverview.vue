@@ -17,7 +17,7 @@
               <div data-metamodel-id="@metamodel.id" class="delete-list-item export-project glyphicon glyphicon-export" data-toggle="tooltip" title="Export project"></div>
               <div data-metamodel-id="@metamodel.id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate" data-toggle="tooltip" data-target="#importModal" title="Duplicate project"></div>
               <div data-metamodel-id="@metamodel.id" class="delete-list-item invite-to-project glyphicon glyphicon-send" data-toggle="tooltip" title="Invite other users"></div>
-              <a style="text-decoration: none; color: initial" :href="'/overview/' + metamodel.id"><div> {{metamodel.name}}</div></a>
+              <a style="text-decoration: none; color: initial" :href="'/zeta/overview/' + metamodel.id"><div> {{metamodel.name}}</div></a>
             </div>
 
           </div>
@@ -87,16 +87,16 @@
             <strong>Edit project <em>{{ gdslProject.name }}</em></strong>
           </div>
           <div class="list-group">
-            <a class="list-group-item" :href="'/codeEditor/editor/' + gdslProject.id + '/style'">
+            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
               Style
             </a>
-            <a class="list-group-item" :href="'/codeEditor/editor/' + gdslProject.id + '/shape'">
+            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'">
               Shape
             </a>
-            <a class="list-group-item" :href="'/codeEditor/editor/' + gdslProject.id + '/diagram'">
+            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
               Diagram
             </a>
-            <a class="list-group-item" :href="'/metamodel/editor/' + gdslProject.id">
+            <a class="list-group-item" :href="'/zeta/metamodel/editor/' + gdslProject.id">
               Concept Editor
             </a>
           </div>
@@ -245,7 +245,7 @@ export default {
   },
   created() {
     //console.log(this.$route.params.id)
-    if(this.$route.params.id == "") {
+    if(!this.$route.params.id || this.$route.params.id == "") {
       this.gdslProject = null
     } else {
       console.log(this.$route.params.id)

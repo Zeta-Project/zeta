@@ -57,7 +57,7 @@
 
 <script>
     import Vue from 'vue'
-    import licenseData from '../../../../../../../../yFiles-dev-key/license.json'
+    import licenseData from '../../../../../../../../../yFiles-dev-key/license.json'
     import {
         DefaultLabelStyle,
         EdgeRouter,
@@ -527,7 +527,7 @@
 </script>
 
 <style scoped>
-    @import '../../../../../../node_modules/yfiles/yfiles.css';
+    @import '/node_modules/yfiles/yfiles.css';
 
     .toolbar {
         position: absolute;
