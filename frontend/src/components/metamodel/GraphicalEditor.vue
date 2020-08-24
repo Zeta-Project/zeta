@@ -1,11 +1,6 @@
 <template>
     <div class="demo-content">
-      <div class="demo-header">
-        <h1 class="demo-title">Vue Zeta</h1>
-      </div>
-
       <GraphEditor ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditor>
-
     </div>
 </template>
 

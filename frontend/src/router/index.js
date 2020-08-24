@@ -1,13 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import VueRouter from 'vue-router'
 
 import DiagramsOverview from '../components/overview/WebpageDiagramsOverview'
 import MetamodelCodeEditor from '../components/metamodel/CodeEditor'
-//import MetamodelGraphicalEditor from '../components/metamodel/GraphicalEditor'
+import MetamodelGraphicalEditor from '../components/metamodel/GraphicalEditor'
 
-const routerHistory = createWebHistory()
-
-const router = createRouter({
-    history: routerHistory,
+const router = new VueRouter({
+    mode: 'history',
     routes: [
         {
             path: '/',
@@ -15,16 +13,16 @@ const router = createRouter({
         },
         {
             path: '/overview/:id?',
-            component: DiagramsOverview
+                component: DiagramsOverview
         },
         {
             path: '/codeEditor/editor/:id/:dslType',
-            component: MetamodelCodeEditor
+                component: MetamodelCodeEditor
         },
-        /*{
+        {
             path: '/metamodel/editor/:id',
-            component: MetamodelGraphicalEditor
-        }*/
+                component: MetamodelGraphicalEditor
+        }
     ]
 })
 

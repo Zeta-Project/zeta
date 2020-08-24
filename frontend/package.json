@@ -17,8 +17,9 @@
     "portal-vue": "^2.1.7",
     "string-replace-loader": "2.3.0",
     "typescript": "^3.9.7",
-    "vue": "^3.0.0-0",
-    "vue-router": "^4.0.0-alpha.4",
+    "vue": "^2.6.10",
+    "vue-material": "^1.0.0-beta-11",
+    "vue-router": "^3.4.3",
     "yfiles": "file:../../yFiles-for-html"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@vue/compiler-sfc": "^3.0.0-0",
     "file-saver": "^2.0.2",
     "less": "2",
-    "less-loader": "4"
+    "less-loader": "4",
+    "vue-template-compiler": "^2.6.11"
   }
 }
