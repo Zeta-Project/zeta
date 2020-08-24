@@ -50,50 +50,6 @@ class SignUpController @Inject()(
   implicit val ec: ExecutionContext
 ) extends InjectedController {
 
-
-//  /** Views the `Sign Up` page.
-//   *
-//   * @param request  The request.
-//   * @param messages The messages.
-//   * @return The result to display.
-//   */
-//  def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
-//    Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form, request, messages)))
-//  }
-
-  /**
-   * Return a CSRF Token for further POST requests
-   * @param request
-   * @param messages
-   * @return
-   */
-  def csrf(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok(Json.obj("csrf" -> CSRF.getToken(request).value)))
-  }
-
-//  /** Handles the submitted form.
-//   *
-//   * @param request  The request
-//   * @param messages The message
-//   * @return The result to display.
-//   */
-//  def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
-//    SignUpForm.form.bindFromRequest()(request).fold(
-//      form => Future.successful(BadRequest(views.html.silhouette.signUp(form, request, messages))),
-//      data => {
-//        val result = Redirect(routes.ScalaRoutes.getSignUp()).flashing("info" -> messages("sign.up.email.sent", data.email))
-//        val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-//        val userId = loginInfoRepo.read(loginInfo)
-//        userId.flatMap(userId =>
-//          userRepo.read(userId).flatMap(user =>
-//            processAlreadySignedUp(user, result, data, request, messages)
-//          )).recoverWith {
-//          case _ => processSignUp(result, data, loginInfo, request, messages)
-//        }
-//      }
-//    )
-//  }
-
   def submit_json(request: Request[AnyContent], messages: Messages): Future[Result] = {
     SignUpForm.form.bindFromRequest()(request).fold(
       form => Future.successful(NotAcceptable),

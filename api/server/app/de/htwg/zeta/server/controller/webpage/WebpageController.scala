@@ -15,13 +15,16 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepo
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
+import play.api.i18n.Messages
 import play.api.libs.json.JsNull
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
+import play.api.mvc.Request
 import play.api.mvc.Result
+import views.html.helper.CSRF
 
 class WebpageController @Inject()(
     modelEntityRepo: GraphicalDslInstanceRepository,
@@ -32,6 +35,16 @@ class WebpageController @Inject()(
 
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
     Redirect(routes.ScalaRoutes.getOverviewNoArgs())
+  }
+
+  /**
+   * Return a CSRF Token for further POST requests
+   * @param request
+   * @param messages
+   * @return
+   */
+  def csrf(request: Request[AnyContent], messages: Messages): Future[Result] = {
+    Future.successful(Ok(Json.obj("csrf" -> CSRF.getToken(request).value)))
   }
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[ProjectShortInfo]] = {
