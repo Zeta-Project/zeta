@@ -30,7 +30,7 @@ import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
 import router from './router/index'
-import { enableWorkarounds } from './components/metamodel/graphical-editor/utils/Workarounds'
+import { enableWorkarounds } from './components/zetalayout/metamodel/graphical-editor/utils/Workarounds'
 
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
