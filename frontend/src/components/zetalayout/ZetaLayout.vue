@@ -27,7 +27,7 @@
               </a>
               <ul class="dropdown-menu navbar-right" role="menu">
                 <li><a href="@routes.ScalaRoutes.getPasswordChange()">Change Password</a></li>
-                <li><a href="@routes.ScalaRoutes.getSignout">Logout</a></li>
+                <li><a href="" @click="logout">Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import {AUTH_LOGOUT} from "@/store/actions/auth";
 export default {
   name: 'ZetaLayout',
   components: {
@@ -64,6 +65,13 @@ export default {
         style: "style",
         validator: "None"
       }]
+    }
+  },
+  methods: {
+    logout: function() {
+      this.$store.dispatch(AUTH_LOGOUT).then(() => {
+        this.$router.push('/account/signIn')
+      })
     }
   }
 }

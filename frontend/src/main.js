@@ -30,6 +30,7 @@ import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
 import router from './router/index'
+import store from './store'
 import { enableWorkarounds } from './components/zetalayout/metamodel/graphical-editor/utils/Workarounds'
 
 import VueMaterial from 'vue-material'
@@ -40,8 +41,21 @@ import 'bootstrap/less/bootstrap.less'
 import 'jquery/src/jquery.js'
 import 'bootstrap'
 
+import axios from 'axios'
+
 Vue.use(VueMaterial)
 Vue.use(VueRouter)
+Vue.use({
+    install(Vue) {
+        Vue.prototype.$api = axios.create({
+            baseURL: "http://localhost:9000"
+        })
+    }
+})
+const token = localStorage.getItem('user-token')
+if (token) {
+    axios.defaults.headers.common['Authorization'] = token
+}
 
 // enable browser-bug workarounds
 enableWorkarounds()
@@ -50,5 +64,6 @@ Vue.config.productionTip = false
 
 new Vue({
     render: h => h(App),
-    router
+    router,
+    store
 }).$mount('#app')
