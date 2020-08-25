@@ -5,6 +5,25 @@ import MetamodelCodeEditor from '../components/zetalayout/metamodel/CodeEditor'
 import MetamodelGraphicalEditor from '../components/zetalayout/metamodel/GraphicalEditor'
 import ZetaLayout from '../components/zetalayout/ZetaLayout'
 import AccountLayout from '../components/accountlayout/AccountLayout'
+import SignIn from '../components/accountlayout/signin/SignIn'
+
+import store from '../store'
+
+const ifNotAuthenticated = (to, from, next) => {
+    if (!store.getters.isAuthenticated) {
+        next();
+        return;
+    }
+    next("/");
+};
+
+const ifAuthenticated = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        next();
+        return;
+    }
+    next("/account/signIn");
+};
 
 
 const router = new VueRouter({
@@ -17,6 +36,7 @@ const router = new VueRouter({
         {
             path: '/zeta',
             component: ZetaLayout,
+            beforeEnter: ifAuthenticated,
             children: [
                 {
                     path: 'overview/:id?',
@@ -35,10 +55,11 @@ const router = new VueRouter({
         {
             path: '/account',
             component: AccountLayout,
+            beforeEnter: ifNotAuthenticated,
             children: [
                 {
                     path: 'signIn',
-                    component: null
+                    component: SignIn
                 },
                 {
                     path: 'signUp',

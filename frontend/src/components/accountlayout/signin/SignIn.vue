@@ -1,11 +1,12 @@
 <template>
-  <fieldset class="col-md-6 col-md-offset-3">
+  <!--<fieldset class="col-md-6 col-md-offset-3">
     <legend>@messages("sign.in.credentials")</legend>
     @helper.form(action = routes.ScalaRoutes.postSignIn()) {
     @helper.CSRF.formField(request)
     @b3.email(signInForm("email"), '_hiddenLabel -> messages("email"), 'placeholder -> messages("email"), 'class -> "form-control input-lg")(fieldConstructor, messages)
     @b3.password(signInForm("password"), '_hiddenLabel -> messages("password"), 'placeholder -> messages("password"), 'class -> "form-control input-lg")(fieldConstructor, messages)
     @b3.checkbox(signInForm("rememberMe"), '_text -> messages("remember.me"), 'checked -> true)(fieldConstructor, messages)
+
     <div class="form-group">
       <div>
         <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messages("sign.in")</button>
@@ -20,16 +21,74 @@
       <p class="disclaimer-links"><a href="https://www.htwg-konstanz.de/en/info/disclaimer/" target="_blank">@messages("disclaimer.DataProtection")</a> & <a href="https://www.htwg-konstanz.de/en/info/imprint/" target="_blank">@messages("disclaimer.imprint")</a></p>
     </div>
 
+  </fieldset>-->
+
+  <fieldset class="col-md-6 col-md-offset-3">
+    <div>
+      <form @submit.prevent="login">
+        <legend>Sign in with your credentials</legend>
+        <div class="form-group">
+          <input required v-model="username" type="email" placeholder="Email" class="form-control input-lg"/>
+        </div>
+        <div class="form-group">
+          <input required v-model="password" type="password" placeholder="password"
+                 class="form-control input-lg"/>
+        </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <label for="rememberMe">
+              <input type="checkbox" id="rememberMe" value="true" checked="true">
+              Remember my login on this computer
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign In</button>
+        </div>
+        <div>
+          <p class="not-a-member">Not a member?
+            <a href="@routes.ScalaRoutes.getSignUp()">Sign Up Now</a> |
+            <a href="@routes.ScalaRoutes.getPasswordForgot()" title="@messages(forgot.your.password)">Forgot your password?</a>
+          </p>
+        </div>
+        <div>
+          <p class="disclaimer-links">
+            <a href="https://www.htwg-konstanz.de/en/info/disclaimer/" target="_blank">Disclaimer</a> &
+            <a href="https://www.htwg-konstanz.de/en/info/imprint/" target="_blank">Imprint</a>
+          </p>
+        </div>
+      </form>
+    </div>
   </fieldset>
 </template>
 
 <script>
+import {AUTH_REQUEST} from "@/store/actions/auth"
+
 export default {
   name: 'SignIn',
   components: {
   },
+  data() {
+    return {
+      username: "",
+      password: ""
+    }
+  },
+  methods: {
+    login: function () {
+      const {username, password} = this
+      this.$store.dispatch(AUTH_REQUEST, {username, password}).then(() => {
+        this.$router.push({ path: '/'})
+      })
+    }
+  },
   mounted() {
-    this.$emit('messagEevent', "testmessage from signin")
+    this.$emit('messageEvent', "testmessage from signin")
   }
 }
 </script>
+
+<style>
+
+</style>
