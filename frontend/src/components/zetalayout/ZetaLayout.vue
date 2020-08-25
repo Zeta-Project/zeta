@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="zeta">
     <nav class="navbar navbar-default" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -78,6 +78,12 @@ export default {
 </script>
 
 <style>
+
+.zeta {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
 
 .navbar-default {
   background-color: #f5f5f5;

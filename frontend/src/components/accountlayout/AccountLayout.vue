@@ -1,27 +1,29 @@
 <template>
-  <main class="container">
-    <div class="starter-template row">
-      <!--@request.flash.get("error").map { msg =>
-      <div class="col-md-6 col-md-offset-3 alert alert-danger">
-        <a href="#" class="close" data-dismiss="alert">&times;</a>
-        <strong>@messages("error")</strong> @msg
+  <div class="account">
+    <main class="container">
+      <div class="starter-template row">
+        <!--@request.flash.get("error").map { msg =>
+        <div class="col-md-6 col-md-offset-3 alert alert-danger">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          <strong>@messages("error")</strong> @msg
+        </div>
+        }
+        @request.flash.get("info").map { msg =>
+        <div class="col-md-6 col-md-offset-3 alert alert-info">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          <strong>@messages("info")</strong> @msg
+        </div>
+        }
+        @request.flash.get("success").map { msg =>
+        <div class="col-md-6 col-md-offset-3 alert alert-success">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          <strong>@messages("success")</strong> @msg
+        </div>
+        }-->
+        <router-view @messageEvent="setMessage"></router-view>
       </div>
-      }
-      @request.flash.get("info").map { msg =>
-      <div class="col-md-6 col-md-offset-3 alert alert-info">
-        <a href="#" class="close" data-dismiss="alert">&times;</a>
-        <strong>@messages("info")</strong> @msg
-      </div>
-      }
-      @request.flash.get("success").map { msg =>
-      <div class="col-md-6 col-md-offset-3 alert alert-success">
-        <a href="#" class="close" data-dismiss="alert">&times;</a>
-        <strong>@messages("success")</strong> @msg
-      </div>
-      }-->
-      <router-view @messageEvent="setMessage"></router-view>
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -45,8 +47,10 @@ export default {
 <style>
 @import "http://fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600";
 
-html, body {
-  background-color: #f5f7f9 !important;
+.account {
+  background-color: #f5f7f9;
+  width: 100%;
+  height: 100%;
 }
 
 h1 {
