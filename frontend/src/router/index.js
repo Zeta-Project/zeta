@@ -4,28 +4,8 @@ import DiagramsOverview from '../components/zetalayout/overview/WebpageDiagramsO
 import MetamodelCodeEditor from '../components/zetalayout/metamodel/CodeEditor'
 import MetamodelGraphicalEditor from '../components/zetalayout/metamodel/GraphicalEditor'
 import ZetaLayout from '../components/zetalayout/ZetaLayout'
+import AccountLayout from '../components/accountlayout/AccountLayout'
 
-/*const router = new VueRouter({
-    mode: 'history',
-    routes: [
-        {
-            path: '/',
-            redirect: '/overview'
-        },
-        {
-            path: '/overview/:id?',
-            component: DiagramsOverview
-        },
-        {
-            path: '/codeEditor/editor/:id/:dslType',
-            component: MetamodelCodeEditor
-        },
-        {
-            path: '/metamodel/editor/:id',
-            component: MetamodelGraphicalEditor
-        }
-    ]
-})*/
 
 const router = new VueRouter({
     mode: 'history',
@@ -54,9 +34,16 @@ const router = new VueRouter({
         },
         {
             path: '/account',
-            component: DiagramsOverview,
+            component: AccountLayout,
             children: [
-
+                {
+                    path: 'signIn',
+                    component: null
+                },
+                {
+                    path: 'signUp',
+                    component: null
+                }
             ]
         }
     ]
