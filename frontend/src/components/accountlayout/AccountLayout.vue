@@ -8,12 +8,12 @@
           <strong>@messages("error")</strong> @msg
         </div>
         }
-        @request.flash.get("info").map { msg =>
-        <div class="col-md-6 col-md-offset-3 alert alert-info">
-          <a href="#" class="close" data-dismiss="alert">&times;</a>
-          <strong>@messages("info")</strong> @msg
+        @request.flash.get("info").map { msg =>-->
+        <div v-if="message" class="col-md-6 col-md-offset-3 alert alert-info">
+          <a href="#" class="close" data-dismiss="alert" @click="setMessage('')">&times;</a>
+          <strong>Info!</strong> {{ message }}
         </div>
-        }
+        <!--}
         @request.flash.get("success").map { msg =>
         <div class="col-md-6 col-md-offset-3 alert alert-success">
           <a href="#" class="close" data-dismiss="alert">&times;</a>

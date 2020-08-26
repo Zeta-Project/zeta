@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 
 export default {
   name: 'SignUp',
@@ -57,11 +58,29 @@ export default {
   },
   methods: {
     register: function () {
+      const info = " You're almost done! We sent an activation mail to " +
+          this.email +
+          " Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail."
+
       console.log(this.firstName)
       console.log(this.lastName)
       console.log(this.email)
       console.log(this.password)
-    }
+      axios.get("http://localhost:9000/csrf").then(
+          (response) => {
+            axios.post("http://localhost:9000/signUp", {
+              firstName: this.firstName,
+              lastName: this.lastName,
+              csrfToken: response.csrf,
+              email: this.email,
+              password: this.password
+            }).then(
+                (response) => this.$emit('messageEvent', info)),
+                (error) => console.log(error)
+          },
+          (error) => console.log(error)
+      )
+      }
   }
 }
 

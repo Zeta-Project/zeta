@@ -13,7 +13,7 @@
         <div class="form-group">
           <div class="checkbox">
             <label for="rememberMe">
-              <input type="checkbox" id="rememberMe" value="true" checked="true">
+              <input type="checkbox" id="rememberMe" value="true" checked="true" v-model="rememberMe">
               Remember my login on this computer
             </label>
           </div>
@@ -48,12 +48,14 @@ export default {
   data() {
     return {
       username: "",
-      password: ""
+      password: "",
+      rememberMe: true
     }
   },
   methods: {
     login: function () {
       const {username, password} = this
+      console.log("remember: " + this.rememberMe)
       this.$store.dispatch(AUTH_REQUEST, {username, password}).then(() => {
         this.$router.push({ path: '/'})
       })
