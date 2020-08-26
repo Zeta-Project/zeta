@@ -1,12 +1,14 @@
 import VueRouter from 'vue-router'
 
-import DiagramsOverview from '../components/zetalayout/overview/WebpageDiagramsOverview'
-import MetamodelCodeEditor from '../components/zetalayout/metamodel/CodeEditor'
-import MetamodelGraphicalEditor from '../components/zetalayout/metamodel/GraphicalEditor'
-import ZetaLayout from '../components/zetalayout/ZetaLayout'
-import AccountLayout from '../components/accountlayout/AccountLayout'
-import SignIn from '../components/accountlayout/signin/SignIn'
-import SignUp from '../components/accountlayout/signup/signUp'
+import DiagramsOverview from '@/components/zetalayout/overview/WebpageDiagramsOverview'
+import MetamodelCodeEditor from '@/components/zetalayout/metamodel/CodeEditor'
+import MetamodelGraphicalEditor from '@/components/zetalayout/metamodel/GraphicalEditor'
+import ZetaLayout from '@/components/zetalayout/ZetaLayout'
+import AccountLayout from '@/components/accountlayout/AccountLayout'
+import SignIn from '@/components/accountlayout/signin/SignIn'
+import SignUp from '@/components/accountlayout/signup/signUp'
+import PasswordForgot from "@/components/accountlayout/password/forgot/PasswordForgot";
+import PasswordChange from "@/components/accountlayout/password/change/PasswordChange";
 
 import store from '../store'
 
@@ -56,15 +58,26 @@ const router = new VueRouter({
         {
             path: '/account',
             component: AccountLayout,
-            beforeEnter: ifNotAuthenticated,
             children: [
                 {
                     path: 'signIn',
-                    component: SignIn
+                    component: SignIn,
+                    beforeEnter: ifNotAuthenticated
                 },
                 {
                     path: 'signUp',
-                    component: SignUp
+                    component: SignUp,
+                    beforeEnter: ifNotAuthenticated
+                },
+                {
+                    path: 'password/forgot',
+                    component: PasswordForgot,
+                    beforeEnter: ifNotAuthenticated
+                },
+                {
+                    path: 'password/change',
+                    component: PasswordChange,
+                    beforeEnter: ifAuthenticated
                 }
             ]
         }

@@ -27,6 +27,9 @@
 </template>
 
 <script>
+import $ from "jquery";
+import zxcvbn from "zxcvbn";
+
 export default {
   name: 'AccountLayout',
   components: {
@@ -42,6 +45,39 @@ export default {
     }
   }
 }
+
+$(function() {
+  let strength = {
+    0: "Worst",
+    1: "Bad",
+    2: "Weak",
+    3: "Good",
+    4: "Strong"
+  };
+
+  let password = $('[data-pwd="true"]');
+  let meter = $('#password-strength-meter');
+  let msg = $('#password-strength-text');
+
+  function showFeedback() {
+    let val = this.value;
+    let result = zxcvbn(val);
+
+    // Update the password strength meter
+    meter.val(result.score);
+
+    // Update the text indicator
+    if (val !== "") {
+      msg.text("Strength: " + strength[result.score]);
+    } else {
+      msg.text("");
+    }
+  }
+
+  password.change(showFeedback);
+  password.keyup(showFeedback);
+});
+
 </script>
 
 <style>

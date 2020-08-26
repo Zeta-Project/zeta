@@ -44,9 +44,21 @@ export default {
       dslType: ''
     }
   },
+  methods: {
+    initializeEditor: function () {
+      $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
+      console.log("runned")
+    }
+  },
   created() {
     this.gdslProject.id = this.$route.params.id
     this.dslType = this.$route.params.dslType
+  },
+  mounted() {
+    this.initializeEditor()
+  },
+  watch: {
+    '$route': 'initializeEditor'
   }
 }
 
@@ -60,9 +72,6 @@ import {SourceCodeInspector} from "./code-editor/source-code-inspector";
 import {CodeOutline} from "./code-editor/code-outline";
 import {OnlineSocket} from "./code-editor/online-socket";
 
-$(document).ready(() => {
-  $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
-});
 
 const modesForModel = {
   'diagram': diagramLanguage,
