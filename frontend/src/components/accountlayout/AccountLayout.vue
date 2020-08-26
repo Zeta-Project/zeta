@@ -154,42 +154,4 @@ a {
   font-size: 18px;
 }
 
-meter {
-  /* Reset the default appearance */
-  -moz-appearance: none;
-  appearance: none;
-
-  margin: 0 auto 1em;
-  width: 100%;
-  height: .5em;
-
-  /* Applicable only to Firefox */
-  background: none;
-  background-color: rgba(0,0,0,0.1);
-}
-
-meter::-webkit-meter-bar {
-  background: none;
-  background-color: rgba(0,0,0,0.1);
-}
-
-meter[value="0"]::-webkit-meter-optimum-value,
-meter[value="1"]::-webkit-meter-optimum-value { background: red; }
-meter[value="2"]::-webkit-meter-optimum-value { background: orange; }
-meter[value="3"]::-webkit-meter-optimum-value { background: yellow; }
-meter[value="4"]::-webkit-meter-optimum-value { background: green; }
-
-meter::-webkit-meter-even-less-good-value { background: red; }
-meter::-webkit-meter-suboptimum-value { background: orange; }
-meter::-webkit-meter-optimum-value { background: green; }
-
-meter[value="1"]::-moz-meter-bar,
-meter[value="1"]::-moz-meter-bar { background: red; }
-meter[value="2"]::-moz-meter-bar { background: orange; }
-meter[value="3"]::-moz-meter-bar { background: yellow; }
-meter[value="4"]::-moz-meter-bar { background: green; }
-
-meter::-webkit-meter-optimum-value {
-  transition: width .4s ease-out;
-}
 </style>
