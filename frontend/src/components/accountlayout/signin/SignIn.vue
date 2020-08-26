@@ -23,8 +23,8 @@
         </div>
         <div>
           <p class="not-a-member">Not a member?
-            <a href="/account/signUp">Sign Up Now</a> |
-            <a href="@routes.ScalaRoutes.getPasswordForgot()" title="@messages(forgot.your.password)">Forgot your password?</a>
+            <router-link to="/account/signUp">Sign Up Now</router-link> |
+            <router-link to="/account/password/forgot">Forgot your password?</router-link>
           </p>
         </div>
         <div>

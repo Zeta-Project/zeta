@@ -17,7 +17,10 @@
               <div data-metamodel-id="@metamodel.id" class="delete-list-item export-project glyphicon glyphicon-export" data-toggle="tooltip" title="Export project"></div>
               <div data-metamodel-id="@metamodel.id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate" data-toggle="tooltip" data-target="#importModal" title="Duplicate project"></div>
               <div data-metamodel-id="@metamodel.id" class="delete-list-item invite-to-project glyphicon glyphicon-send" data-toggle="tooltip" title="Invite other users"></div>
-              <a style="text-decoration: none; color: initial" :href="'/zeta/overview/' + metamodel.id"><div> {{metamodel.name}}</div></a>
+             <!-- <a style="text-decoration: none; color: initial" :href="'/zeta/overview/' + metamodel.id"><div> {{metamodel.name}}</div></a>-->
+              <router-link style="text-decoration: none; color: initial" :to="'/zeta/overview/' + metamodel.id">
+                <div> {{metamodel.name}}</div>
+              </router-link>
             </div>
 
           </div>
@@ -87,18 +90,21 @@
             <strong>Edit project <em>{{ gdslProject.name }}</em></strong>
           </div>
           <div class="list-group">
-            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
+            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
               Style
-            </a>
-            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'">
+            </router-link>
+            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'">
               Shape
-            </a>
-            <a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
+            </router-link>
+            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
               Diagram
-            </a>
-            <a class="list-group-item" :href="'/zeta/metamodel/editor/' + gdslProject.id">
+            </router-link>
+            <!--<a class="list-group-item" :href="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
+              Diagram
+            </a>-->
+            <router-link class="list-group-item" :to="'/zeta/metamodel/editor/' + gdslProject.id">
               Concept Editor
-            </a>
+            </router-link>
           </div>
           <div class="panel-footer dropdown">
             <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -243,13 +249,30 @@ export default {
       ]
     }
   },
+  methods: {
+    routeParamChanged: function () {
+      console.log("test")
+      if(!this.$route.params.id || this.$route.params.id == "") {
+        this.gdslProject = null
+      } else {
+        this.gdslProject = {
+          id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
+          name: "testproject",
+          concept: "Concept",
+          diagram: "diagram",
+          shape: "shape",
+          style: "style",
+          validator: "None"
+        }
+      }
+    }
+  },
   created() {
     //console.log(this.$route.params.id)
-    if(!this.$route.params.id || this.$route.params.id == "") {
-      this.gdslProject = null
-    } else {
-      console.log(this.$route.params.id)
-    }
+    this.routeParamChanged()
+  },
+  watch: {
+    '$route': 'routeParamChanged'
   }
 }
 </script>

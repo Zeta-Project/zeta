@@ -9,14 +9,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">
+          <router-link class="navbar-brand" to="/">
             <img src="../../assets/zeta_logo.png" class="navbar-logo">
-          </a>
+          </router-link>
         </div>
 
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
           <ul class="nav navbar-nav">
-            <li v-for="p in project" v-bind:key="p.id"><a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a></li>
+            <li v-for="p in project" v-bind:key="p.id"><!--<a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a>-->
+              <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + p.id">{{p.name}}</router-link>
+            </li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
@@ -26,7 +28,7 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu navbar-right" role="menu">
-                <li><a href="@routes.ScalaRoutes.getPasswordChange()">Change Password</a></li>
+                <li><router-link to="/account/password/change">Change Password</router-link></li>
                 <li><a href="" @click="logout">Logout</a></li>
               </ul>
             </li>
