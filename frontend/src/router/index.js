@@ -6,6 +6,7 @@ import MetamodelGraphicalEditor from '../components/zetalayout/metamodel/Graphic
 import ZetaLayout from '../components/zetalayout/ZetaLayout'
 import AccountLayout from '../components/accountlayout/AccountLayout'
 import SignIn from '../components/accountlayout/signin/SignIn'
+import SignUp from '../components/accountlayout/signup/signUp'
 
 import store from '../store'
 
@@ -63,7 +64,7 @@ const router = new VueRouter({
                 },
                 {
                     path: 'signUp',
-                    component: null
+                    component: SignUp
                 }
             ]
         }

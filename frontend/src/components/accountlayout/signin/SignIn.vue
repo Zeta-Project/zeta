@@ -1,28 +1,4 @@
 <template>
-  <!--<fieldset class="col-md-6 col-md-offset-3">
-    <legend>@messages("sign.in.credentials")</legend>
-    @helper.form(action = routes.ScalaRoutes.postSignIn()) {
-    @helper.CSRF.formField(request)
-    @b3.email(signInForm("email"), '_hiddenLabel -> messages("email"), 'placeholder -> messages("email"), 'class -> "form-control input-lg")(fieldConstructor, messages)
-    @b3.password(signInForm("password"), '_hiddenLabel -> messages("password"), 'placeholder -> messages("password"), 'class -> "form-control input-lg")(fieldConstructor, messages)
-    @b3.checkbox(signInForm("rememberMe"), '_text -> messages("remember.me"), 'checked -> true)(fieldConstructor, messages)
-
-    <div class="form-group">
-      <div>
-        <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messages("sign.in")</button>
-      </div>
-    </div>
-    }
-
-    <div>
-      <p class="not-a-member">@messages("not.a.member") <a href="@routes.ScalaRoutes.getSignUp()">@messages("sign.up.now")</a> | <a href="@routes.ScalaRoutes.getPasswordForgot()" title="@messages(forgot.your.password)">@messages("forgot.your.password")</a></p>
-    </div>
-    <div>
-      <p class="disclaimer-links"><a href="https://www.htwg-konstanz.de/en/info/disclaimer/" target="_blank">@messages("disclaimer.DataProtection")</a> & <a href="https://www.htwg-konstanz.de/en/info/imprint/" target="_blank">@messages("disclaimer.imprint")</a></p>
-    </div>
-
-  </fieldset>-->
-
   <fieldset class="col-md-6 col-md-offset-3">
     <div>
       <form @submit.prevent="login">
@@ -47,7 +23,7 @@
         </div>
         <div>
           <p class="not-a-member">Not a member?
-            <a href="@routes.ScalaRoutes.getSignUp()">Sign Up Now</a> |
+            <a href="/account/signUp">Sign Up Now</a> |
             <a href="@routes.ScalaRoutes.getPasswordForgot()" title="@messages(forgot.your.password)">Forgot your password?</a>
           </p>
         </div>
@@ -82,9 +58,6 @@ export default {
         this.$router.push({ path: '/'})
       })
     }
-  },
-  mounted() {
-    this.$emit('messageEvent', "testmessage from signin")
   }
 }
 </script>
