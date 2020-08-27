@@ -91,7 +91,6 @@ $(function() {
 </script>
 
 <style>
-@import "http://fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600";
 
 .account {
   background-color: #f5f7f9;
