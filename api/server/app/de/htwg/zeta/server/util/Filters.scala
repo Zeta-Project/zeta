@@ -13,15 +13,16 @@ import play.api.mvc.EssentialFilter
 import play.api.mvc.Filter
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
+import play.filters.cors.CORSFilter
 import play.filters.csrf.CSRFFilter
 import play.filters.headers.SecurityHeadersFilter
 
 /**
  * Provides filters.
  */
-class Filters @Inject() (csrfFilter: CSRFFilter, securityHeadersFilter: SecurityHeadersFilter, mat: Materializer, ec: ExecutionContext) extends HttpFilters {
+class Filters @Inject() (corsFilter: CORSFilter, csrfFilter: CSRFFilter, securityHeadersFilter: SecurityHeadersFilter, mat: Materializer, ec: ExecutionContext) extends HttpFilters {
 
-  override def filters: Seq[EssentialFilter] = Seq(csrfFilter, securityHeadersFilter, new LoggingFilter()(mat, ec))
+  override def filters: Seq[EssentialFilter] = Seq(corsFilter, csrfFilter, securityHeadersFilter, new LoggingFilter()(mat, ec))
 
 }
 

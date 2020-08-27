@@ -70,6 +70,9 @@ class ScalaRoutes @Inject()(
 
   def getSocketConnection: WebSocket = webSocket.socket
 
+  // # CSRF Toke
+  def getCSRF(): Action[AnyContent] = AuthenticatedGet(webpageController.csrf _)
+
   // # Home page
   def getIndex(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)
 
@@ -77,13 +80,15 @@ class ScalaRoutes @Inject()(
 
   def getSignout: Action[AnyContent] = AuthenticatedGet(applicationController.signOut _)
 
-  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(signUpController.view _)
+  // TODO: Remove
+  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(webpageController.csrf _)
 
-  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit _)
+  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit_json _)
 
-  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(signInController.view _)
+  // TODO: Remove
+  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(webpageController.csrf _)
 
-  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit _)
+  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit_json _)
 
   def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(forgotPasswordController.view _)
 

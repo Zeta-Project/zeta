@@ -46,7 +46,7 @@ class ApplicationController @Inject()(
    * @return The result to display.
    */
   def signOut(request: SecuredRequest[ZetaEnv, AnyContent]): Future[AuthenticatorResult] = {
-    val result = Redirect(routes.ScalaRoutes.getIndex())
+    val result = Ok//Redirect(routes.ScalaRoutes.getIndex())
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, result)(request)
   }

@@ -12,6 +12,7 @@ GET           /socket                                                           
 
 # Home page
 GET           /                                                                                   de.htwg.zeta.server.routing.ScalaRoutes.getIndex
+GET           /csrf                                                                               de.htwg.zeta.server.routing.ScalaRoutes.getCSRF
 GET           /user                                                                               de.htwg.zeta.server.routing.ScalaRoutes.getUser
 GET           /signOut                                                                            de.htwg.zeta.server.routing.ScalaRoutes.getSignout
 

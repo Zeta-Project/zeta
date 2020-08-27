@@ -3,6 +3,9 @@ package de.htwg.zeta.common.models.project.concept.elements
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
 
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+
 
 case class Method(
     name: String,
@@ -10,7 +13,15 @@ case class Method(
     description: String,
     returnType: AttributeType,
     code: String
-)
+) {
+  def asJson: JsObject = Json.obj(
+    "name" -> name,
+    "parameters" -> parameters.mapValues(_.asJson),
+    "description" -> description,
+    "returnType" -> returnType.asJson,
+    "code" -> code
+  )
+}
 
 object Method {
 
