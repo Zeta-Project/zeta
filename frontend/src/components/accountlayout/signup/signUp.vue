@@ -46,8 +46,7 @@ import axios from 'axios'
 
 export default {
   name: 'SignUp',
-  components: {
-  },
+  components: {},
   data() {
     return {
       firstName: "",
@@ -58,22 +57,23 @@ export default {
   },
   methods: {
     register: function () {
-      const info = " You're almost done! We sent an activation mail to " +
+      const info =
+          " You're almost done! We sent an activation mail to " +
           this.email +
-          " Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail."
+          " Please follow the instructions in the email to activate your account." +
+          "If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail."
 
-      axios.get("http://localhost:9000/csrf").then(
-          (response) => {
-            axios.post("http://localhost:9000/signUp", {
-              firstName: this.firstName,
-              lastName: this.lastName,
-              csrfToken: response.csrf,
-              email: this.email,
-              password: this.password
-            }).then(
-                (response) => this.$emit('infoMessage', info)),
-                (error) => this.$emit('errorMessage', error)
+      axios.post(
+          "http://localhost:9000/signUp",
+          {
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            password: this.password
           },
+          {withCredentials: true}
+      ).then(
+          (response) => this.$emit('infoMessage', info),
           (error) => this.$emit('errorMessage', error)
       )
     }
@@ -83,7 +83,7 @@ export default {
 </script>
 
 <style>
-  meter {
+meter {
   /* Reset the default appearance */
   -moz-appearance: none;
   appearance: none;
@@ -94,31 +94,61 @@ export default {
 
   /* Applicable only to Firefox */
   background: none;
-  background-color: rgba(0,0,0,0.1);
-  }
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
-  meter::-webkit-meter-bar {
+meter::-webkit-meter-bar {
   background: none;
-  background-color: rgba(0,0,0,0.1);
-  }
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
-  meter[value="0"]::-webkit-meter-optimum-value,
-  meter[value="1"]::-webkit-meter-optimum-value { background: red; }
-  meter[value="2"]::-webkit-meter-optimum-value { background: orange; }
-  meter[value="3"]::-webkit-meter-optimum-value { background: yellow; }
-  meter[value="4"]::-webkit-meter-optimum-value { background: green; }
+meter[value="0"]::-webkit-meter-optimum-value,
+meter[value="1"]::-webkit-meter-optimum-value {
+  background: red;
+}
 
-  meter::-webkit-meter-even-less-good-value { background: red; }
-  meter::-webkit-meter-suboptimum-value { background: orange; }
-  meter::-webkit-meter-optimum-value { background: green; }
+meter[value="2"]::-webkit-meter-optimum-value {
+  background: orange;
+}
 
-  meter[value="1"]::-moz-meter-bar,
-  meter[value="1"]::-moz-meter-bar { background: red; }
-  meter[value="2"]::-moz-meter-bar { background: orange; }
-  meter[value="3"]::-moz-meter-bar { background: yellow; }
-  meter[value="4"]::-moz-meter-bar { background: green; }
+meter[value="3"]::-webkit-meter-optimum-value {
+  background: yellow;
+}
 
-  meter::-webkit-meter-optimum-value {
+meter[value="4"]::-webkit-meter-optimum-value {
+  background: green;
+}
+
+meter::-webkit-meter-even-less-good-value {
+  background: red;
+}
+
+meter::-webkit-meter-suboptimum-value {
+  background: orange;
+}
+
+meter::-webkit-meter-optimum-value {
+  background: green;
+}
+
+meter[value="1"]::-moz-meter-bar,
+meter[value="1"]::-moz-meter-bar {
+  background: red;
+}
+
+meter[value="2"]::-moz-meter-bar {
+  background: orange;
+}
+
+meter[value="3"]::-moz-meter-bar {
+  background: yellow;
+}
+
+meter[value="4"]::-moz-meter-bar {
+  background: green;
+}
+
+meter::-webkit-meter-optimum-value {
   transition: width .4s ease-out;
-  }
+}
 </style>
