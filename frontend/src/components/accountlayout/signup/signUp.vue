@@ -62,10 +62,6 @@ export default {
           this.email +
           " Please follow the instructions in the email to activate your account. If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail."
 
-      console.log(this.firstName)
-      console.log(this.lastName)
-      console.log(this.email)
-      console.log(this.password)
       axios.get("http://localhost:9000/csrf").then(
           (response) => {
             axios.post("http://localhost:9000/signUp", {

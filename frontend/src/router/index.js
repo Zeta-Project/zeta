@@ -16,7 +16,6 @@ const isAuthenticated = function() {
 }
 
 const ifNotAuthenticated = (to, from, next) => {
-    console.log(!!localStorage.getItem("user-token"))
     if (!isAuthenticated()) {
         next();
         return;
@@ -25,7 +24,6 @@ const ifNotAuthenticated = (to, from, next) => {
 };
 
 const ifAuthenticated = (to, from, next) => {
-    console.log(!!localStorage.getItem("user-token"))
     if (isAuthenticated()) {
         next();
         return;

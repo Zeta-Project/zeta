@@ -55,7 +55,6 @@ export default {
   methods: {
     login: function () {
       const {username, password, rememberMe} = this
-      console.log("remember: " + this.rememberMe)
       this.$store.dispatch(AUTH_REQUEST, {username, password, rememberMe}).then(() => {
         this.$router.push({ path: '/'})
       })

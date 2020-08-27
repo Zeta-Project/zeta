@@ -50,7 +50,6 @@ const actions = {
                         rememberMe: user.rememberMe
                     }).then(
                         (response) => {
-                            console.log(response)
                             localStorage.setItem("user-token", "response.token");
                             commit(AUTH_SUCCESS, response);
                             dispatch(USER_REQUEST);
