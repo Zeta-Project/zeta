@@ -21,24 +21,7 @@ const getters = {
 
 const actions = {
     [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
-        /*return new Promise((resolve, reject) => {
-            commit(AUTH_REQUEST);
-            apiCall({ url: "auth", data: user, method: "POST" })
-                .then(resp => {
-                    localStorage.setItem("user-token", resp.token);
-                    // Here set the header of your ajax library to the token value.
-                    // example with axios
-                    // axios.defaults.headers.common['Authorization'] = resp.token
-                    commit(AUTH_SUCCESS, resp);
-                    dispatch(USER_REQUEST);
-                    resolve(resp);
-                })
-                .catch(err => {
-                    commit(AUTH_ERROR, err);
-                    localStorage.removeItem("user-token");
-                    reject(err);
-                });
-        });*/
+
         return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
             axios.get("http://localhost:9000/csrf").then(
@@ -62,7 +45,7 @@ const actions = {
                         }
                     )
                 },
-                (error) => console.log(error)
+                (error) => reject(error)
             )
         })
     },

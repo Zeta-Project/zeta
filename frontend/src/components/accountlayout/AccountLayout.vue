@@ -2,25 +2,27 @@
   <div class="account">
     <main class="container">
       <div class="starter-template row">
-        <!--@request.flash.get("error").map { msg =>
-        <div class="col-md-6 col-md-offset-3 alert alert-danger">
-          <a href="#" class="close" data-dismiss="alert">&times;</a>
-          <strong>@messages("error")</strong> @msg
+
+        <div v-if="errorMessage" class="col-md-6 col-md-offset-3 alert alert-danger">
+          <a href="#" class="close" data-dismiss="alert" @click="setErrorMessage('')">&times;</a>
+          <strong>Error!</strong> {{ errorMessage }}
         </div>
-        }
-        @request.flash.get("info").map { msg =>-->
-        <div v-if="message" class="col-md-6 col-md-offset-3 alert alert-info">
-          <a href="#" class="close" data-dismiss="alert" @click="setMessage('')">&times;</a>
-          <strong>Info!</strong> {{ message }}
+
+
+        <div v-if="infoMessage" class="col-md-6 col-md-offset-3 alert alert-info">
+          <a href="#" class="close" data-dismiss="alert" @click="setInfoMessage('')">&times;</a>
+          <strong>Info!</strong> {{ infoMessage }}
         </div>
-        <!--}
-        @request.flash.get("success").map { msg =>
-        <div class="col-md-6 col-md-offset-3 alert alert-success">
-          <a href="#" class="close" data-dismiss="alert">&times;</a>
-          <strong>@messages("success")</strong> @msg
+
+        <div v-if="successMessage" class="col-md-6 col-md-offset-3 alert alert-success">
+          <a href="#" class="close" data-dismiss="alert" @click="setSuccessMessage('')">&times;</a>
+          <strong>Success!</strong> {{ successMessage }}
         </div>
-        }-->
-        <router-view @messageEvent="setMessage"></router-view>
+
+        <router-view
+            @errorMessage="setErrorMessage"
+            @infoMessage="setInfoMessage"
+            @successMessage="setSuccessMessage"/>
       </div>
     </main>
   </div>
@@ -36,12 +38,20 @@ export default {
   },
   data() {
     return {
-      message: ''
+      errorMessage: '',
+      infoMessage: '',
+      successMessage: '',
     }
   },
   methods: {
-    setMessage(message) {
-      this.message = message
+    setErrorMessage(message) {
+      this.errorMessage = message
+    },
+    setInfoMessage(message) {
+      this.infoMessage = message
+    },
+    setSuccessMessage(message) {
+      this.successMessage = message
     }
   }
 }

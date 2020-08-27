@@ -57,7 +57,7 @@ export default {
       const {username, password, rememberMe} = this
       this.$store.dispatch(AUTH_REQUEST, {username, password, rememberMe}).then(() => {
         this.$router.push({ path: '/'})
-      })
+      }).catch(reason => this.$emit('errorMessage', reason))
     }
   }
 }

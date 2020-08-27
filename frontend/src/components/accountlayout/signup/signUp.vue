@@ -71,10 +71,10 @@ export default {
               email: this.email,
               password: this.password
             }).then(
-                (response) => this.$emit('messageEvent', info)),
-                (error) => console.log(error)
+                (response) => this.$emit('infoMessage', info)),
+                (error) => this.$emit('errorMessage', error)
           },
-          (error) => console.log(error)
+          (error) => this.$emit('errorMessage', error)
       )
     }
   }
