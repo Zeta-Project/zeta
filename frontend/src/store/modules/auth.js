@@ -6,38 +6,48 @@ import {
 } from "../actions/auth";
 import { USER_REQUEST } from "../actions/user";
 import apiCall from "@/utils/api";
+import axios from 'axios'
 
-const state = {
+let state = {
     token: localStorage.getItem("user-token") || "",
     status: "",
     hasLoadedOnce: false
 };
 
 const getters = {
-    isAuthenticated: state => !!state.token,
+    isAuthenticated: () => !!state.token,
     authStatus: state => state.status
 };
 
 const actions = {
     [AUTH_REQUEST]: ({ commit, dispatch }, user) => {
+
         return new Promise((resolve, reject) => {
             commit(AUTH_REQUEST);
-            apiCall({ url: "auth", data: user, method: "POST" })
-                .then(resp => {
-                    localStorage.setItem("user-token", resp.token);
-                    // Here set the header of your ajax library to the token value.
-                    // example with axios
-                    // axios.defaults.headers.common['Authorization'] = resp.token
-                    commit(AUTH_SUCCESS, resp);
-                    dispatch(USER_REQUEST);
-                    resolve(resp);
-                })
-                .catch(err => {
-                    commit(AUTH_ERROR, err);
-                    localStorage.removeItem("user-token");
-                    reject(err);
-                });
-        });
+            axios.get("http://localhost:9000/csrf").then(
+                (response) => {
+                    axios.post("http://localhost:9000/signIn", {
+                        csrfToken: response.data.csrf,
+                        email: user.username,
+                        password: user.password,
+                        rememberMe: user.rememberMe
+                    }).then(
+                        (response) => {
+                            localStorage.setItem("user-token", "response.token");
+                            commit(AUTH_SUCCESS, response);
+                            dispatch(USER_REQUEST);
+                            resolve(response);
+                        },
+                        (error) => {
+                            commit(AUTH_ERROR, error);
+                            localStorage.removeItem("user-token");
+                            reject(error);
+                        }
+                    )
+                },
+                (error) => reject(error)
+            )
+        })
     },
     [AUTH_LOGOUT]: ({ commit }) => {
         return new Promise(resolve => {
