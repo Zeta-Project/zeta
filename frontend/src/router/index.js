@@ -10,10 +10,14 @@ import SignUp from '@/components/accountlayout/signup/signUp'
 import PasswordForgot from "@/components/accountlayout/password/forgot/PasswordForgot";
 import PasswordChange from "@/components/accountlayout/password/change/PasswordChange";
 
-import store from '../store'
+
+const isAuthenticated = function() {
+    return !!(localStorage.getItem("user-token") || "")
+}
 
 const ifNotAuthenticated = (to, from, next) => {
-    if (!store.getters.isAuthenticated) {
+    console.log(!!localStorage.getItem("user-token"))
+    if (!isAuthenticated()) {
         next();
         return;
     }
@@ -21,7 +25,8 @@ const ifNotAuthenticated = (to, from, next) => {
 };
 
 const ifAuthenticated = (to, from, next) => {
-    if (store.getters.isAuthenticated) {
+    console.log(!!localStorage.getItem("user-token"))
+    if (isAuthenticated()) {
         next();
         return;
     }
