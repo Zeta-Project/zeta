@@ -5,9 +5,7 @@ import {
     AUTH_LOGOUT
 } from "../actions/auth";
 import { USER_REQUEST } from "../actions/user";
-import apiCall from "@/utils/api";
 import axios from 'axios'
-import $ from "jquery"
 
 let state = {
     token: localStorage.getItem("user-token") || "",

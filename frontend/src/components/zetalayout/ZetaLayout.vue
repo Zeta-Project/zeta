@@ -24,7 +24,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li v-if="user" class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                <span>{{ user.fullName }}</span>
+                <span>{{ user.firstName }} {{user.lastName}}</span>
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu navbar-right" role="menu">
@@ -44,6 +44,7 @@
 
 <script>
 import {AUTH_LOGOUT} from "@/store/actions/auth";
+import axios from 'axios'
 export default {
   name: 'ZetaLayout',
   components: {
@@ -55,8 +56,7 @@ export default {
         firstName: "test",
         lastName: "test2",
         email: "test@test",
-        activated: true,
-        fullName: "test test2"
+        activated: true
       },
       project: [{
         id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
@@ -75,6 +75,15 @@ export default {
         this.$router.push('/account/signIn')
       })
     }
+  },
+  mounted() {
+    axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
+        (response) => {
+          this.user = response.data.user;
+          //this.project = response.data.gdslProject
+        },
+        (error) => console.log(error)
+    )
   }
 }
 </script>

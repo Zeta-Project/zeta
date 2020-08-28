@@ -218,6 +218,9 @@
 </template>
 
 <script>
+import './diagram-overview'
+import axios from "axios";
+
 export default {
   name: 'DiagramsOverview',
   props: {
@@ -271,10 +274,21 @@ export default {
     //console.log(this.$route.params.id)
     this.routeParamChanged()
   },
+  mounted() {
+    axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
+        (response) => {
+          //this.metaModels = response.data.metaModels;
+          //this.gdslProject = response.data.gdslProject
+          //this.modelInstances = response.data.modelInstances
+        },
+        (error) => console.log(error)
+    )
+  },
   watch: {
     '$route': 'routeParamChanged'
   }
 }
+
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
