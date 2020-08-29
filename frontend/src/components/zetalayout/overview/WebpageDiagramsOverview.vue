@@ -277,9 +277,9 @@ export default {
   mounted() {
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
-          //this.metaModels = response.data.metaModels;
-          //this.gdslProject = response.data.gdslProject
-          //this.modelInstances = response.data.modelInstances
+          this.metaModels = response.data.metaModels;
+          this.gdslProject = response.data.gdslProject
+          this.modelInstances = response.data.modelInstances
         },
         (error) => console.log(error)
     )

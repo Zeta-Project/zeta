@@ -82,7 +82,7 @@ export default {
           if(response.data.csrf) this.logout()
 
           this.user = response.data.user;
-          //this.project = response.data.gdslProject
+          this.project = response.data.gdslProject
         },
         (error) => console.log(error)
     )
