@@ -79,6 +79,8 @@ export default {
   mounted() {
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
+          if(response.data.csrf) this.logout()
+
           this.user = response.data.user;
           //this.project = response.data.gdslProject
         },
