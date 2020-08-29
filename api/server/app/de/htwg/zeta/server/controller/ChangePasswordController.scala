@@ -53,18 +53,18 @@ class ChangePasswordController @Inject()(
    */
   def submit(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Future[Result] = {
     ChangePasswordForm.form.bindFromRequest()(request).fold(
-      form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity.user, request, messages))),
+      form => Future.successful(BadRequest),
       password => {
         val (currentPassword, newPassword) = password // scalastyle:ignore
         val credentials = Credentials(request.identity.email, currentPassword)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           val passwordInfo = passwordHasherRegistry.current.hash(newPassword)
           authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-            Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("success" -> messages("password.changed"))
+            Ok//Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("success" -> messages("password.changed"))
           }
         }.recover {
           case _: ProviderException =>
-            Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("error" -> messages("current.password.invalid"))
+            Unauthorized//Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("error" -> messages("current.password.invalid"))
         }
       }
     )

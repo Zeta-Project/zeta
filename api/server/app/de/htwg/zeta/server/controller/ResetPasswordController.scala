@@ -61,18 +61,19 @@ class ResetPasswordController @Inject()(
   def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     tokenCache.read(token).flatMap[Result](userId => {
       ResetPasswordForm.form.bindFromRequest()(request).fold(
-        form => Future(BadRequest(views.html.silhouette.resetPassword(form, token, request, messages))),
+        form => Future(BadRequest),
         password => {
           userRepo.read(userId).flatMap(user => {
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)
             val passwordInfo = passwordHasherRegistry.current.hash(password)
             authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-              Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("password.reset"))
+              Ok
+              //Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("password.reset"))
             }
           })
         })
     }).recover {
-      case _ => Redirect(routes.ScalaRoutes.getSignIn()).flashing(error -> messages(invalidResetLink))
+      case _ => NotAcceptable//Redirect(routes.ScalaRoutes.getSignIn()).flashing(error -> messages(invalidResetLink))
     }
   }
 
