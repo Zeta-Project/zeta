@@ -82,7 +82,7 @@ class SignInController @Inject()(
           }
         }.recover {
           case _: ProviderException =>
-            BadRequest
+            Unauthorized
         }
       }
     )
