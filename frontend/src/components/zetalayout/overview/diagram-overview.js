@@ -3,6 +3,8 @@ window.jQuery = jQuery;
 window.$ = jQuery;
 import modelValidatorUtil from "./modelValidatorUtil";
 require('bootstrap');
+import axios from 'axios'
+import router from "@/router";
 
 (function ($) {
     'use strict';
@@ -12,12 +14,12 @@ require('bootstrap');
         if (name === "") return;
 
         const data = JSON.stringify({
-            "name": name,
+            "name": name
         });
 
-        $.ajax({
+        /*$.ajax({
             type: 'POST',
-            url: '/rest/v1/meta-models',
+            url: 'http://localhost:9000/rest/v1/meta-models',
             data: data,
             headers: {
                 'Accept': 'application/json',
@@ -30,7 +32,15 @@ require('bootstrap');
             error: function (jqXHR, textStatus, errorThrown) {
                 alert("Could not create meta model: " + textStatus);
             }
-        });
+        });*/
+        axios.post(
+            "http://localhost:9000/rest/v1/meta-models",
+            {name: name},
+            {withCredentials: true}).then(
+            (response) => router.push("/zeta/overview/" + response.data.id),
+            (error) => alert("Could not create meta model: " + error)
+
+        )
 
     };
 
