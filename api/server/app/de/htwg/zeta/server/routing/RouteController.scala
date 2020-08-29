@@ -90,14 +90,17 @@ class ScalaRoutes @Inject()(
 
   def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit_json _)
 
+  // TODO: Remove
   def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(forgotPasswordController.view _)
 
   def postPasswordForgot(): Action[AnyContent] = UnAuthenticatedPost(forgotPasswordController.submit _)
 
+  // TODO: Remove
   def getPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedGet(resetPasswordController.view(token: java.util.UUID) _)
 
   def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(resetPasswordController.submit(token: java.util.UUID) _)
 
+  // TODO: Remove
   def getPasswordChange(): Action[AnyContent] = AuthenticatedGet(changePasswordController.view _)
 
   def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(changePasswordController.submit _)

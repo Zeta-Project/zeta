@@ -59,10 +59,10 @@ class ForgotPasswordController @Inject()(
    */
   def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
     ForgotPasswordForm.form.bindFromRequest()(request).fold(
-      form => Future.successful(BadRequest(views.html.silhouette.forgotPassword(form, request, messages))),
+      form => Future.successful(NotAcceptable),
       email => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
-        val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
+        val result = Ok//Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
         val userId = loginInfoRepo.read(loginInfo)
         val user = userId.flatMap(userId => userRepo.read(userId))
         user.flatMap(user => {
@@ -78,7 +78,7 @@ class ForgotPasswordController @Inject()(
             result
           }
         }).recover {
-          case _ => result
+          case _ => NotAcceptable
         }
       }
     )
