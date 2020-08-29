@@ -45,6 +45,7 @@
 <script>
 import {AUTH_LOGOUT} from "@/store/actions/auth";
 import axios from 'axios'
+import {EventBus} from "@/eventbus/eventbus";
 export default {
   name: 'ZetaLayout',
   components: {
@@ -77,12 +78,20 @@ export default {
     }
   },
   mounted() {
+    EventBus.$on('metaModelAdded', metamodel => {
+      this.project.push(metamodel)
+    });
+    EventBus.$on('metaModelRemoved', metamodelID => {
+      let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
+      this.metaModels.splice(i, 1)
+    });
+
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
           if(response.data.csrf) this.logout()
 
           this.user = response.data.user;
-          this.project = response.data.gdslProject
+          this.project = response.data.metaModels
         },
         (error) => console.log(error)
     )

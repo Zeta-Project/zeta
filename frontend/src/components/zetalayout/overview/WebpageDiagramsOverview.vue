@@ -13,10 +13,10 @@
                  class="list-group-item list-item-container"
                  v-bind:class="{active: gdslProject && metamodel.id == gdslProject.id}">
 
-              <div data-metamodel-id="@metamodel.id" class="delete-list-item delete-project glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete project"></div>
-              <div data-metamodel-id="@metamodel.id" class="delete-list-item export-project glyphicon glyphicon-export" data-toggle="tooltip" title="Export project"></div>
-              <div data-metamodel-id="@metamodel.id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate" data-toggle="tooltip" data-target="#importModal" title="Duplicate project"></div>
-              <div data-metamodel-id="@metamodel.id" class="delete-list-item invite-to-project glyphicon glyphicon-send" data-toggle="tooltip" title="Invite other users"></div>
+              <div :data-metamodel-id="metamodel.id" class="delete-list-item delete-project glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete project"></div>
+              <div :data-metamodel-id="metamodel.id" class="delete-list-item export-project glyphicon glyphicon-export" data-toggle="tooltip" title="Export project"></div>
+              <div :data-metamodel-id="metamodel.id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate" data-toggle="tooltip" data-target="#importModal" title="Duplicate project"></div>
+              <div :data-metamodel-id="metamodel.id" class="delete-list-item invite-to-project glyphicon glyphicon-send" data-toggle="tooltip" title="Invite other users"></div>
              <!-- <a style="text-decoration: none; color: initial" :href="'/zeta/overview/' + metamodel.id"><div> {{metamodel.name}}</div></a>-->
               <router-link style="text-decoration: none; color: initial" :to="'/zeta/overview/' + metamodel.id">
                 <div> {{metamodel.name}}</div>
@@ -220,6 +220,7 @@
 <script>
 import './diagram-overview'
 import axios from "axios";
+import { EventBus } from "@/eventbus/eventbus"
 
 export default {
   name: 'DiagramsOverview',
@@ -254,19 +255,16 @@ export default {
   },
   methods: {
     routeParamChanged: function () {
-      console.log("test")
       if(!this.$route.params.id || this.$route.params.id == "") {
-        this.gdslProject = null
+
       } else {
-        this.gdslProject = {
-          id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
-          name: "testproject",
-          concept: "Concept",
-          diagram: "diagram",
-          shape: "shape",
-          style: "style",
-          validator: "None"
-        }
+        axios.get(
+            "http://localhost:9000/rest/v1/meta-models/" + this.$route.params.id,
+            {withCredentials: true}
+        ).then(
+            (response) => this.gdslProject = response.data,
+            (error) => console.log(error)
+        )
       }
     }
   },
@@ -275,14 +273,24 @@ export default {
     this.routeParamChanged()
   },
   mounted() {
+    EventBus.$on('metaModelAdded', metamodel => {
+      this.metaModels.push(metamodel)
+    });
+    EventBus.$on('metaModelRemoved', metamodelID => {
+      let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
+      this.metaModels.splice(i, 1)
+    });
+
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
           this.metaModels = response.data.metaModels;
           this.gdslProject = response.data.gdslProject
           this.modelInstances = response.data.modelInstances
+          console.log(this.metaModels)
         },
         (error) => console.log(error)
     )
+
   },
   watch: {
     '$route': 'routeParamChanged'

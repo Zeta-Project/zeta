@@ -5,6 +5,7 @@ import modelValidatorUtil from "./modelValidatorUtil";
 require('bootstrap');
 import axios from 'axios'
 import router from "@/router";
+import {EventBus} from "@/eventbus/eventbus"
 
 (function ($) {
     'use strict';
@@ -13,31 +14,13 @@ import router from "@/router";
         const name = $("#inputProjectName").val();
         if (name === "") return;
 
-        const data = JSON.stringify({
-            "name": name
-        });
-
-        /*$.ajax({
-            type: 'POST',
-            url: 'http://localhost:9000/rest/v1/meta-models',
-            data: data,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            dataType: "json",
-            success: function (data, textStatus, jqXHR) {
-                window.location.replace("/overview/" + data.id);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert("Could not create meta model: " + textStatus);
-            }
-        });*/
         axios.post(
             "http://localhost:9000/rest/v1/meta-models",
             {name: name},
             {withCredentials: true}).then(
-            (response) => router.push("/zeta/overview/" + response.data.id),
+            (response) => {
+                EventBus.$emit('metaModelAdded', {id: response.data.id, name: response.data.name});
+            },
             (error) => alert("Could not create meta model: " + error)
 
         )
@@ -107,7 +90,7 @@ import router from "@/router";
             event.preventDefault();
             const metaModelId = this.dataset.metamodelId;
 
-            $.ajax({
+            /*$.ajax({
                 type: 'DELETE',
                 url: '/rest/v1/meta-models/' + metaModelId,
                 headers: {
@@ -120,7 +103,14 @@ import router from "@/router";
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Could not delete meta model: " + textStatus);
                 }
-            });
+            });*/
+            axios.delete(
+                "http://localhost:9000/rest/v1/meta-models/" + metaModelId,
+                {withCredentials: true}
+            ).then(
+                (response) => EventBus.$emit("metaModelRemoved", metaModelId),
+                (error) => alert("Could not delete meta model: " + error)
+            )
         });
 
 
