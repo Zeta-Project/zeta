@@ -16,35 +16,9 @@ export class SourceCodeInspector {
         this.runInspection();
     }
 
-    /*runInspection() {
-        fetch(`http://localhost:9000/rest/v2/meta-models/${this.metaModelId}/triggerParse`, {
-            method: 'GET',
-            credentials: 'same-origin'
-        })
-            .then(response => response.json())
-            .then(response => {
-                if (response.success) {
-                    const hadErrorsBefore = !this.sourceCodeOk;
-                    if (hadErrorsBefore) {
-                        this.showHintAllErrorsRemoved();
-                    }
-                } else {
-                    if (response.errorDsl === this.dslType) {
-                        this.showHintFailureInCurrentDsl(response.messages, response.position)
-                    } else {
-                        this.showHintFailureInOtherDsl(response.errorDsl, response.messages);
-                    }
-                }
-                this.sourceCodeOk = response.success;
-            })
-            .catch(err => {
-                console.error(err);
-                alert('an unexpected error occurred');
-            });
-    }*/
     runInspection() {
         axios.get('http://localhost:9000/rest/v2/meta-models/' + this.metaModelId + '/triggerParse', {withCredentials: true})
-            .then(response => response.json())
+            .then(response => response.data)
             .then(response => {
                 if (response.success) {
                     const hadErrorsBefore = !this.sourceCodeOk;
