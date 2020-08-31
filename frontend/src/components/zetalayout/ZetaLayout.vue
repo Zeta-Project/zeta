@@ -16,8 +16,10 @@
 
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
           <ul class="nav navbar-nav">
-            <li v-for="p in project" v-bind:key="p.id"><!--<a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a>-->
-              <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + p.id">{{p.name}}</router-link>
+            <li v-if="gdslProject"><!--<a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a>-->
+              <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">
+                {{gdslProject.name}}
+              </router-link>
             </li>
           </ul>
 
@@ -59,15 +61,15 @@ export default {
         email: "test@test",
         activated: true
       },
-      project: [{
-        id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
-        name: "testproject",
-        concept: "Concept",
-        diagram: "diagram",
-        shape: "shape",
-        style: "style",
-        validator: "None"
-      }]
+      gdslProject: {
+        id: "",
+        name: "",
+        concept: "",
+        diagram: "",
+        shape: "",
+        style: "",
+        validator: ""
+      }
     }
   },
   methods: {
@@ -78,23 +80,25 @@ export default {
     }
   },
   mounted() {
-    EventBus.$on('metaModelAdded', metamodel => {
-      this.project.push(metamodel)
-    });
-    EventBus.$on('metaModelRemoved', metamodelID => {
-      let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
-      this.metaModels.splice(i, 1)
-    });
+    EventBus.$on('gdslProjectSelected', gdslProject => {
+      this.gdslProject = gdslProject
+    })
+    EventBus.$on('gdslProjectUnselected', () => {
+      this.gdslProject = null
+    })
+
 
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
           if(response.data.csrf) this.logout()
 
           this.user = response.data.user;
-          this.project = response.data.metaModels
         },
         (error) => console.log(error)
     )
+  },
+  created() {
+    this.gdslProject = null
   }
 }
 </script>

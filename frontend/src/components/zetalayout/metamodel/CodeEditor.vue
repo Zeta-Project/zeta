@@ -71,6 +71,7 @@ import {styleLanguage, diagramLanguage, shapeLanguage} from './code-editor/ace-g
 import {SourceCodeInspector} from "./code-editor/source-code-inspector";
 import {CodeOutline} from "./code-editor/code-outline";
 import {OnlineSocket} from "./code-editor/online-socket";
+import axios from 'axios'
 
 
 const modesForModel = {
@@ -107,14 +108,15 @@ class CodeEditor {
   }
 
   loadSourceCode() {
-    fetch(`http://localhost:9000/rest/v1/meta-models/${this.metaModelId}`, {
-      method: 'GET',
-      credentials: 'same-origin'
-    })
-        .then(response => response.json())
-        .then(metaModel => this.setAceEditorContent(metaModel[this.dslType]))
-        .then(() => this.codeOutline.createCodeOutline())
-        .catch(err => console.log(`Error loading MetaModel '${this.metaModelId}': ${err}`));
+    axios.get(
+        'http://localhost:9000/rest/v1/meta-models/' + this.metaModelId,
+        {withCredentials: true}).then(
+        (response) => {
+          this.setAceEditorContent(response.data[this.dslType]);
+          this.codeOutline.createCodeOutline();
+        },
+        (error) => console.log('Error loading MetaModel ' + this.metaModelId + ': ' + error )
+    )
   }
 
   setAceEditorContent(content) {

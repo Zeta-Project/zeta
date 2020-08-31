@@ -236,13 +236,13 @@ export default {
         }
       ],
       gdslProject: {
-          id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
-          name: "testproject",
-          concept: "Concept",
-          diagram: "diagram",
-          shape: "shape",
-          style: "style",
-          validator: "None"
+          id: "",
+          name: "",
+          concept: "",
+          diagram: "",
+          shape: "",
+          style: "",
+          validator: ""
       },
       modelInstances: [
         /*{
@@ -256,23 +256,23 @@ export default {
   methods: {
     routeParamChanged: function () {
       if(!this.$route.params.id || this.$route.params.id == "") {
-
+        this.gdslProject = null
+        EventBus.$emit("gdslProjectUnselected")
       } else {
         axios.get(
             "http://localhost:9000/rest/v1/meta-models/" + this.$route.params.id,
             {withCredentials: true}
         ).then(
-            (response) => this.gdslProject = response.data,
+            (response) => {
+              this.gdslProject = response.data;
+              EventBus.$emit("gdslProjectSelected", response.data)
+            },
             (error) => console.log(error)
         )
       }
     }
   },
   created() {
-    //console.log(this.$route.params.id)
-    this.routeParamChanged()
-  },
-  mounted() {
     EventBus.$on('metaModelAdded', metamodel => {
       this.metaModels.push(metamodel)
     });
@@ -281,16 +281,17 @@ export default {
       this.metaModels.splice(i, 1)
     });
 
+  },
+  mounted() {
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
           this.metaModels = response.data.metaModels;
-          this.gdslProject = response.data.gdslProject
           this.modelInstances = response.data.modelInstances
           console.log(this.metaModels)
         },
         (error) => console.log(error)
     )
-
+    this.routeParamChanged()
   },
   watch: {
     '$route': 'routeParamChanged'
