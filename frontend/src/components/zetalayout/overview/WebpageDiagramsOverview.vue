@@ -231,8 +231,8 @@ export default {
     return {
       metaModels: [
         {
-          id: "520ec611-1dbd-4a93-bf6c-2b316cb67f0b",
-          name: "testproject"
+          id: "",
+          name: "loading..."
         }
       ],
       gdslProject: {

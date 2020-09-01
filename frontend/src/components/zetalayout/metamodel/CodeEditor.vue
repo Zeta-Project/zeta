@@ -125,7 +125,7 @@ class CodeEditor {
   }
 
   saveSourceCode(code) {
-    fetch(`http://localhost:9000/rest/v1/meta-models/${this.metaModelId}/${this.dslType}`, {
+    /*fetch(`http://localhost:9000/rest/v1/meta-models/${this.metaModelId}/${this.dslType}`, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -140,7 +140,26 @@ class CodeEditor {
         .catch(err => {
           this.toggleSaveNotifications('.js-save-failed');
           console.error(`Save failed`, err);
-        });
+        });*/
+    axios.put(
+        'http://localhost:9000/rest/v1/meta-models/' + this.metaModelId + '/' + this.dslType,
+        JSON.stringify(code),
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+    ).then(
+        (response) => {
+          this.toggleSaveNotifications('.js-save-successful');
+          this.sourceCodeInspector.runInspection();
+        },
+        (error) => {
+          this.toggleSaveNotifications('.js-save-failed');
+          console.error(`Save failed`, error);
+        }
+    )
   }
 
   toggleSaveNotifications(element) {
