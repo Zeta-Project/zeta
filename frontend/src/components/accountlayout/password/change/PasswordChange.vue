@@ -8,13 +8,13 @@
         </p>
 
         <div class="form-group">
-          <input required v-model="oldPassword" type="password" placeholder="password"
+          <input required v-model="oldPassword" type="password" placeholder="Old password"
                  class="form-control input-lg"/>
         </div>
 
         <section>
           <div class="form-group">
-            <input required v-model="newPassword" type="password" placeholder="Password"
+            <input required v-model="newPassword" type="password" placeholder="New password"
                    class="form-control input-lg" data-pwd="true"/>
             <meter max="4" id="password-strength-meter"></meter>
             <p id="password-strength-text"></p>
@@ -22,7 +22,7 @@
         </section>
 
         <div class="form-group">
-          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Change password</button>
         </div>
 
         <div class="sign-in-now">
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+import {AUTH_LOGOUT} from "@/store/actions/auth";
 
 export default {
   name: 'PasswordChange',
@@ -51,8 +53,20 @@ export default {
   },
   methods: {
     change: function () {
-      console.log(this.oldPassword)
-      console.log(this.newPassword)
+      axios.post(
+          'http://localhost:9000/password/change',
+          {
+            "current-password": this.oldPassword,
+            "new-password": this.newPassword
+          },
+          {withCredentials: true}
+      ).then(
+          (response) => {
+            this.$emit('successMessage', "Password was successfully changed");
+            this.$store.dispatch(AUTH_LOGOUT);
+          },
+          (error) => this.$emit('errorMessage', error)
+      )
     }
   }
 }
