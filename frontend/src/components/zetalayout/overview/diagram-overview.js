@@ -174,10 +174,11 @@ import {EventBus} from "@/eventbus/eventbus"
         });
 
 
-        $(".export-project").click(function () {
-            if (window.metaModelId) {
-                const url = '/rest/v2/models/' + window.metaModelId + '/exportProject';
-                window.open(url);
+        $(".export-project").click(function (e) {
+            const metaModelId = this.dataset.metamodelId
+            if (metaModelId) {
+                const url = 'http://localhost:9000/rest/v2/models/' + metaModelId + '/exportProject';
+                window.open(url, '_blank');
             }
         });
 
@@ -352,19 +353,19 @@ import {EventBus} from "@/eventbus/eventbus"
         // Sending AJAX request and upload file
         function uploadProject(formdata, projectName){
             $("#close-import-modal").click();
-            $.ajax({
-                url: '/rest/v2/projects/import?projectName=' + projectName,
-                type: 'post',
-                data: formdata,
-                contentType: "application/zip",
-                processData: false,
-                success: function(response) {
-                    window.location.reload(true);
-                },
-                error: function(error) {
-                    showError('Invalid .zeta project file!');
-                }
-            });
+            axios.post(
+                'http://localhost:9000/rest/v2/projects/import?projectName=' + projectName,
+                formdata,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/zip',
+                        'processData': false
+                    }}
+            ).then(
+                (response) => EventBus.$emit('reloadProjects'),
+                (error) => showError('Invalid .zeta project file!')
+            )
         }
 
     });

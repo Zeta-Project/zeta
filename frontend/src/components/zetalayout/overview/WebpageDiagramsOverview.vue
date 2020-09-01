@@ -254,6 +254,16 @@ export default {
     }
   },
   methods: {
+    loadProjects: function() {
+      axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
+          (response) => {
+            this.metaModels = response.data.metaModels;
+            this.modelInstances = response.data.modelInstances
+            console.log(this.metaModels)
+          },
+          (error) => console.log(error)
+      )
+    },
     routeParamChanged: function () {
       if(!this.$route.params.id || this.$route.params.id == "") {
         this.gdslProject = null
@@ -280,17 +290,13 @@ export default {
       let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
       this.metaModels.splice(i, 1)
     });
+    EventBus.$on('reloadProjects', () => {
+      this.loadProjects()
+    })
 
   },
   mounted() {
-    axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
-        (response) => {
-          this.metaModels = response.data.metaModels;
-          this.modelInstances = response.data.modelInstances
-          console.log(this.metaModels)
-        },
-        (error) => console.log(error)
-    )
+    this.loadProjects()
     this.routeParamChanged()
   },
   watch: {
