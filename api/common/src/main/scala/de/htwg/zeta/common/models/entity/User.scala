@@ -3,7 +3,6 @@ package de.htwg.zeta.common.models.entity
 import java.util.UUID
 
 import play.api.libs.json.Format
-import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 
 /** The user object.
@@ -24,14 +23,6 @@ case class User(
 
   /** The full name of the user. */
   val fullName = s"$firstName $lastName"
-  def asJson: JsObject = Json.obj(
-    "id" -> id,
-    "firstName" -> firstName,
-    "lastName" -> lastName,
-    "email" -> email,
-    "activated" -> activated
-  )
-
 }
 
 object User {

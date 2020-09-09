@@ -2,16 +2,11 @@ package de.htwg.zeta.common.models.project.concept.elements
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.project.concept.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 
 sealed trait AttributeValue{
   val attributeType: AttributeType
-
-  def asJson: JsObject = Json.obj("attributeType" -> attributeType.asJson)
 }
 
 object AttributeValue {

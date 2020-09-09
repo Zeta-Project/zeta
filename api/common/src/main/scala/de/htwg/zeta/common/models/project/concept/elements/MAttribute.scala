@@ -2,8 +2,6 @@ package de.htwg.zeta.common.models.project.concept.elements
 
 import scala.collection.immutable.Seq
 
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 
 /**
  * The MAttribute implementation
@@ -30,20 +28,7 @@ case class MAttribute(
     expression: String,
     ordered: Boolean,
     transient: Boolean
-) {
-  def asJson: JsObject = Json.obj(
-    "name" -> name,
-    "globalUnique" -> globalUnique,
-    "localUnique" -> localUnique,
-    "typ" -> typ.asJson,
-    "default" -> default.asJson,
-    "constant" -> constant,
-    "singleAssignment" -> singleAssignment,
-    "expression" -> expression,
-    "ordered" -> ordered,
-    "transient" -> transient
-  )
-}
+)
 
 object MAttribute {
 

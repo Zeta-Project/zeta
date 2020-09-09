@@ -9,6 +9,8 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.common.format.ProjectShortInfo
+import de.htwg.zeta.common.format.entity.UserFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
@@ -29,6 +31,8 @@ import views.html.helper.CSRF
 class WebpageController @Inject()(
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
+    gdslProjectFormat: GdslProjectFormat,
+    userFormat: UserFormat,
     ws: WSClient
 ) extends Controller {
 
@@ -71,11 +75,11 @@ class WebpageController @Inject()(
       gdslProject: Option[GdslProject],
       modelInstances: Seq[GraphicalDslInstanceShortInfo]) = {
     Json.obj(
-      "user" -> unwrapOrNull(user).fold(r => r,l => l.asJson),
+      "user" -> unwrapOrNull(user).fold(r => r,l => userFormat.writes(l)),
       "metaModels" -> metaModels,
-      "gdslProject" -> unwrapOrNull(gdslProject).fold(r => r,l => l.asJson),
+      "gdslProject" -> unwrapOrNull(gdslProject).fold(r => r,l => gdslProjectFormat.writes(l)),
       "modelInstances" -> modelInstances
-    )
+    );
   }
 
   private def unwrapOrNull[A](input: Option[A]): Either[JsValue, A] = input match {
