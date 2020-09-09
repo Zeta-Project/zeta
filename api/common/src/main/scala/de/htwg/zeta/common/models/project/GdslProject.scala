@@ -4,8 +4,6 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.project.concept.Concept
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 
 /** Graphical-DSL (formerly named MetaModelEntity). */
 case class GdslProject(
@@ -16,17 +14,7 @@ case class GdslProject(
     shape: String,
     style: String,
     validator: Option[String] = None
-) extends Entity {
-  def asJson: JsObject = Json.obj(
-    "id" -> this.id,
-    "name" -> name,
-    "concept" -> concept.asJson,
-    "diagram" -> diagram,
-    "shape" -> shape,
-    "style" -> style,
-    "validator" -> validator
-  )
-}
+) extends Entity
 
 object GdslProject {
 
