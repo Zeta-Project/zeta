@@ -14,21 +14,32 @@ import {EventBus} from "@/eventbus/eventbus"
         const name = $("#inputProjectName").val();
         if (name === "") return;
 
+        const defaultMetamodelDefinition = require('./defaultMetamodelDefinition.json')
+        console.log(defaultMetamodelDefinition)
         axios.post(
             "http://localhost:9000/rest/v1/meta-models",
             {name: name},
-            {withCredentials: true}).then(
+            {withCredentials: true}
+        ).then(
             (response) => {
                 EventBus.$emit('metaModelAdded', {id: response.data.id, name: response.data.name});
+                axios.put(
+                    "http://localhost:9000/rest/v1/meta-models/" + response.data.id +"/definition",
+                    defaultMetamodelDefinition,
+                    { withCredentials: true}
+                ).then(
+                    (response) => console.log(response),
+                    (error) => console.log(error)
+                )
             },
             (error) => alert("Could not create meta model: " + error)
-
         )
 
     };
 
     const createModelInstance = function () {
         const name = $("#inputModelName").val();
+        console.log(name)
         if (name === "") {
             return;
         }

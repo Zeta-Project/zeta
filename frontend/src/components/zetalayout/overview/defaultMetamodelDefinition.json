@@ -1,0 +1,115 @@
+{
+  "classes": [
+    {
+      "name": "AbstractKlasse",
+      "description": "",
+      "abstractness": true,
+      "superTypeNames": [],
+      "inputReferenceNames": [],
+      "outputReferenceNames": [],
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "InterfaceKlasse",
+      "description": "",
+      "abstractness": true,
+      "superTypeNames": [],
+      "inputReferenceNames": [],
+      "outputReferenceNames": [],
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "Klasse",
+      "description": "",
+      "abstractness": true,
+      "superTypeNames": [],
+      "inputReferenceNames": [],
+      "outputReferenceNames": [
+        "BaseClassRealization",
+        "Inheritance",
+        "Component",
+        "Aggregation"
+      ],
+      "attributes": [],
+      "methods": []
+    }
+  ],
+  "references": [
+    {
+      "name": "BaseClassRealization",
+      "description": "",
+      "sourceDeletionDeletesTarget": true,
+      "targetDeletionDeletesSource": true,
+      "sourceClassName": "Klasse",
+      "targetClassName": "InterfaceKlasse",
+      "sourceLowerBounds": 0,
+      "sourceUpperBounds": -1,
+      "targetLowerBounds": 0,
+      "targetUpperBounds": -1,
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "Realization",
+      "description": "",
+      "sourceDeletionDeletesTarget": true,
+      "targetDeletionDeletesSource": true,
+      "sourceClassName": "Klasse",
+      "targetClassName": "InterfaceKlasse",
+      "sourceLowerBounds": 0,
+      "sourceUpperBounds": -1,
+      "targetLowerBounds": 0,
+      "targetUpperBounds": -1,
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "Inheritance",
+      "description": "",
+      "sourceDeletionDeletesTarget": true,
+      "targetDeletionDeletesSource": true,
+      "sourceClassName": "Klasse",
+      "targetClassName": "AbstractKlasse",
+      "sourceLowerBounds": 0,
+      "sourceUpperBounds": -1,
+      "targetLowerBounds": 0,
+      "targetUpperBounds": -1,
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "Component",
+      "description": "",
+      "sourceDeletionDeletesTarget": true,
+      "targetDeletionDeletesSource": true,
+      "sourceClassName": "Klasse",
+      "targetClassName": "Klasse",
+      "sourceLowerBounds": 0,
+      "sourceUpperBounds": -1,
+      "targetLowerBounds": 0,
+      "targetUpperBounds": -1,
+      "attributes": [],
+      "methods": []
+    },
+    {
+      "name": "Aggregation",
+      "description": "",
+      "sourceDeletionDeletesTarget": true,
+      "targetDeletionDeletesSource": true,
+      "sourceClassName": "Klasse",
+      "targetClassName": "Klasse",
+      "sourceLowerBounds": 0,
+      "sourceUpperBounds": -1,
+      "targetLowerBounds": 0,
+      "targetUpperBounds": -1,
+      "attributes": [],
+      "methods": []
+    }
+  ],
+  "enums": [],
+  "attributes": [],
+  "methods": [],
+  "uiState": ""
+}
