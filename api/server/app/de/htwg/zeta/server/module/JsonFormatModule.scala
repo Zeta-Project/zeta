@@ -10,6 +10,7 @@ import de.htwg.zeta.common.format.entity.FilterFormat
 import de.htwg.zeta.common.format.entity.GeneratorFormat
 import de.htwg.zeta.common.format.entity.GeneratorImageFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
+import de.htwg.zeta.common.format.entity.UserFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
@@ -43,6 +44,7 @@ class JsonFormatModule extends ScalaModule {
     bind[AttributeTypeFormat].toInstance(new AttributeTypeFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble, sUnit = "Unit"))
     bind[AttributeValueFormat].toInstance(new AttributeValueFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble))
     bind[EnumFormat].toInstance(new EnumFormat)
+    bind[UserFormat].toInstance(new UserFormat)
   }
 
   @Provides
@@ -139,5 +141,4 @@ class JsonFormatModule extends ScalaModule {
   ): MethodFormat = {
     new MethodFormat(attributeTypeFormat)
   }
-
 }

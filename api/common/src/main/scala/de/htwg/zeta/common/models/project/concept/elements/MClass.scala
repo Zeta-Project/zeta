@@ -6,8 +6,6 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.project.concept.Concept.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 
 
 /** The MClass implementation
@@ -28,19 +26,7 @@ case class MClass(
     outputReferenceNames: Seq[String],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends AttributeMap with MethodMap {
-
-  def asJson: JsObject = Json.obj(
-    "name" -> name,
-    "description" -> description,
-    "abstractness" -> abstractness,
-    "superTypeNames" -> superTypeNames,
-    "inputReferenceNames" -> inputReferenceNames,
-    "outputReferenceNames" -> outputReferenceNames,
-    "attributes" -> attributes.map(_.asJson),
-    "methods" -> methods.map(_.asJson)
-  )
-}
+) extends AttributeMap with MethodMap
 
 object MClass {
 

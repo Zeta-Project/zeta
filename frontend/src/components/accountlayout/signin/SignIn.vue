@@ -40,6 +40,7 @@
 
 <script>
 import {AUTH_REQUEST} from "@/store/actions/auth"
+import {EventBus} from "@/eventbus/eventbus";
 
 export default {
   name: 'SignIn',
@@ -56,8 +57,8 @@ export default {
     login: function () {
       const {username, password, rememberMe} = this
       this.$store.dispatch(AUTH_REQUEST, {username, password, rememberMe}).then(() => {
-        this.$router.push({ path: '/'})
-      }).catch(reason => this.$emit('errorMessage', reason))
+        this.$router.push({ path: '/'}).catch(err => {})
+      }).catch(reason => EventBus.$emit('errorMessage', reason))
     }
   }
 }

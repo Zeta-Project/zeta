@@ -2,27 +2,7 @@
   <div class="account">
     <main class="container">
       <div class="starter-template row">
-
-        <div v-if="errorMessage" class="col-md-6 col-md-offset-3 alert alert-danger">
-          <a href="#" class="close" data-dismiss="alert" @click="setErrorMessage('')">&times;</a>
-          <strong>Error!</strong> {{ errorMessage }}
-        </div>
-
-
-        <div v-if="infoMessage" class="col-md-6 col-md-offset-3 alert alert-info">
-          <a href="#" class="close" data-dismiss="alert" @click="setInfoMessage('')">&times;</a>
-          <strong>Info!</strong> {{ infoMessage }}
-        </div>
-
-        <div v-if="successMessage" class="col-md-6 col-md-offset-3 alert alert-success">
-          <a href="#" class="close" data-dismiss="alert" @click="setSuccessMessage('')">&times;</a>
-          <strong>Success!</strong> {{ successMessage }}
-        </div>
-
-        <router-view
-            @errorMessage="setErrorMessage"
-            @infoMessage="setInfoMessage"
-            @successMessage="setSuccessMessage"/>
+        <router-view/>
       </div>
     </main>
   </div>
@@ -35,24 +15,6 @@ import zxcvbn from "zxcvbn";
 export default {
   name: 'AccountLayout',
   components: {
-  },
-  data() {
-    return {
-      errorMessage: '',
-      infoMessage: '',
-      successMessage: '',
-    }
-  },
-  methods: {
-    setErrorMessage(message) {
-      this.errorMessage = message
-    },
-    setInfoMessage(message) {
-      this.infoMessage = message
-    },
-    setSuccessMessage(message) {
-      this.successMessage = message
-    }
   }
 }
 
