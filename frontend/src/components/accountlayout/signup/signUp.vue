@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios'
+import {EventBus} from "@/eventbus/eventbus";
 
 export default {
   name: 'SignUp',
@@ -73,8 +74,8 @@ export default {
           },
           {withCredentials: true}
       ).then(
-          (response) => this.$emit('infoMessage', info),
-          (error) => this.$emit('errorMessage', error)
+          (response) => EventBus.$emit("successMessage", info),
+          (error) => EventBus.$emit('errorMessage', error)
       )
     }
   }

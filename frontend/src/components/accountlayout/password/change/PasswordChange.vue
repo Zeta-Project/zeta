@@ -40,6 +40,7 @@
 <script>
 import axios from 'axios'
 import {AUTH_LOGOUT} from "@/store/actions/auth";
+import {EventBus} from "@/eventbus/eventbus";
 
 export default {
   name: 'PasswordChange',
@@ -62,10 +63,10 @@ export default {
           {withCredentials: true}
       ).then(
           (response) => {
-            this.$emit('successMessage', "Password was successfully changed");
+            EventBus.$emit('successMessage', "Password was successfully changed");
             this.$store.dispatch(AUTH_LOGOUT);
           },
-          (error) => this.$emit('errorMessage', error)
+          (error) => EventBus.$emit('errorMessage', error)
       )
     }
   }

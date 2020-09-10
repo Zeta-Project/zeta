@@ -47,7 +47,6 @@ export default {
   methods: {
     initializeEditor: function () {
       $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
-      console.log("runned")
     }
   },
   created() {

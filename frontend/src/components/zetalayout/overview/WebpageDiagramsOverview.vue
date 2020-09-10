@@ -204,31 +204,12 @@
       </div>
     </div>
 
-    <div v-if="errorMessage" class="col-md-6 col-md-offset-3 alert alert-danger">
-      <a href="#" class="close" data-dismiss="alert" v-on:click="errorMessage = ''">&times;</a>
-      <strong>Error!</strong>
-      <br>
-      {{ errorMessage }}
-    </div>
-
-    <div v-if="successMessage" class="col-md-6 col-md-offset-3 alert alert-success">
-      <a href="#" class="close" data-dismiss="alert" v-on:click="successMessage = ''">&times;</a>
-      <strong>Success!</strong>
-      <br>
-      {{ successMessage }}
-    </div>
-
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import { EventBus } from "@/eventbus/eventbus"
-import jQuery from "jquery"
-window.jQuery = jQuery;
-window.$ = jQuery;
-
-import modelValidatorUtil from "@/components/zetalayout/overview/modelValidatorUtil";
 
 export default {
   name: 'DiagramsOverview',
@@ -277,9 +258,8 @@ export default {
           (response) => {
             this.metaModels = response.data.metaModels;
             this.modelInstances = response.data.modelInstances
-            console.log(this.metaModels)
           },
-          (error) => console.log(error)
+          (error) => EventBus.$emit("errorMessage","Could not load metamodels: " + error)
       )
     },
     routeParamChanged() {
@@ -295,14 +275,13 @@ export default {
               this.gdslProject = response.data;
               EventBus.$emit("gdslProjectSelected", response.data)
             },
-            (error) => console.log(error)
+            (error) => EventBus.$emit("errorMessage","Could not load selected metamodel: " + error)
         )
       }
     },
     createProject() {
       const name = this.inputProjectName
       if (name === "") return;
-      const defaultMetamodelDefinition = require('./defaultMetamodelDefinition.json')
       axios.post(
           "http://localhost:9000/rest/v1/meta-models",
           {name: name},
@@ -310,16 +289,9 @@ export default {
       ).then(
           (response) => {
             EventBus.$emit('metaModelAdded', {id: response.data.id, name: response.data.name});
-            axios.put(
-                "http://localhost:9000/rest/v1/meta-models/" + response.data.id +"/definition",
-                defaultMetamodelDefinition,
-                { withCredentials: true}
-            ).then(
-                (response) => console.log(response),
-                (error) => console.log(error)
-            )
+            this.setPojectDefinition(response.data.id)
           },
-          (error) => alert("Could not create meta model: " + error)
+          (error) => EventBus.$emit("errorMessage","Could not create metamodel: " + error)
       )
     },
     deleteProject(metaModelId) {
@@ -328,7 +300,40 @@ export default {
           {withCredentials: true}
       ).then(
           (response) => EventBus.$emit("metaModelRemoved", metaModelId),
-          (error) => alert("Could not delete meta model: " + error)
+          (error) => EventBus.$emit("errorMessage","Could not delete meta model: " + error)
+      )
+    },
+    importProject() {
+      const fd = new FormData();
+      fd.append('file', this.file);
+      const projectName = this.importProjectName.trim();
+      this.uploadProject(this.file, projectName);
+    },
+    uploadProject(file, projectName){
+      axios.post(
+          'http://localhost:9000/rest/v2/projects/import?projectName=' + projectName,
+          file,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/zip',
+              'processData': false
+            }}
+      ).then(
+          (response) => EventBus.$emit('reloadProjects'),
+          (error) => EventBus.$emit("errorMessage", 'Invalid .zeta project file!')
+      )
+    },
+
+    setPojectDefinition(metaModelId) {
+      const defaultMetamodelDefinition = require('./defaultMetamodelDefinition.json')
+      axios.put(
+          "http://localhost:9000/rest/v1/meta-models/" + metaModelId +"/definition",
+          defaultMetamodelDefinition,
+          { withCredentials: true}
+      ).then(
+          (response) => EventBus.$emit("successMessage","Successfully created new metamodel"),
+          (error) => EventBus.$emit("errorMessage","Failed to created metamodel-definition: " + error)
       )
     },
     invite() {
@@ -339,7 +344,8 @@ export default {
           {withCredentials: true}
       ).then(
           (response) => location.reload(),
-          (error) => alert("failed to invite the user to the project, probably there is no user with this email")
+          (error) => EventBus.$emit("errorMessage","Failed to invite the user to the project," +
+              "probably there is no user with this email")
       )
     },
     duplicate() {
@@ -350,7 +356,7 @@ export default {
           {withCredentials: true}
       ).then(
           (response) => this.loadProjects(),
-          (error) => alert("failed to duplicate the project")
+          (error) => EventBus.$emit("errorMessage", "Failed to duplicate the project")
       )
     },
     exportProject(metaModelId) {
@@ -360,68 +366,70 @@ export default {
       }
     },
     validatorGenerate() {
-      /*modelValidatorUtil.generate(this.$route.params.id, {
-        success: function(data, textStatus, jqXHR) {
-          $("#success-panel").fadeOut('slow', function () {
-            $("#success-panel").show();
-            $("#success-panel").find("div").text("Validator successfully generated");
-            $("#success-panel").fadeIn('slow');
-          });
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          this.showError(jqXHR.responseText);
-        }
-      });*/
-
       axios.get(
           "http://localhost:9000/rest/v1/meta-models/" + this.$route.params.id + "/validator?generate=true",
           {withCredentials: true}
       ).then(
-          (response) => this.successMessage = "Validator successfully generated",
-          (error) => this.errorMessage = error
+          (response) => EventBus.$emit("successMessage", "Validator successfully generated"),
+          (error) => EventBus.$emit("errorMessage", "Failed to generate Validator: " + error)
       )
     },
     validatorShow() {
-      /*modelValidatorUtil.show(this.$route.params.id, {
-        openWindow: true,
-        success: function(data, textStatus, jqXHR) {
-          switch (data.status) {
-            case 200:
-              this.showSuccess("Validator successfully generated.");
-              break;
-            case 201:
-              this.showSuccess("Existing validator successfully loaded.");
-              break;
-          }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          this.showError(jqXHR.responseText);
-        }
-      });*/
-
       axios.get(
           "http://localhost:9000/rest/v1/meta-models/" + this.$route.params.id + "/validator?generate=true",
           {withCredentials: true}
       ).then(
-          (response) => this.openWindow().document.body.innerHTML = "<pre>" + response.data + "</pre>",
-          (error) => console.log(error)
+          (response) => {
+            this.openWindow("<pre>" + response.data + "</pre>")
+            switch (response.status) {
+              case 200:
+                EventBus.$emit("successMessage", "Validator successfully generated")
+                break;
+              case 201:
+                EventBus.$emit("successMessage", "Existing validator successfully loaded")
+                break;
+            }
+          },
+          (error) => EventBus.$emit("errorMessage", error)
       )
     },
     validateModelInstance(modelId) {
-      modelValidatorUtil.validate(modelId, {
-        openWindow: true,
-        error: function(jqXHR, textStatus, errorThrown) {
-          this.showError(jqXHR.responseText);
+      axios.get("" +
+          "http://localhost:9000/rest/v1/models/" + modelId + "/validation",
+          {withCredentials: true}
+      ).then(
+          (response) => this.openWindow("<pre>" + this.validationResultToString(response.data) + "</pre>"),
+          (error) => EventBus.$emit("errorMessage", error)
+      )
+    },
+    validationResultToString(result) {
+      var list = result.map(function (res) {
+        var string = "Rule \"" + res.rule.name + "\" failed";
+        if (res.element !== null) {
+          string += " for " + res.element.type + " of type \"" + res.element.typeName + "\" (" + res.element.type + "-id: " + res.element.id + ")"
         }
+        string += ".\n";
+        string += "\t- description: \"" + res.rule.description + "\"\n";
+        string += "\t- possible fix: \"" + res.rule.possibleFix + "\"";
+        return string;
       });
+
+      var listString = "";
+      for (var i = 0; i < list.length; ++i) {
+        listString += "* " + list[i] + "\n\n";
+      }
+
+      if (result.length === 0) {
+        return "Model instance is valid."
+      } else {
+        return "Model instance is invalid:\n\n" + listString;
+      }
     },
     createModelInstance() {
       const name = this.inputModelName
-      console.log(name)
       if (name === "") {
         return;
       }
-
       const model = {
         name: name,
         graphicalDslId: this.$route.params.id
@@ -432,14 +440,14 @@ export default {
           JSON.stringify(model),
           {withCredentials: true}
       ).then(
-          (response) => this.$router.push("/zeta/overview/" + this.$route.params.id),
-          (error) => alert("failed creating model instance: " + error)
+          (response) => this.$router.push("/zeta/overview/" + this.$route.params.id).catch(err => {}),
+          (error) => EventBus.$emit("errorMessage", "Failed creating model instance: " + error)
       )
     },
     deleteModelInstance(modelId) {
       axios.delete("http://localhost:9000/rest/v1/models/" + modelId, {withCredentials: true}).then(
-          (response) => this.$router.push("/zeta/overview/" + this.$route.params.id),
-          (error) => alert("failed deleting model instance: " + error)
+          (response) => this.$router.push("/zeta/overview/" + this.$route.params.id).catch(err => {}),
+          (error) => EventBus.$emit("errorMessage", "Failed deleting model instance: " + error)
       )
     },
     dragover(event) {
@@ -451,7 +459,6 @@ export default {
       event.preventDefault();
     },
     dropFile(event) {
-      console.log(event)
       event.preventDefault();
       this.file = event.dataTransfer.files[0];
       this.onProjectSelected();
@@ -461,7 +468,7 @@ export default {
         const fd = new FormData();
         fd.append('file', this.file);
         this.uploadText = this.file.name
-        const projectNameFromFile = this.file.name.split("_")[0];
+        const projectNameFromFile = this.file.name.split(".zeta")[0];
         this.importProjectName = projectNameFromFile
 
       } else {
@@ -475,52 +482,15 @@ export default {
       return this.importProjectName.trim() !== "";
     },
     openFileManager() {
-      console.log("open manager")
       this.$refs.file.click()
     },
-    importProject() {
-      const fd = new FormData();
-      fd.append('file', this.file);
-      const projectName = this.importProjectName.trim();
-      this.uploadProject(this.file, projectName);
-    },
-    uploadProject(file, projectName){
-      //$("#close-import-modal").click();
-      axios.post(
-          'http://localhost:9000/rest/v2/projects/import?projectName=' + projectName,
-          file,
-          {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/zip',
-              'processData': false
-            }}
-      ).then(
-          (response) => EventBus.$emit('reloadProjects'),
-          (error) => this.showError('Invalid .zeta project file!')
-      )
-    },
     onFileChange(event) {
-      console.log(event)
       this.file = event.target.files[0];
       this.onProjectSelected();
     },
-    showError(text) {
-      $("#error-panel").fadeOut('slow', function () {
-        $("#error-panel").find("div").text(text);
-        $("#error-panel").fadeIn('slow');
-      });
-    },
-    showSuccess(text) {
-      $("#success-panel").fadeOut('slow', function () {
-        $("#success-panel").show();
-        $("#success-panel").find("div").text(text);
-        $("#success-panel").fadeIn('slow');
-      });
-    },
-    openWindow() {
+    openWindow(data) {
       var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=300');
-      win.document.body.innerHTML = "waiting for data...";
+      win.document.body.innerHTML = data;
       return win;
     }
   },
@@ -531,6 +501,7 @@ export default {
     EventBus.$on('metaModelRemoved', metamodelID => {
       let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
       this.metaModels.splice(i, 1)
+      if(this.$route.params.id === metamodelID) this.$router.push("/zeta/overview").catch(err => {})
     });
     EventBus.$on('reloadProjects', () => {
       this.loadProjects()
@@ -545,11 +516,6 @@ export default {
     '$route': 'routeParamChanged'
   }
 }
-
-
-//Jquery Syntax
-
-
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
