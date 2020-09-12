@@ -192,8 +192,6 @@ export default {
       ],
       inputProjectName: "",
       selectedProjectId: null,
-      inviteProjectName: "",
-      duplicateProjectName: "",
       inputModelName: "",
       uploadText: "Drag and Drop .zeta file here...",
       importProjectName: "",
