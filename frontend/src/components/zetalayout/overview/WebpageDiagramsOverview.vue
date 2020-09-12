@@ -11,17 +11,9 @@
 
             <div v-for="metamodel in metaModels" v-bind:key="metamodel.id"
                  class="list-group-item list-item-container"
-                 v-bind:class="{active: gdslProject && metamodel.id == gdslProject.id}">
+                 v-bind:class="{active: gdslProject && metamodel.id === gdslProject.id}">
 
-              <div v-on:click="deleteProject(metamodel.id)" class="delete-list-item delete-project glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete project"></div>
-              <div v-on:click="exportProject(metamodel.id)" class="delete-list-item export-project glyphicon glyphicon-export" data-toggle="tooltip" title="Export project"></div>
-              <div v-on:click="selectedProjectId = metamodel.id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate" data-toggle="modal" data-target="#duplicateModal" title="Duplicate project"></div>
-              <div v-on:click="selectedProjectId = metamodel.id" class="delete-list-item invite-to-project glyphicon glyphicon-send" data-toggle="modal" data-target="#inviteModal" title="Invite other users">
-
-              </div>
-              <router-link style="text-decoration: none; color: initial" :to="'/zeta/overview/' + metamodel.id">
-                <div> {{metamodel.name}}</div>
-              </router-link>
+              <ProjectSelectionRow v-bind:id="metamodel.id" v-bind:name="metamodel.name"/>
             </div>
 
           </div>
@@ -160,59 +152,17 @@
         </button>
       </a>
     </div>
-
-    <!-- invite modal -->
-    <div class="modal fade" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header modal-header-info">
-            <span class="modal-title" id="inviteModalLabel">Invite to project</span>
-            <button id="close-invite-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <input v-model="inviteProjectName" type="text" class="form-control" id="inviteProjectName" placeholder="E-Mail Address" autocomplete="off">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button v-on:click="invite" id="start-invite-btn" type="button" class="btn btn-info" :disabled="!(inviteProjectName.trim().length !== 0)">Invite</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- end invite modal -->
-
-    <!-- duplicate project modal -->
-    <div class="modal fade" id="duplicateModal" tabindex="-1" role="dialog" aria-labelledby="duplicateModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header modal-header-info">
-            <span class="modal-title" id="duplicateModalLabel">Duplicate project</span>
-            <button id="close-duplicate-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <input v-model="duplicateProjectName" type="text" class="form-control" id="duplicateProjectName" placeholder="New Project Name" autocomplete="off">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button v-on:click="duplicate" id="start-duplicate-btn" type="button" class="btn btn-info" :disabled="!(duplicateProjectName.trim().length !== 0)">Duplicate</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import { EventBus } from "@/eventbus/eventbus"
+import {EventBus} from "@/eventbus/eventbus"
+import ProjectSelectionRow from "./ProjectSelectionRow";
 
 export default {
   name: 'DiagramsOverview',
+  components: {ProjectSelectionRow},
   props: {
     msg: String
   },
@@ -279,30 +229,6 @@ export default {
         )
       }
     },
-    createProject() {
-      const name = this.inputProjectName
-      if (name === "") return;
-      axios.post(
-          "http://localhost:9000/rest/v1/meta-models",
-          {name: name},
-          {withCredentials: true}
-      ).then(
-          (response) => {
-            EventBus.$emit('metaModelAdded', {id: response.data.id, name: response.data.name});
-            this.setPojectDefinition(response.data.id)
-          },
-          (error) => EventBus.$emit("errorMessage","Could not create metamodel: " + error)
-      )
-    },
-    deleteProject(metaModelId) {
-      axios.delete(
-          "http://localhost:9000/rest/v1/meta-models/" + metaModelId,
-          {withCredentials: true}
-      ).then(
-          (response) => EventBus.$emit("metaModelRemoved", metaModelId),
-          (error) => EventBus.$emit("errorMessage","Could not delete meta model: " + error)
-      )
-    },
     importProject() {
       const fd = new FormData();
       fd.append('file', this.file);
@@ -335,35 +261,6 @@ export default {
           (response) => EventBus.$emit("successMessage","Successfully created new metamodel"),
           (error) => EventBus.$emit("errorMessage","Failed to created metamodel-definition: " + error)
       )
-    },
-    invite() {
-      const metaModelId = this.selectedProjectId;
-      const email = this.inviteProjectName.trim();
-      axios.get(
-          "http://localhost:9000/rest/v2/invite-to-project/" + metaModelId + "/" + email,
-          {withCredentials: true}
-      ).then(
-          (response) => location.reload(),
-          (error) => EventBus.$emit("errorMessage","Failed to invite the user to the project," +
-              "probably there is no user with this email")
-      )
-    },
-    duplicate() {
-      const metaModelId = this.selectedProjectId;
-      const name = this.duplicateProjectName.trim();
-      axios.get(
-          "http://localhost:9000/rest/v2/duplicate-project/" + metaModelId + "/" + name,
-          {withCredentials: true}
-      ).then(
-          (response) => this.loadProjects(),
-          (error) => EventBus.$emit("errorMessage", "Failed to duplicate the project")
-      )
-    },
-    exportProject(metaModelId) {
-      if (metaModelId) {
-        const url = 'http://localhost:9000/rest/v2/models/' + metaModelId + '/exportProject';
-        window.open(url, '_blank');
-      }
     },
     validatorGenerate() {
       axios.get(
