@@ -65,8 +65,7 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import {EventBus} from "@/eventbus/eventbus"
+import ProjectUtils from "./ProjectUtils";
 
 export default {
   name: "ProjectSelectionRow",
@@ -82,40 +81,16 @@ export default {
   },
   methods: {
     deleteProject() {
-      axios.delete(
-          "http://localhost:9000/rest/v1/meta-models/" + this.id,
-          {withCredentials: true}
-      ).then(
-          (response) => EventBus.$emit("metaModelRemoved", this.id),
-          (error) => EventBus.$emit("errorMessage", "Could not delete meta model: " + error)
-      )
+      ProjectUtils.deleteProject(this.id)
     },
     exportProject() {
-      if (this.id) {
-        const url = 'http://localhost:9000/rest/v2/models/' + this.id + '/exportProject';
-        window.open(url, '_blank');
-      }
+      ProjectUtils.exportProject(this.id)
     },
     duplicate() {
-      const name = this.duplicateProjectName.trim();
-      axios.get(
-          "http://localhost:9000/rest/v2/duplicate-project/" + this.id + "/" + name,
-          {withCredentials: true}
-      ).then(
-          (response) => EventBus.$emit("reloadProjects", "Duplicate from ", this.id),
-          (error) => EventBus.$emit("errorMessage", "Failed to duplicate the project")
-      )
+      ProjectUtils.duplicateProject(this.id, this.duplicateProjectName)
     },
     invite() {
-      const email = this.inviteProjectName.trim();
-      axios.get(
-          "http://localhost:9000/rest/v2/invite-to-project/" + this.id + "/" + email,
-          {withCredentials: true}
-      ).then(
-          (response) => location.reload(),
-          (error) => EventBus.$emit("errorMessage", "Failed to invite the user to the project," +
-              "probably there is no user with this email")
-      )
+      ProjectUtils.inviteToProject(this.id, this.inviteProjectName)
     },
   }
 }
