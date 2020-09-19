@@ -4,48 +4,13 @@
 
       <ProjectSelection class="col-md-4" v-bind:meta-models="this.metaModels" v-bind:gdsl-project="this.gdslProject"/>
 
-      <EditorSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject" :model-instances="modelInstances" />
+      <EditorSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
+                       :model-instances="modelInstances"/>
 
 
-      <div class="col-md-4" v-if="gdslProject">
-        <div id="model-instance-container" class="panel panel-default">
-          <div class="panel-heading">
-            <strong>Model Instances</strong>
-          </div>
-
-          <div class="panel-body" v-if="!modelInstances.length">
-            <span class="text-muted">There are no model instances.</span>
-          </div>
-
-          <div class="list-group" v-else>
-            <a v-for="model in modelInstances" v-bind:key="model.id" href="@routes.ScalaRoutes.getModelEditor(model.id)"
-               class="list-group-item list-item-container">
-              {{ model.name }}
-              <div v-on:click="deleteModelInstance(model.id)"
-                   class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip"
-                   title="Delete model instance"></div>
-              <div v-on:click="validateModelInstance(model.id)"
-                   class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up"
-                   data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-            </a>
-          </div>
-
-          <div class="panel-footer">
-            <form>
-              <div class="input-group">
-                <input v-on:keyup.enter="createModelInstance" v-model="inputModelName" type="text" class="form-control"
-                       id="inputModelName" placeholder="New model name" autocomplete="off">
-                <span class="input-group-btn">
-                  <button v-on:click="createModelInstance" type=button id="btnCreateModelInstance"
-                          class="btn btn-default" data-toggle="tooltip" title="Create model instace">
-                    <span class="glyphicon glyphicon-plus" aria-hidden=true></span>
-                  </button>
-                </span>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <ModelSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
+                      :model-instances="modelInstances"
+      />
     </div>
 
     <div class="bottom-link right">
@@ -61,14 +26,13 @@
 <script>
 import axios from "axios";
 import {EventBus} from "@/eventbus/eventbus"
-import ValidatorUtils from "./ValidatorUtils"
-import ModelInstanceUtils from "./ModelInstanceUtils"
 import ProjectSelection from "./ProjectSelection";
 import EditorSelection from "./EditorSelection";
+import ModelSelection from "./ModelSelection";
 
 export default {
   name: 'DiagramsOverview',
-  components: {EditorSelection, ProjectSelection},
+  components: {ModelSelection, EditorSelection, ProjectSelection},
   props: {
     msg: String
   },
@@ -98,7 +62,7 @@ export default {
       ],
       inputProjectName: "",
       selectedProjectId: null,
-      inputModelName: "",
+
       uploadText: "Drag and Drop .zeta file here...",
       importProjectName: "",
       file: null
@@ -131,15 +95,7 @@ export default {
         )
       }
     },
-    validateModelInstance(modelId) {
-      ValidatorUtils.validate(modelId)
-    },
-    createModelInstance() {
-      ModelInstanceUtils.createInstance(this.inputModelName, this.$route.params.id)
-    },
-    deleteModelInstance(modelId) {
-      ModelInstanceUtils.deleteInstance(modelId, this.$route.params.id)
-    },
+
     dragover(event) {
       event.preventDefault();
       event.stopPropagation();
