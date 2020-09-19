@@ -4,41 +4,7 @@
 
       <ProjectSelection class="col-md-4" v-bind:meta-models="this.metaModels" v-bind:gdsl-project="this.gdslProject"/>
 
-
-      <div id="edit-project" class="col-md-4" v-if="gdslProject">
-        <div class="panel panel-default overlay-container">
-          <div v-if="modelInstances.length" class="overlay" data-toggle="tooltip"
-               title="Locked because there are model instances"></div>
-          <div class="panel-heading">
-            <strong>Edit project <em>{{ gdslProject.name }}</em></strong>
-          </div>
-          <div class="list-group">
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
-              Style
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'">
-              Shape
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
-              Diagram
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/metamodel/editor/' + gdslProject.id">
-              Concept Editor
-            </router-link>
-          </div>
-          <div class="panel-footer dropdown">
-            <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-              Validator
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="btnValidator">
-              <li><a v-on:click="validatorGenerate" id="validatorGenerate">Generate / Update Validator</a></li>
-              <li><a v-on:click="validatorShow" id="validatorShow">Show Validation Rules</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <EditorSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject" :model-instances="modelInstances" />
 
 
       <div class="col-md-4" v-if="gdslProject">
@@ -96,13 +62,13 @@
 import axios from "axios";
 import {EventBus} from "@/eventbus/eventbus"
 import ValidatorUtils from "./ValidatorUtils"
-import ProjectUtils from "./ProjectUtils"
 import ModelInstanceUtils from "./ModelInstanceUtils"
 import ProjectSelection from "./ProjectSelection";
+import EditorSelection from "./EditorSelection";
 
 export default {
   name: 'DiagramsOverview',
-  components: {ProjectSelection},
+  components: {EditorSelection, ProjectSelection},
   props: {
     msg: String
   },
@@ -165,30 +131,6 @@ export default {
         )
       }
     },
-    createProject() {
-      ProjectUtils.createProject(this.inputProjectName)
-    },
-    deleteProject(metaModelId) {
-      ProjectUtils.deleteProject(metaModelId)
-    },
-    importProject() {
-      ProjectUtils.importProject(this.file, this.importProjectName)
-    },
-    invite() {
-      ProjectUtils.inviteToProject(this.selectedProjectId, this.inviteProjectName)
-    },
-    duplicate() {
-      ProjectUtils.duplicateProject(this.selectedProjectId, this.duplicateProjectName)
-    },
-    exportProject(metaModelId) {
-      ProjectUtils.exportProject(metaModelId)
-    },
-    validatorGenerate() {
-      ValidatorUtils.generate(this.$route.params.id)
-    },
-    validatorShow() {
-      ValidatorUtils.show(this.$route.params.id)
-    },
     validateModelInstance(modelId) {
       ValidatorUtils.validate(modelId)
     },
@@ -205,33 +147,6 @@ export default {
     },
     preventDrop(event) {
       event.preventDefault();
-    },
-    openFileManager() {
-      this.$refs.file.click()
-    },
-    dropFile(event) {
-      event.preventDefault();
-      this.file = event.dataTransfer.files[0];
-      this.onProjectSelected();
-    },
-    onFileChange(event) {
-      this.file = event.target.files[0];
-      this.onProjectSelected();
-    },
-    onProjectSelected() {
-      if (this.isValidZetaProjectFile()) {
-        this.uploadText = this.file.name
-        const projectNameFromFile = this.file.name.split(".zeta")[0].split("_")[0];
-        this.importProjectName = projectNameFromFile
-      } else {
-        this.uploadText = "Invalid zeta project file!"
-      }
-    },
-    isValidZetaProjectFile() {
-      return this.file && this.file.name.endsWith(".zeta");
-    },
-    isValidProjectName() {
-      return this.importProjectName.trim() !== "";
     }
   },
   created() {
