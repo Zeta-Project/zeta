@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="list-group-item list-item-container" v-bind:class="{active: isSelected}">
     <div v-on:click="deleteProject()" class="delete-list-item delete-project glyphicon glyphicon-trash"
          data-toggle="tooltip" title="Delete project"/>
     <div v-on:click="exportProject()" class="delete-list-item export-project glyphicon glyphicon-export"
@@ -71,7 +71,8 @@ export default {
   name: "ProjectSelectionRow",
   props: {
     id: String,
-    name: String
+    name: String,
+    isSelected: Boolean
   },
   data() {
     return {

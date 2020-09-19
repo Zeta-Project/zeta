@@ -9,11 +9,8 @@
 
           <div class="list-group" v-if="metaModels.length">
 
-            <div v-for="metamodel in metaModels" v-bind:key="metamodel.id"
-                 class="list-group-item list-item-container"
-                 v-bind:class="{active: gdslProject && metamodel.id === gdslProject.id}">
-
-              <ProjectSelectionRow v-bind:id="metamodel.id" v-bind:name="metamodel.name"/>
+            <div v-for="metamodel in metaModels" v-bind:key="metamodel.id">
+              <ProjectSelectionRow v-bind:id="metamodel.id" v-bind:name="metamodel.name" v-bind:is-selected="gdslProject && metamodel.id === gdslProject.id"/>
             </div>
 
           </div>
