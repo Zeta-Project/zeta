@@ -2,6 +2,7 @@ package de.htwg.zeta.parser.style
 
 import scalafx.scene.paint.Color
 import org.scalatest.Inside
+import org.scalatest.color
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -153,7 +154,7 @@ class StyleParserTest extends AnyFlatSpec with Matchers with Inside {
     inside(styleParser) {
       case Right(List(style: StyleParseTree)) =>
         style.name shouldBe "Y"
-        style.description shouldBe "Style for a connection between an interface and its implementing class"
+        style.description shouldBe StyleDescription("Style for a connection between an interface and its implementing class")
 
         style.attributes should contain(Transparency(1.0))
         style.attributes should contain(BackgroundColor(Color.White))

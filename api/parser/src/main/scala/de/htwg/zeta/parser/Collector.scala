@@ -42,5 +42,5 @@ class Collector(private val list: List[Any]) {
    * @return One single value for type T.
    */
   //noinspection ScalaStyle
-  def ![T](implicit classTag: ClassTag[T]): T = ?(classTag).get
+  def ![T](implicit classTag: ClassTag[T]): T = ?(classTag).fold(throw new NoSuchElementException)(f => f)
 }

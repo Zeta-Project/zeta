@@ -5,7 +5,9 @@ import scalaz.Success
 import scalaz.Validation
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
+import de.htwg.zeta.common.models.project.gdsl.diagram.Diagram
 import de.htwg.zeta.common.models.project.gdsl.shape.Shape
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.parser.common.ParseError
 import de.htwg.zeta.parser.diagram.DiagramParseTreeTransformer
 import de.htwg.zeta.parser.diagram.DiagramParser
@@ -32,38 +34,55 @@ class GraphicalDSLParser {
   }
   case class ErrorResult(errorDsl: String, errors: List[String], position: Option[(Int, Int)])
 
-  def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[ErrorResult, GraphicalDsl] = {
-    val styleParseTree = StyleParser.parseStyles(styleInput)
-    if (!styleParseTree.isRight) {
-      return ErrorResult.styleFailure(styleParseTree.left.get)
+  private def checkStyleParser(styleInput: String): Either[Failure[ErrorResult],List[Style]] = {
+    StyleParser.parseStyles(styleInput) match {
+      case Left(value) => Left(ErrorResult.styleFailure(value))
+      case Right(value) => StyleParseTreeTransformer.transform(value) match {
+        case Success(value) => Right(value)
+        case Failure(value) => Left(ErrorResult.styleFailure(value))
+      }
     }
-    val styles = StyleParseTreeTransformer.transform(styleParseTree.getOrElse(List()))
-    if (!styles.isSuccess) {
-      return ErrorResult.styleFailure(styles.toEither.left.get)
-    }
-    val shapeParseTree = ShapeParser.parseShapes(shapeInput)
-    if (!shapeParseTree.isRight) {
-      return ErrorResult.shapeFailure(shapeParseTree.left.get)
-    }
-    val shape = ShapeParseTreeTransformer.transform(shapeParseTree.getOrElse(List()), styles.getOrElse(List()), concept)
-    if (!shape.isSuccess) {
-      return ErrorResult.shapeFailure(shape.toEither.left.get)
-    }
-    val diagramParseTree = DiagramParser.parseDiagrams(diagramInput)
-    if (!diagramParseTree.isRight) {
-      return ErrorResult.diagramFailure(diagramParseTree.left.get)
-    }
-    val diagrams = DiagramParseTreeTransformer.transform(diagramParseTree.getOrElse(List()), shape.getOrElse(Shape(List(), List())).nodes)
-    if (!diagrams.isSuccess) {
-      return ErrorResult.diagramFailure(diagrams.toEither.left.get)
-    }
-    Success(GraphicalDsl(
-      id = (diagrams.hashCode() + styles.hashCode() + shape.hashCode()).toString,
-      diagrams = diagrams.getOrElse(List()),
-      styles = styles.getOrElse(List()),
-      shape = shape.getOrElse(Shape(List(), List()))
-    ))
-
   }
 
+  private def checkShapeParser(shapeInput: String, styles: List[Style], concept: Concept): Either[Failure[ErrorResult],Shape] = {
+    ShapeParser.parseShapes(shapeInput) match {
+      case Left(value) => Left(ErrorResult.shapeFailure(value))
+      case Right(value) => ShapeParseTreeTransformer.transform(value,styles, concept) match {
+        case Success(value) => Right(value)
+        case Failure(value) => Left(ErrorResult.shapeFailure(value))
+      }
+    }
+  }
+
+  private def checkDiagramParser(diagramInput: String, shape: Shape): Either[Failure[ErrorResult],List[Diagram]] = {
+    DiagramParser.parseDiagrams(diagramInput) match {
+      case Left(value) => Left(ErrorResult.diagramFailure(value))
+      case Right(value) => DiagramParseTreeTransformer.transform(value,shape.nodes) match {
+        case Success(value) => Right(value)
+        case Failure(value) => Left(ErrorResult.diagramFailure(value))
+      }
+    }
+  }
+
+  def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[ErrorResult, GraphicalDsl] = {
+    val styles = checkStyleParser(styleInput) match {
+      case Right(value) => value
+      case Left(err) => return err
+    }
+    val shape = checkShapeParser(shapeInput, styles, concept) match {
+      case Right(value) => value
+      case Left(err) => return err
+    }
+    val diagrams = checkDiagramParser(diagramInput,shape) match {
+      case Right(value) => value
+      case Left(err) => return err
+    }
+
+    Success(GraphicalDsl(
+      id = (diagrams.hashCode() + styles.hashCode() + shape.hashCode()).toString,
+      diagrams = diagrams,
+      styles = styles,
+      shape = shape
+    ))
+  }
 }

@@ -4,6 +4,7 @@ import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.common.CommentParser
 import de.htwg.zeta.parser.common.ParseError
+import de.htwg.zeta.parser.style.StyleParser.description
 
 object StyleParser extends CommonParserMethods with UniteParsers {
 
@@ -13,28 +14,33 @@ object StyleParser extends CommonParserMethods with UniteParsers {
       case Left(l) => Left(l)
       case Right(t) =>
         parseAll(styles, t.text) match {
-          case Error(msg, next) =>
+          case NoSuccess(msg, next) =>
             val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
             Left(newPosition)
-          case Failure(msg, next) =>
-            val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
-            Left(newPosition)
-          case Success(s, _) => Right(s)
+          case Success(s, _) => Right(s.styleParserTree)
         }
     }
   }
 
-  private def styles: Parser[List[StyleParseTree]] = rep(style)
+  private def styles: Parser[MainStyleParserTree] = positioned {
+    phrase(rep(style)) ^^ (arg => MainStyleParserTree(arg))
+  }
 
-  private def style: Parser[StyleParseTree] = {
-    name ~ opt(parentStyles) ~ leftBrace ~ description ~ attributes ~ rightBrace ^^ { parseSeq =>
-      val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
+  private def style: Parser[StyleParseTree] = positioned {
+    name ~ opt(parentStyles) ~ leftBrace ~ styleAttributes ~ rightBrace ^^ { parseSeq =>
+      val name ~ parentStyles ~ _ ~ styleAttributes ~ _ = parseSeq
       StyleParseTree(
         name,
-        description,
+        styleAttributes.description,
         parentStyles.getOrElse(List()),
-        attributes
+        styleAttributes.attributes
       )
+    }
+  }
+
+  private def styleAttributes: Parser[StyleAttributes] = positioned {
+    description ~ attributes ^^ {
+      case description ~ (attributes: List[StyleAttribute]) =>  new StyleAttributes(description, attributes)
     }
   }
 
@@ -45,34 +51,34 @@ object StyleParser extends CommonParserMethods with UniteParsers {
 
   private def name = literal("style") ~> ident
 
-  private def description = literal("description") ~ eq ~> argumentString
+  private def description: Parser[StyleDescription] = positioned("description" ~ eq ~> argumentString ^^ (arg => StyleDescription(arg)))
 
-  private def lineColor = literal("line-color") ~ eq ~> argumentColor ^^ (arg => LineColor(arg))
+  private def lineColor = positioned("line-color" ~ eq ~> argumentColor ^^ (arg => LineColor(arg)))
 
-  private def lineStyle = literal("line-style") ~ eq ~> argument ^^ (arg => LineStyle(arg))
+  private def lineStyle = positioned("line-style" ~ eq ~> argument ^^ (arg => LineStyle(arg)))
 
-  private def lineWidth = literal("line-width") ~ eq ~> argumentInt ^^ (arg => LineWidth(arg))
+  private def lineWidth = positioned("line-width" ~ eq ~> argumentInt ^^ (arg => LineWidth(arg)))
 
-  private def transparency = literal("transparency") ~ eq ~> argumentDouble ^^ (arg => Transparency(arg))
+  private def transparency = positioned("transparency" ~ eq ~> argumentDouble ^^ (arg => Transparency(arg)))
 
-  private def backgroundColor = literal("background-color") ~ eq ~> argumentColor ^^ (arg => BackgroundColor(arg))
+  private def backgroundColor = positioned("background-color" ~ eq ~> argumentColor ^^ (arg => BackgroundColor(arg)))
 
-  private def fontColor = literal("font-color") ~ eq ~> argumentColor ^^ (arg => FontColor(arg))
+  private def fontColor = positioned("font-color" ~ eq ~> argumentColor ^^ (arg => FontColor(arg)))
 
-  private def fontName = literal("font-name") ~ eq ~> argument ^^ (arg => FontName(arg))
+  private def fontName = positioned("font-name" ~ eq ~> argument ^^ (arg => FontName(arg)))
 
-  private def fontSize = literal("font-size") ~ eq ~> argumentInt ^^ (arg => FontSize(arg))
+  private def fontSize = positioned("font-size" ~ eq ~> argumentInt ^^ (arg => FontSize(arg)))
 
-  private def fontBold = literal("font-bold") ~ eq ~> argumentBoolean ^^ (arg => FontBold(arg))
+  private def fontBold = positioned("font-bold" ~ eq ~> argumentBoolean ^^ (arg => FontBold(arg)))
 
-  private def fontItalic = literal("font-italic") ~ eq ~> argumentBoolean ^^ (arg => FontItalic(arg))
+  private def fontItalic = positioned("font-italic" ~ eq ~> argumentBoolean ^^ (arg => FontItalic(arg)))
 
   private def gradientOrientation =
-    literal("gradient-orientation") ~ eq ~> (GradientOrientation.vertical | GradientOrientation.horizontal) ^^ (arg => GradientOrientation(arg))
+    positioned("gradient-orientation" ~ eq ~> (GradientOrientation.vertical | GradientOrientation.horizontal) ^^ (arg => GradientOrientation(arg)))
 
-  private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argumentColor ^^ (arg => GradientAreaColor(arg))
+  private def gradientAreaColor = positioned("gradient-area-color" ~ eq ~> argumentColor ^^ (arg => GradientAreaColor(arg)))
 
-  private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argumentDouble ^^ (arg => GradientAreaOffset(arg))
+  private def gradientAreaOffset = positioned("gradient-area-offset" ~ eq ~> argumentDouble ^^ (arg => GradientAreaOffset(arg)))
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
 }
