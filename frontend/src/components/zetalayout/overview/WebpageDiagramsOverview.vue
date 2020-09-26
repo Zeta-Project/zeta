@@ -77,7 +77,7 @@ export default {
       )
     },
     routeParamChanged() {
-      if (!this.$route.params.id || this.$route.params.id == "") {
+      if (!this.$route.params.id || this.$route.params.id === "") {
         this.gdslProject = null
         EventBus.$emit("gdslProjectUnselected")
       } else {
