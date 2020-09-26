@@ -2,15 +2,13 @@
   <div v-on:dragover="dragover" v-on:drop="preventDrop">
     <div class="row">
 
-      <ProjectSelection class="col-md-4" v-bind:meta-models="this.metaModels" v-bind:gdsl-project="this.gdslProject"/>
+      <ProjectSelection class="col-md-4" v-bind:meta-models="metaModels" v-bind:gdsl-project="gdslProject"/>
 
       <EditorSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
                        :model-instances="modelInstances"/>
 
-
       <ModelSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
-                      :model-instances="modelInstances"
-      />
+                      :model-instances="modelInstances"/>
     </div>
 
     <div class="bottom-link right">
