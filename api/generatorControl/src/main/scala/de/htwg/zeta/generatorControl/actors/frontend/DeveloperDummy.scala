@@ -37,7 +37,7 @@ class DeveloperDummy() extends Actor with ActorLogging {
   private val backend: ActorRef = ClusterSharding(context.system).shardRegion(Mediator.shardRegionName)
 
   private val instance = ToolDeveloper(self, userId)
-  private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, RegisterDeveloperDummy)
+  private val registerTask = context.system.scheduler.scheduleAtFixedRate(Duration(1, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, RegisterDeveloperDummy)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))

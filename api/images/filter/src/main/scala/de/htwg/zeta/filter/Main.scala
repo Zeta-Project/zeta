@@ -10,7 +10,6 @@ import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
@@ -39,9 +38,9 @@ object Main extends App {
   logger.info("Execute Filter")
   val cmd = new Commands(args)
 
-  implicit val actorSystem = ActorSystem()
-  implicit val materializer = ActorMaterializer()
-  implicit val client = AhcWSClient()
+  implicit val actorSystem: ActorSystem = ActorSystem()
+  //implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val client: AhcWSClient = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
   private val modelEntityPersistence = injector.getInstance(classOf[GraphicalDslInstanceRepository])
@@ -114,14 +113,14 @@ object Main extends App {
 
   }
 
-  private def checkInstance(fn: BaseFilter, entity: GraphicalDslInstance) = {
+  private def checkInstance(fn: BaseFilter, entity: GraphicalDslInstance): Future[(UUID,Boolean)] = {
     val checked = fn.filter(entity)
     if (checked) {
       logger.info(s"Check successful: metaModel ${entity.graphicalDslId}, model ${entity.id}")
     } else {
       logger.info(s"Check failed: metaModel ${entity.graphicalDslId}, model ${entity.id}")
     }
-    Future.successful(entity.id, checked)
+    Future.successful(Tuple2(entity.id, checked))
   }
 
   def saveResult(filter: Filter, instances: List[UUID]): Future[Any] = {

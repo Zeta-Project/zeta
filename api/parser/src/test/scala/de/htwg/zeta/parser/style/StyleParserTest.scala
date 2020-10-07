@@ -2,7 +2,6 @@ package de.htwg.zeta.parser.style
 
 import scalafx.scene.paint.Color
 import org.scalatest.Inside
-import org.scalatest.color
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

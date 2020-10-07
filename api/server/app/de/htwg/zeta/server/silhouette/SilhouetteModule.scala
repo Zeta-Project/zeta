@@ -2,6 +2,7 @@ package de.htwg.zeta.server.silhouette
 
 import java.util.concurrent.TimeUnit
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
@@ -53,7 +54,6 @@ import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.ceedubs.ficus.readers.ValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.WSClient
 import play.api.mvc.Cookie.SameSite
 import play.api.mvc.CookieHeaderEncoding

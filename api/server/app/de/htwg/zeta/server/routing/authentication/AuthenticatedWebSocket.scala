@@ -2,10 +2,7 @@ package de.htwg.zeta.server.routing.authentication
 
 import scala.concurrent.Future
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.HandlerResult
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent

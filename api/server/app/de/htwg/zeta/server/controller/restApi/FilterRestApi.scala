@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -22,7 +22,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsonValidationError
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 import play.api.mvc.Results
 
@@ -33,8 +33,9 @@ import play.api.mvc.Results
 class FilterRestApi @Inject()(
     filterRepo: FilterRepository,
     fileRepo: FileRepository,
-    filterFormat: FilterFormat
-) extends Controller with Logging {
+    filterFormat: FilterFormat,
+    implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   /** Lists all filter.
    *

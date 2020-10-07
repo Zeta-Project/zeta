@@ -13,7 +13,8 @@ def image(name: String, d: sbt.File) = {
       "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
       "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
       "org.scala-lang" % "scala-reflect" % ZetaBuild.scalaVersionNumber,
-      "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber
+      "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
+      "org.scala-lang" % "scala-library" % ZetaBuild.scalaVersionNumber
     )
   ).enablePlugins(JavaAppPackaging).enablePlugins(DockerSpotifyClientPlugin).dependsOn(ZetaBuild.common).dependsOn(ZetaBuild.persistence)
 }

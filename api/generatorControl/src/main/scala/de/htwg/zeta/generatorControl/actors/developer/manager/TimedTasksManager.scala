@@ -42,7 +42,7 @@ class TimedTasksManager(worker: ActorRef, injector: Injector) extends Actor with
   def create(task: TimedTask) = {
     val taskDelay = Duration(task.delay, TimeUnit.MINUTES)
     val taskInterval = Duration(task.interval, TimeUnit.MINUTES)
-    val schedule = context.system.scheduler.schedule(taskDelay, taskInterval, self, ExecuteTask(task))
+    val schedule = context.system.scheduler.scheduleAtFixedRate(taskDelay, taskInterval, self, ExecuteTask(task))
     schedules += (task.id -> schedule)
   }
 

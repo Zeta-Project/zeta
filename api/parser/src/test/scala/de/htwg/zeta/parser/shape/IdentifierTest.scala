@@ -11,12 +11,12 @@ class IdentifierTest extends AnyFreeSpec with Matchers {
 
     "without a prefix" in {
       val identifierWithoutPrefix = Identifier("myIdentifier")
-      identifierWithoutPrefix.split shouldBe ("", "myIdentifier")
+      identifierWithoutPrefix.split shouldBe Tuple2("", "myIdentifier")
     }
 
     "with a prefix" in {
       val identifierWithIdentifier = Identifier("prefix.ident")
-      identifierWithIdentifier.split shouldBe ("prefix", "ident")
+      identifierWithIdentifier.split shouldBe Tuple2("prefix", "ident")
     }
 
   }

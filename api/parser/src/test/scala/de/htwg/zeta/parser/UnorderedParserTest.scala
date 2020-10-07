@@ -5,6 +5,7 @@ import scala.util.parsing.combinator.JavaTokenParsers
 import org.scalactic.source
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
+import scala.language.implicitConversions
 
 //noinspection ScalaStyle
 class UnorderedParserTest extends AnyFreeSpec with Matchers with UnorderedParser with JavaTokenParsers {

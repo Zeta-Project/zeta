@@ -17,6 +17,8 @@ import javax.inject.Singleton
 
 import scala.collection.JavaConverters
 
+import de.htwg.zeta.server.start.CustomApplicationLoader.DevDeployment
+import de.htwg.zeta.server.start.CustomApplicationLoader.ProdDeployment
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.bind
@@ -35,7 +37,6 @@ import play.api.inject.guice.GuiceableModule
  *
  */
 class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
-
   info("CustomApplicationLoader started")
 
   /**
@@ -47,14 +48,22 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
   override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
     val classLoader: ClassLoader = context.environment.classLoader
 
-    val environment = CustomApplicationLoader.checkEnvironment(context.initialConfiguration)
+    val environment = CustomApplicationLoader.checkEnvironment(context.initialConfiguration) match {
+      case Some(env) => env
+      case None =>
+        noDeploymentMessage()
+        DevDeployment
+    }
 
     DevelopmentStarter(environment, classLoader)
 
     val config = mergeConfigs(environment, classLoader, context.initialConfiguration.underlying)
 
     val seeds: List[String] = environment match {
-      case CustomApplicationLoader.DevDeployment => List(s"${HostIP.load()}:${CustomApplicationLoader.devPort}")
+      case CustomApplicationLoader.DevDeployment => {
+        warn(s"Application runs in development mode.")
+        List(s"${HostIP.load()}:${CustomApplicationLoader.devPort}")
+      }
       case CustomApplicationLoader.ProdDeployment => buildSeeds(config)
     }
 
@@ -76,6 +85,12 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
       .overrides(modules: _*)
   }
 
+  private def noDeploymentMessage() =
+    warn(s"""Please set the Environment Variable "ZETA_DEPLOYMENT" to either "${
+      DevDeployment.asString
+    }" or "${
+      ProdDeployment.asString
+    }".""")
 
   private def mergeConfigs(environment: CustomApplicationLoader.DeploymentMode, classLoader: ClassLoader, initialConfiguration: Config): Config = {
     val parsed = parseConf(environment.asString, classLoader)
@@ -106,26 +121,12 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 }
 
 object CustomApplicationLoader {
-
-  private val noDeploymentMessage =
-    s"""Please set the Environment Variable "ZETA_DEPLOYMENT" to either "${
-      DevDeployment.asString
-    }" or "${
-      ProdDeployment.asString
-    }"."""
-
-  def checkEnvironment(config: Configuration): CustomApplicationLoader.DeploymentMode = {
-
-    val envOpt =
-      config.getString("zeta.deployment.environment").collect {
-        case ProdDeployment(env) => env
-        case DevDeployment(env) => env
+    def checkEnvironment(config: Configuration): Option[CustomApplicationLoader.DeploymentMode] = {
+      config.get[String]("zeta.deployment.environment") match {
+        case ProdDeployment(env) => Some(env)
+        case DevDeployment(env) => Some(env)
+        case _ => None
       }
-
-    envOpt match {
-      case Some(env) => env
-      case None => DevDeployment
-    }
   }
 
 

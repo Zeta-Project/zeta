@@ -6,7 +6,6 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax

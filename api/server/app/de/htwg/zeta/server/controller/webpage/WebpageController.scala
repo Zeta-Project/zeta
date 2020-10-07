@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.webpage
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
 import views.html.helper.CSRF
@@ -33,8 +33,9 @@ class WebpageController @Inject()(
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     userFormat: UserFormat,
-    ws: WSClient
-) extends Controller {
+    ws: WSClient,
+    implicit val ec: ExecutionContext
+) extends InjectedController {
 
 
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
@@ -117,6 +118,5 @@ class WebpageController @Inject()(
       }
     }
   }
-
 }
 

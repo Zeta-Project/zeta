@@ -2,7 +2,7 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import grizzled.slf4j.Logging
@@ -12,22 +12,23 @@ import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
 
 
 class WebAppController @Inject()(
     ws: WSClient,
-    config: play.api.Configuration
-) extends Controller with Logging {
+    config: play.api.Configuration,
+    implicit val ec: ExecutionContext,
+) extends InjectedController with Logging {
 
   private val defaultHost = "localhost"
   private val defaultPort = 8080
 
   private lazy val urlPostfix: String = {
-    val host = config.getString("zeta.webapp.host").getOrElse(defaultHost).toString
-    val port = config.getInt("zeta.webapp.port").getOrElse(defaultPort).toString
+    val host = Option(config.get[String]("zeta.webapp.host")).getOrElse(defaultHost)
+    val port = Option(config.get[Int]("zeta.webapp.port")).getOrElse(defaultPort).toString
 
     s"http://$host:$port"
   }

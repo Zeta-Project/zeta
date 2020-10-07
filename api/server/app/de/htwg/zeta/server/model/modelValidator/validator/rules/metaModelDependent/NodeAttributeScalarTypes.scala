@@ -9,10 +9,6 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleT
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule

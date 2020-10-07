@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -22,7 +22,8 @@ import play.api.mvc.Result
  */
 class EventDrivenTaskRestApi @Inject()(
     eventDrivenTaskRepo: EventDrivenTaskRepository,
-    eventDrivenTaskFormat: EventDrivenTaskFormat
+    eventDrivenTaskFormat: EventDrivenTaskFormat,
+    override implicit val ec: ExecutionContext
 ) extends RestApiController[EventDrivenTask] {
 
   /** Lists all filter.

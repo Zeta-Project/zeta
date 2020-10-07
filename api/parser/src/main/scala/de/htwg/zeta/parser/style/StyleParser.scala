@@ -4,7 +4,6 @@ import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.common.CommentParser
 import de.htwg.zeta.parser.common.ParseError
-import de.htwg.zeta.parser.style.StyleParser.description
 
 object StyleParser extends CommonParserMethods with UniteParsers {
 
@@ -27,8 +26,8 @@ object StyleParser extends CommonParserMethods with UniteParsers {
   }
 
   private def style: Parser[StyleParseTree] = positioned {
-    name ~ opt(parentStyles) ~ leftBrace ~ styleAttributes ~ rightBrace ^^ { parseSeq =>
-      val name ~ parentStyles ~ _ ~ styleAttributes ~ _ = parseSeq
+    name ~ opt(parentStyles) ~ styleAttributes ^^ { parseSeq =>
+      val name ~ parentStyles ~ styleAttributes = parseSeq
       StyleParseTree(
         name,
         styleAttributes.description,
@@ -39,7 +38,7 @@ object StyleParser extends CommonParserMethods with UniteParsers {
   }
 
   private def styleAttributes: Parser[StyleAttributes] = positioned {
-    description ~ attributes ^^ {
+    leftBrace ~> description ~ attributes <~ rightBrace ^^ {
       case description ~ (attributes: List[StyleAttribute]) =>  new StyleAttributes(description, attributes)
     }
   }

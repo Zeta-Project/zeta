@@ -10,7 +10,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
   routesImport += "de.htwg.zeta.server.util.route.Binders._",
 
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   resolvers += Resolver.jcenterRepo,
   wartremoverErrors += Wart.AsInstanceOf,
 

@@ -61,7 +61,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
 
   // trigger task to check if work was accepted from the master
   private val duration = Duration(10, TimeUnit.SECONDS)
-  private val workAcceptedTask: Cancellable = context.system.scheduler.schedule(duration, duration, self, CheckTick)
+  private val workAcceptedTask: Cancellable = context.system.scheduler.scheduleAtFixedRate(duration, duration, self, CheckTick)
 
   override def postStop(): Unit = workAcceptedTask.cancel()
 

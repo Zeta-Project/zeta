@@ -48,7 +48,7 @@ class DeveloperFrontend(out: ActorRef, devMediator: ActorRef, userId: UUID) exte
   private def setupRegisterDeveloperFrontend(): Cancellable = {
     val initialDelay = Duration(1, TimeUnit.SECONDS)
     val interval = Duration(30, TimeUnit.SECONDS)
-    context.system.scheduler.schedule(initialDelay, interval, self, RegisterDeveloperFrontend)
+    context.system.scheduler.scheduleAtFixedRate(initialDelay, interval, self, RegisterDeveloperFrontend)
   }
 
   override def preStart(): Unit = {

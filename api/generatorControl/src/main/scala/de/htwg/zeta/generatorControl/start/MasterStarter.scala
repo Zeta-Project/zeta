@@ -41,7 +41,7 @@ class MasterStarter(config: MasterConfig) extends Starter {
 
   private def createActor(config: MasterConfig) = {
     implicit val system = createActorSystem(MasterStarter.ActorRole, config.seeds, config.port)
-    implicit val mat = ActorMaterializer()
+    //implicit val mat = ActorMaterializer()
     implicit val client = AhcWSClient()
 
     system.actorOf(

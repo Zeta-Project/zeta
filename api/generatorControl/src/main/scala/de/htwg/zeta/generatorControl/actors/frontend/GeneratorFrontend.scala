@@ -43,7 +43,7 @@ object GeneratorFrontend extends FrontendManagerGenerator {
 class GeneratorFrontend(out: ActorRef, devMediator: ActorRef, userId: UUID, workId: UUID) extends Actor with ActorLogging {
   context.setReceiveTimeout(Duration(10, TimeUnit.MINUTES))
   private val instance = GeneratorClient(out, workId)
-  private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterGeneratorFrontend)
+  private val registerTask = context.system.scheduler.scheduleAtFixedRate(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterGeneratorFrontend)
 
   override def postStop() = {
     devMediator ! MessageEnvelope(userId, Disconnected(instance))

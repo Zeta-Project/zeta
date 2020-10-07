@@ -2,7 +2,7 @@ package de.htwg.zeta.server.routing.authentication
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-
+import scala.language.higherKinds
 import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.silhouette.ZetaEnv
