@@ -97,3 +97,8 @@ export default {
 }
 
 </script>
+<style scoped>
+.list-group-item.active {
+  z-index: revert;
+}
+</style>
