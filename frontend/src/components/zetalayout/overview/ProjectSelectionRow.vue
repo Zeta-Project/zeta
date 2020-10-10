@@ -98,7 +98,7 @@ export default {
 
 </script>
 <style scoped>
-.list-group-item.active {
-  z-index: revert;
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus  {
+  z-index: auto;
 }
 </style>
