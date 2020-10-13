@@ -21,19 +21,16 @@ import play.api.i18n.Messages
 import play.api.libs.json.JsNull
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
-import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
 import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
-import views.html.helper.CSRF
 
 class WebpageController @Inject()(
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     userFormat: UserFormat,
-    ws: WSClient,
     implicit val ec: ExecutionContext
 ) extends InjectedController {
 
@@ -49,7 +46,7 @@ class WebpageController @Inject()(
    * @return
    */
   def csrf(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok(Json.obj("csrf" -> CSRF.getToken(request).value)))
+    Future.successful(Ok)
   }
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[ProjectShortInfo]] = {

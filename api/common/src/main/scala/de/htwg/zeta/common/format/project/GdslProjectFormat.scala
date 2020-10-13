@@ -44,8 +44,16 @@ class GdslProjectFormat(
     GdslProject(id, name, concept, diagram, shape, style, validator)
   }
 
-  def empty: Reads[GdslProject] = (json: JsValue) => {
-    (json \ sName).validate[String].map(GdslProject.empty)
+//  def empty: Reads[GdslProject] = (json: JsValue) => {
+//    (json \ sName).validate[String].map(GdslProject.empty)
+//  }
+
+  val empty: Reads[GdslProject] = Reads { json =>
+    for {
+      name <- (json \ sName).validate[String]
+    } yield {
+      GdslProject.empty(name)
+    }
   }
 
 }

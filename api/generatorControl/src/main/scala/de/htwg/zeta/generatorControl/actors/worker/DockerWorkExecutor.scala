@@ -217,7 +217,7 @@ private class WorkProcessor(
     // no more container is running
     currentContainer.remove(work.id)
 
-    val status = containerExit.statusCode
+    val status = containerExit.statusCode().intValue()
 
     val exit = getExitCodeMessage(status)
 

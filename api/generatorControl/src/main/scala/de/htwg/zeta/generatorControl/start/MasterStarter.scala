@@ -12,7 +12,6 @@ import akka.actor.Props
 import akka.cluster.singleton.ClusterSingletonManager
 import akka.cluster.singleton.ClusterSingletonManagerSettings
 import akka.persistence.journal.leveldb.SharedLeveldbStore
-import akka.stream.ActorMaterializer
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.generatorControl.actors.master.Master
 import org.rogach.scallop.ScallopOption

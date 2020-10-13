@@ -6,6 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.ExecutionContext
 
 import akka.util.Timeout
 import com.google.inject.Provides
@@ -57,7 +58,7 @@ import play.api.Configuration
 import play.api.libs.ws.WSClient
 import play.api.mvc.Cookie.SameSite
 import play.api.mvc.CookieHeaderEncoding
-
+import scala.concurrent.ExecutionContext.Implicits.global
 /**
  * The Guice module which wires all Silhouette dependencies.
  */

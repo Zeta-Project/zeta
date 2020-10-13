@@ -2,8 +2,6 @@ package de.htwg.zeta.server.model.metaModel
 
 import java.util.UUID
 
-import scala.language.postfixOps
-
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
@@ -20,7 +18,7 @@ object MetaModelWsActor {
 
 class MetaModelWsActor(out: ActorRef, metaModelId: UUID, mediatorContainer: MetaModelWsMediatorContainer) extends Actor {
 
-  val log = Logger(getClass.getName)
+  val log: Logger = Logger(getClass.getName)
   val mediator: ActorRef = mediatorContainer.mediator
 
   mediator ! SubscribeTo(metaModelId.toString)

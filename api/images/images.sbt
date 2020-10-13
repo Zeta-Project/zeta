@@ -9,7 +9,7 @@ def image(name: String, d: sbt.File) = {
     libraryDependencies ++= Seq(
       "org.clapper" %% "grizzled-slf4j" % "1.3.4",
       "org.slf4j" % "slf4j-simple" % "1.7.30",
-      "org.rogach" %% "scallop" % "3.1.5", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
+      "org.rogach" %% "scallop" % "3.5.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
       "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
       "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
       "org.scala-lang" % "scala-reflect" % ZetaBuild.scalaVersionNumber,

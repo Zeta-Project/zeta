@@ -36,10 +36,10 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
   private val mediator = DistributedPubSub(context.system).mediator
   private val workerId = UUID.randomUUID().toString
 
-  private val registerTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), registerInterval, mediator,
+  private val registerTask = context.system.scheduler.scheduleAtFixedRate(Duration(10, TimeUnit.SECONDS), registerInterval, mediator,
     Publish("Master", MasterWorkerProtocol.RegisterWorker(workerId)))
 
-  private val workTimeoutTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), workTimeout / 4, self, WorkTimeout)
+  private val workTimeoutTask = context.system.scheduler.scheduleAtFixedRate(Duration(10, TimeUnit.SECONDS), workTimeout / 4, self, WorkTimeout)
 
   private val workExecutor = context.watch(executor)
 

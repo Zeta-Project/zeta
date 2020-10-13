@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import akka.stream.Materializer
-import play.api.Logger
+import grizzled.slf4j.Logging
 import play.api.http.HttpFilters
 import play.api.mvc.EssentialFilter
 import play.api.mvc.Filter
@@ -30,7 +30,7 @@ class Filters @Inject() (corsFilter: CORSFilter, securityHeadersFilter: Security
  * @param mat Materializer
  * @param ec ExecutionContext
  */
-class LoggingFilter()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+class LoggingFilter()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter with Logging {
 
   def apply(nextFilter: RequestHeader => Future[Result])
     (requestHeader: RequestHeader): Future[Result] = {
@@ -41,7 +41,7 @@ class LoggingFilter()(implicit val mat: Materializer, ec: ExecutionContext) exte
       val endTime = System.currentTimeMillis
       val requestTime = endTime - startTime
 
-      Logger.info(s"${requestHeader.method} ${requestHeader.uri} (took ${requestTime}ms and returned ${result.header.status})")
+      info(s"${requestHeader.method} ${requestHeader.uri} (took ${requestTime}ms and returned ${result.header.status})")
       result.withHeaders("Request-Time" -> requestTime.toString)
     }
   }

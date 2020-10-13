@@ -6,7 +6,7 @@ lazy val persistence = ZetaBuild.defaultProject(project).settings(
 
   libraryDependencies ++= Seq(
     // json parser
-    "com.typesafe.play" %% "play-json" % "2.6.10",
+    "com.typesafe.play" %% "play-json" % "2.7.4",
     // mongoDB accessor
     "org.reactivemongo" %% "reactivemongo" % "0.13.0",
     "org.reactivemongo" %% "reactivemongo-play-json" % 	"0.13.0-play26",

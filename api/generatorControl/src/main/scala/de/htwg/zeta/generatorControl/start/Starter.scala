@@ -32,9 +32,6 @@ protected trait Starter extends Logging {
     f.onComplete {
       case Success(ActorIdentity(_, Some(ref))) =>
           SharedLeveldbJournal.setStore(ref, system)
-//        case _ =>
-//          system.log.error("Shared journal not started at {}", path)
-//          system.terminate()
       case Failure(t) =>
         system.log.error("Lookup of shared journal at {} timed out", path)
         system.terminate()

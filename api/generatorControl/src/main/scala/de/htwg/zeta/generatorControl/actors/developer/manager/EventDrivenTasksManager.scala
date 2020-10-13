@@ -10,13 +10,9 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import com.google.inject.Injector
 import de.htwg.zeta.common.models.entity.EventDrivenTask
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.ModelChanged
 import de.htwg.zeta.common.models.frontend.SavedModel
 import de.htwg.zeta.common.models.worker.RunEventDrivenTask
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository

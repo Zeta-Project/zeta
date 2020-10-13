@@ -21,9 +21,9 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "5.0.7"
-  val playVersion = "2.6.25"
-  val akkaVersion = "2.6.9"
+  val silhouetteVersion = "6.1.1"
+  val playVersion = "2.7.5"
+  val akkaVersion = "2.6.10"
   val javaFxVersion = "11"
   val scalaFxVersion = "11-R16"
 

@@ -5,7 +5,6 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import akka.actor.ActorSystem
-import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
@@ -20,7 +19,6 @@ import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 class ModelController @Inject()(
-    implicit mat: Materializer,
     system: ActorSystem,
     silhouette: Silhouette[ZetaEnv],
     modelEntityRepo: GraphicalDslInstanceRepository,

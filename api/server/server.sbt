@@ -3,7 +3,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
   version := "0.1",
 
   wartremoverExcluded += baseDirectory.value / "conf" / "routes",
-  //wartremoverExcluded += baseDirectory.value / "target" / "scala-2.11" / "routes" / "main" / "router" / "Routes.scala",
+  wartremoverExcluded += baseDirectory.value / "target" / "routes" / "main" / "router" / "Routes.scala",
 
   wartremoverExcluded ++= routes.in(Compile).value,
   routesGenerator := InjectedRoutesGenerator,
@@ -22,17 +22,16 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.mohiva" %% "play-silhouette-crypto-jca" % ZetaBuild.silhouetteVersion,
 
     //typesafe
-    "org.webjars" %% "webjars-play" % "2.6.3",
+    "org.webjars" %% "webjars-play" % "2.7.3",
     "org.webjars" % "bootstrap" % "3.1.1",
-    "com.iheart" %% "ficus" % "1.4.7",
+    "com.iheart" %% "ficus" % "1.5.0",
     "com.typesafe.play" %% "play-mailer" % "6.0.1",
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
     "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-cache" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ehcache" % ZetaBuild.playVersion,
-    // TODO: play-json versions 2.6.10 > x < 2.6.14 contains a bug
-    "com.typesafe.play" %% "play-json" % "2.6.10",
+    "com.typesafe.play" %% "play-json" % "2.7.4",
     "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % ZetaBuild.playVersion,
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
@@ -48,14 +47,15 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "org.scala-lang" % "scala-library" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.13",
+    "com.softwaremill.quicklens" %% "quicklens" % "1.6.1",
 
     // test mock framework
-    "org.scalamock" %% "scalamock" % "4.1.0" % Test,
+    "org.mockito" %% "mockito-scala" % "1.16.0" % Test,
     guice
   ),
   PlayKeys.devSettings := Seq("play.server.akka.requestTimeout" -> "infinite")
-).enablePlugins(PlayScala).dependsOn(
+).enablePlugins(PlayScala)
+  .dependsOn(
   ZetaBuild.codeGenerator,
   ZetaBuild.common,
   ZetaBuild.generatorControl,
