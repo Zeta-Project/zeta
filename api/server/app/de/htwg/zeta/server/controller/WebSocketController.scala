@@ -22,7 +22,7 @@ class WebSocketController @Inject()(silhouette: Silhouette[ZetaEnv])(
     implicit system: ActorSystem,
     materializer: Materializer,
     ec: ExecutionContext,
-    onlineUserManagerFactory: OnlineUserActorFactory,
+    onlineUserManagerFactory: OnlineUserActorFactory
 ) extends InjectedController {
 
   def socket: WebSocket = WebSocket.acceptOrResult[String, String] { request =>

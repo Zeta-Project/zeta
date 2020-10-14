@@ -20,7 +20,7 @@ import play.api.mvc.Result
 class WebAppController @Inject()(
     ws: WSClient,
     config: play.api.Configuration,
-    implicit val ec: ExecutionContext,
+    implicit val ec: ExecutionContext
 ) extends InjectedController with Logging {
 
   private val defaultHost = "localhost"
