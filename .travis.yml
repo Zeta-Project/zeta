@@ -30,6 +30,6 @@ before_install:
   - docker-compose build frontend
 script:  
   - cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
-  - sbt debian:packageBin
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  #- sbt jdkPackager:packageBin
