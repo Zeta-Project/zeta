@@ -50,7 +50,7 @@ class TransientTokenCache extends Actor with Logging {
 
   private val lifeTime: Long = Duration(1, TimeUnit.HOURS).toMillis
 
-  private val  cleanUpJob: Cancellable = context.system.scheduler.schedule(cleaningInterval, cleaningInterval,self,CleanUp)
+  private val  cleanUpJob: Cancellable = context.system.scheduler.scheduleAtFixedRate(cleaningInterval, cleaningInterval,self,CleanUp)
 
   private def cleanUp() = {
     info("Cleaning expired tokens")

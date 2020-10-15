@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.ExecutionContext
 
 import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
 import com.mohiva.play.silhouette.api.LoginEvent
@@ -15,7 +16,6 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.zeta.common.format.entity.FileFormat
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
-import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
@@ -24,14 +24,10 @@ import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import play.api.Configuration
 import play.api.i18n.Messages
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
-import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
-import views.html.helper.CSRF
 /**
  * The `Sign In` controller.
  *
@@ -47,8 +43,9 @@ class SignInController @Inject()(
     clock: Clock,
     loginInfoRepo: SilhouetteLoginInfoDao,
     userRepo: UserRepository,
-    fileFormat: FileFormat
-) extends Controller {
+    fileFormat: FileFormat,
+    implicit val ec: ExecutionContext
+) extends InjectedController {
 
   def submit_json(request: Request[AnyContent], messages: Messages): Future[Result] = {
     SignInForm.form.bindFromRequest()(request).fold(

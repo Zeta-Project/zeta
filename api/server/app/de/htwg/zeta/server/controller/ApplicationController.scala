@@ -3,14 +3,14 @@ package de.htwg.zeta.server.controller
 import javax.inject.Inject
 
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.LogoutEvent
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
-import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 /**
@@ -19,8 +19,8 @@ import play.api.mvc.Result
  * @param silhouette The Silhouette stack.
  */
 class ApplicationController @Inject()(
-    silhouette: Silhouette[ZetaEnv])
-  extends Controller {
+    silhouette: Silhouette[ZetaEnv]
+) extends InjectedController {
 
   /** Handles the index action.
    *

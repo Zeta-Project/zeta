@@ -16,18 +16,19 @@ import de.htwg.zeta.server.routing.authentication
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import javax.inject.Inject
+
 import play.api.http.websocket.Message
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.AnyContent
 import play.api.mvc.AnyContentAsEmpty
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
 import play.api.mvc.WebSocket
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 
-trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logging { // scalastyle:ignore
+trait AbstractWebSocket[REQ <: Request[AnyContent]] extends InjectedController with Logging { // scalastyle:ignore
 
   protected[authentication] val dependencies: AbstractWebSocket.Dependencies
   protected[authentication] val system: ActorSystem = dependencies.system
@@ -93,7 +94,7 @@ trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logg
 }
 
 
-object AbstractWebSocket extends Controller {
+object AbstractWebSocket extends InjectedController {
   private[authentication] val defaultTans: MessageFlowTransformer[String, String] = MessageFlowTransformer.stringMessageFlowTransformer
   private[authentication] val onFailure: authentication.AbstractWebSocket.Status = InternalServerError
 

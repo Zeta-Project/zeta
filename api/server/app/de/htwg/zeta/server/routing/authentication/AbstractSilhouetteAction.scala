@@ -2,6 +2,7 @@ package de.htwg.zeta.server.routing.authentication
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import scala.language.higherKinds
 
 import com.mohiva.play.silhouette.api.HandlerResult
 import play.api.mvc.Request

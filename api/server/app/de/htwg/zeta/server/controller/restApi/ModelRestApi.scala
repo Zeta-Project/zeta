@@ -4,8 +4,8 @@ import java.time.Instant
 import java.util.UUID
 import java.util.zip.ZipFile
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
 import de.htwg.zeta.common.format.model.EdgeFormat
@@ -26,12 +26,15 @@ import de.htwg.zeta.server.util.ProjectExporter
 import de.htwg.zeta.server.util.ProjectImporter
 import grizzled.slf4j.Logging
 import javax.inject.Inject
+
+import scala.concurrent.ExecutionContext
+
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.RawBuffer
 import play.api.mvc.Result
 import play.api.mvc.Results
@@ -47,8 +50,9 @@ class ModelRestApi @Inject()(
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
     projectExporter: ProjectExporter,
-    projectImporter: ProjectImporter
-) extends Controller with Logging {
+    projectImporter: ProjectImporter,
+    implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {

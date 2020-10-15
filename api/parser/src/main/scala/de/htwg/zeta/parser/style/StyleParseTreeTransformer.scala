@@ -84,7 +84,7 @@ object StyleParseTreeTransformer {
 
     Style(
       name = styleParseTree.name,
-      description = styleParseTree.description,
+      description = styleParseTree.description.description,
       background = Background(
         color = attrs.?[BackgroundColor].fold(parentOrDefault(Background.defaultColor, _.background.color))(c => Color(c.color))
       ),

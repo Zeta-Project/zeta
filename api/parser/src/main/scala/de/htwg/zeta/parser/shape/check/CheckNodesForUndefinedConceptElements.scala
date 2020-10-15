@@ -25,7 +25,7 @@ case class CheckNodesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
   //noinspection ScalaStyle
   // this thing is a mess!
   def checkNodesForUndefinedConceptElements(nodeParseTrees: List[NodeParseTree], concept: Concept): List[Id] = {
-    var errors = new ListBuffer[String]()
+    val errors = new ListBuffer[String]()
 
     // check if there is an attribute or method with name 'identifier' in class 'context'
     def isValidIdentifier(identifier: String, context: MClass): Boolean = {

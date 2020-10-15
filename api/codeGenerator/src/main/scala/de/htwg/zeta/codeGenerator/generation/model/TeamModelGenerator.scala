@@ -8,7 +8,6 @@ import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.GeneratedFile
 import de.htwg.zeta.codeGenerator.model.GeneratedFolder
-import play.twirl.api.Html
 
 object TeamModelGenerator {
   def generate(anchor: Anchor): GeneratedFolder = {

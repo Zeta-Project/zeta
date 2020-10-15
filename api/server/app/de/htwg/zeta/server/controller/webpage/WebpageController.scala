@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.webpage
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -21,20 +21,18 @@ import play.api.i18n.Messages
 import play.api.libs.json.JsNull
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
-import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
-import views.html.helper.CSRF
 
 class WebpageController @Inject()(
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     userFormat: UserFormat,
-    ws: WSClient
-) extends Controller {
+    implicit val ec: ExecutionContext
+) extends InjectedController {
 
 
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
@@ -48,7 +46,7 @@ class WebpageController @Inject()(
    * @return
    */
   def csrf(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok(Json.obj("csrf" -> CSRF.getToken(request).value)))
+    Future.successful(Ok)
   }
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[ProjectShortInfo]] = {
@@ -117,6 +115,5 @@ class WebpageController @Inject()(
       }
     }
   }
-
 }
 

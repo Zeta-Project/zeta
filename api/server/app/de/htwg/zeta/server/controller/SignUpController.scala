@@ -22,14 +22,12 @@ import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.AnyContent
 import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
-import views.html.helper.CSRF
 
 /**
  * The `Sign Up` controller.

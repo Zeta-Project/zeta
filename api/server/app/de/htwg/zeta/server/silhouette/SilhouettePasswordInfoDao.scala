@@ -1,6 +1,9 @@
 package de.htwg.zeta.server.silhouette
 
+
 import scala.concurrent.Future
+import scala.reflect.ClassTag
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -8,15 +11,12 @@ import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
  * Persistence for the PasswordInfo.
  */
-class SilhouettePasswordInfoDao (
-    passwordInfoRepo: PasswordInfoRepository
-) extends DelegableAuthInfoDAO[PasswordInfo] {
+class SilhouettePasswordInfoDao(passwordInfoRepo: PasswordInfoRepository)(implicit val classTag: ClassTag[PasswordInfo]) extends DelegableAuthInfoDAO[PasswordInfo] {
 
   /** Adds new auth info for the given login info.
    *
@@ -65,5 +65,4 @@ class SilhouettePasswordInfoDao (
   private def toZetaPasswordInfo(passwordInfo: PasswordInfo): ZetaPasswordInfo = ZetaPasswordInfo(passwordInfo.hasher, passwordInfo.password, passwordInfo.salt)
 
   private def toZetaLoginInfo(loginInfo: LoginInfo): ZetaLoginInfo = ZetaLoginInfo(loginInfo.providerID, loginInfo.providerKey)
-
 }

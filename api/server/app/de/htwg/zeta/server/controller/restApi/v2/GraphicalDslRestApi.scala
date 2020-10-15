@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.restApi.v2
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -21,7 +21,7 @@ import grizzled.slf4j.Logging
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 class GraphicalDslRestApi @Inject()(
@@ -30,8 +30,9 @@ class GraphicalDslRestApi @Inject()(
     taskResultFormat: TaskResultFormat,
     stylesFormat: StylesFormat,
     diagramsFormat: DiagramsFormat,
-    shapeFormat: ShapeFormat
-) extends Controller with Logging {
+    shapeFormat: ShapeFormat,
+    implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   def triggerParse(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] =
     protectedRead(id, request, graphicalDsl => {

@@ -4,24 +4,20 @@ import java.net.URLDecoder
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-import com.google.inject.Guice
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.zeta.persistence.general.UserRepository
-import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
-import de.htwg.zeta.server.actor.TokenCacheActor
 import de.htwg.zeta.server.model.TokenCache
 import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
 
@@ -34,8 +30,9 @@ class ActivateAccountController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
     userRepo: UserRepository,
-    loginInfoRepo: SilhouetteLoginInfoDao
-) extends Controller {
+    loginInfoRepo: SilhouetteLoginInfoDao,
+  implicit val ec: ExecutionContext
+) extends InjectedController {
 
   /** Sends an account activation email to the user with the given email.
    *

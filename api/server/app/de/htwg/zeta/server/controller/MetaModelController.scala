@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import akka.actor.ActorRef
@@ -15,15 +15,16 @@ import de.htwg.zeta.server.model.metaModel.MetaModelWsMediatorContainer
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 
 class MetaModelController @Inject()(
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
-    mediator: MetaModelWsMediatorContainer
-) extends Controller {
+    mediator: MetaModelWsMediatorContainer,
+    implicit val ec: ExecutionContext
+) extends InjectedController {
 
   def metaModelEditor(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>

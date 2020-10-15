@@ -10,7 +10,6 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 
 object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 

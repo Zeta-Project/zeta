@@ -1,7 +1,6 @@
 package de.htwg.zeta.parser.common
 
 import de.htwg.zeta.parser.style.StyleParser
-import de.htwg.zeta.parser.style.StyleParseTree
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.freespec.AnyFreeSpec
 
@@ -63,7 +62,7 @@ class CommentParserTest extends AnyFreeSpec with Matchers {
           styleResult.isLeft shouldBe true
           styleResult match {
             case Left(v) =>
-              v.position shouldBe (3,1)
+              v.position shouldBe Tuple2(3,1)
             case Right(v) => v shouldBe false
           }
         }
@@ -78,7 +77,7 @@ class CommentParserTest extends AnyFreeSpec with Matchers {
           styleResult.isRight shouldBe false
           styleResult.left.toOption match {
             case Some(v) =>
-              v.position shouldBe (3,1)
+              v.position shouldBe Tuple2(3,1)
             case None => None shouldBe Some
           }
         }
@@ -98,7 +97,7 @@ class CommentParserTest extends AnyFreeSpec with Matchers {
           styleResult.isRight shouldBe false
           styleResult.left.toOption match {
             case Some(v) =>
-              v.position shouldBe (3,1)
+              v.position shouldBe Tuple2(3,1)
             case None => None shouldBe Some
           }
         }
@@ -117,7 +116,7 @@ class CommentParserTest extends AnyFreeSpec with Matchers {
           val styleResult = StyleParser.parseStyles(input)
           styleResult match {
             case Left(v) =>
-              v.position shouldBe (6,1)
+              v.position shouldBe Tuple2(6,1)
             case _ => false shouldBe true
           }
         }

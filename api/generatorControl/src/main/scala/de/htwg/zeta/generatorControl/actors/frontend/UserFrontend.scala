@@ -43,7 +43,7 @@ object UserFrontend extends FrontendManagerGenerator {
 class UserFrontend(out: ActorRef, backend: ActorRef, userId: UUID, model: UUID) extends Actor with ActorLogging {
   context.setReceiveTimeout(Duration(10, TimeUnit.MINUTES))
   private val instance = ModelUser(self, userId, model)
-  private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterUserFrontend)
+  private val registerTask = context.system.scheduler.scheduleAtFixedRate(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterUserFrontend)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))

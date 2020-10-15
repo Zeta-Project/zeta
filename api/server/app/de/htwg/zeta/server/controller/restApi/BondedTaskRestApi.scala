@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -21,7 +21,8 @@ import play.api.mvc.Result
  */
 class BondedTaskRestApi @Inject()(
     bondedTaskRepo: BondedTaskRepository,
-    bondedTaskFormat: BondedTaskFormat
+    bondedTaskFormat: BondedTaskFormat,
+    override implicit val ec: ExecutionContext
 ) extends RestApiController[BondedTask] {
 
   /** Lists all BondedTask.

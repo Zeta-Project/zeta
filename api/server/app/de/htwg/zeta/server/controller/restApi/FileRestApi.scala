@@ -3,7 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -18,7 +18,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsonValidationError
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 
@@ -27,8 +27,9 @@ import play.api.mvc.Result
  */
 class FileRestApi @Inject()(
     fileRepo: FileRepository,
-    fileFormat: FileFormat
-) extends Controller with Logging {
+    fileFormat: FileFormat,
+    implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   /**
    * Get a single File instance

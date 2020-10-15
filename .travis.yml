@@ -12,7 +12,7 @@ env:
   
 language: scala
 scala:
-  - 2.12.11
+  - 2.12.12
 cache:
   directories:
     - $HOME/.sbt
@@ -28,6 +28,8 @@ before_install:
   # - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-for-html.git && cd -
   # - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-dev-key.git && cd -
   - docker-compose build frontend
-script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
+script:  
+  - cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  #- sbt jdkPackager:packageBin

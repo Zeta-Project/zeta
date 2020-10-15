@@ -12,6 +12,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.entity.BondedTask
@@ -59,6 +60,7 @@ object Mediator {
   val locatedOnNode = "developer"
   val shardRegionName = "developerMediator"
 
+
   val extractEntityId: ShardRegion.ExtractEntityId = {
     case MessageEnvelope(id, message) => (id.toString, message)
   }
@@ -77,9 +79,9 @@ object Mediator {
   def props(): Props = Props(new Mediator())
 }
 
-class Mediator() extends Actor with ActorLogging {
-  private implicit val mat = ActorMaterializer()
-  private implicit val client = AhcWSClient()
+class Mediator () extends Actor with ActorLogging {
+  //private implicit val mat = ActorMaterializer()
+  //private implicit val client = AhcWSClient()
 
   private val mediator: ActorRef = DistributedPubSub(context.system).mediator
   private val developerId: UUID = UUID.fromString(self.path.name)

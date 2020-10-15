@@ -31,7 +31,7 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
   val ws = new WebSocketFactory().createSocket(uri).addHeader("Cookie", s"SyncGatewaySession=${session};")
 
   // The sequence number which will be used on emit to the parent generator
-  var sequence = new AtomicInteger(0)
+  val sequence = new AtomicInteger(0)
 
   // A Subject is an Observable and an Observer at the same time.
   private val events = Subject[GeneratorResponse]()
@@ -106,7 +106,7 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
 
   private def processStartError[Output](subscriptionKey: String, subscriber: Subscriber[Output], key: String, reason: String) = {
     if (key == subscriptionKey) {
-      subscriber.onError(throw new Exception(reason))
+      subscriber.onError(new Exception(reason))
     }
   }
 
@@ -135,8 +135,8 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
         val json = Json.toJson(ToGenerator(sequence.incrementAndGet(), key, parent, message)).toString
         ws.sendText(json)
       }
-      case None => throw new Exception("Unable to publish because this generator was not called by another generator. Missing key parameter.")
+      case None => new Exception("Unable to publish because this generator was not called by another generator. Missing key parameter.")
     }
-    case None => throw new Exception("Unable to publish because this generator was not called by another generator. Missing parent parameter.")
+    case None => new Exception("Unable to publish because this generator was not called by another generator. Missing parent parameter.")
   }
 }
