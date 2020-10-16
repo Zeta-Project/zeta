@@ -65,9 +65,9 @@ PUT           /rest/v1/meta-models/:metaModelId/style                           
 GET           /rest/v1/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /rest/v1/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 GET           /rest/v1/meta-models/:metaModelId/validator                                         de.htwg.zeta.server.routing.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
-PUT           /rest/vl/meta-models/:metaModelId/classMethod/:methodName/:className                de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsClassMethod(metaModelId: java.util.UUID, className: String, methodName: String)
-PUT           /rest/vl/meta-models/:metaModelId/referenceMethod/:methodName/:referenceName        de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsReferenceMethod(metaModelId: java.util.UUID, referenceName: String, methodName: String)
-PUT           /rest/vl/meta-models/:metaModelId/commonMethod/:methodName                          de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsMainMethod(metaModelId: java.util.UUID, methodName: String)
+PUT           /rest/v1/meta-models/:metaModelId/classMethod/:methodName/:className                de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsClassMethod(metaModelId: java.util.UUID, className: String, methodName: String)
+PUT           /rest/v1/meta-models/:metaModelId/referenceMethod/:methodName/:referenceName        de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsReferenceMethod(metaModelId: java.util.UUID, referenceName: String, methodName: String)
+PUT           /rest/v1/meta-models/:metaModelId/commonMethod/:methodName                          de.htwg.zeta.server.routing.ScalaRoutes.putMetaModelsMainMethod(metaModelId: java.util.UUID, methodName: String)
 HEAD          /metamodels/:metaModelId/validator                                                  de.htwg.zeta.server.routing.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### REST API V2
