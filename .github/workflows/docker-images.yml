@@ -17,7 +17,6 @@ jobs:
         with:
           context: .
           file: ./frontend/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
           push: false
           tags: zeta/frontend:latest
           build-args: |
@@ -34,7 +33,6 @@ jobs:
         with:
           context: .
           file: ./frontend/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
           push: false
           tags: zeta/api:latest
           build-args: |
