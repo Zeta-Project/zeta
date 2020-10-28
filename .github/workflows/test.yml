@@ -1,0 +1,26 @@
+name: Test Services
+
+on:
+  push:
+    branches: [ ci_build ]
+
+jobs:
+  job_api:
+    name: Test api backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: compile
+        uses: olafurpg/setup-scala@v10
+        with:
+           java-version: openjdk@1.11
+
+      - name: sbt test
+        run: |
+          cd api && sbt "compile" "scalastyle" coverage test coverageReport
+      - name: coverage report
+        run: |
+          bash <(curl -s https://codecov.io/bash)
+          
