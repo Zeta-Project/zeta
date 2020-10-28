@@ -1,8 +1,5 @@
 name: Test Services
-
-on:
-  push:
-    branches: [ ci_build ]
+on: push
 
 jobs:
   job_api:

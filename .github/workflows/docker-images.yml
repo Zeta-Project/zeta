@@ -2,7 +2,9 @@ name: Build Container
 
 on:
   push:
-    branches: [ ci_build ]
+    branches:
+      - dev
+      - master
 
 jobs:
   job_frontend:
