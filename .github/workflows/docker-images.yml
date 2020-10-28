@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./frontend/Dockerfile
+          file: ./api/Dockerfile
           push: false
           tags: zeta/api:latest
           build-args: |
