@@ -5,7 +5,7 @@
         <strong>Projects</strong>
       </div>
 
-      <div class="list-group" v-if="metaModels.length">
+      <div class="list-group" v-if="metaModels !== undefined && metaModels.length">
 
         <div v-for="metamodel in metaModels" v-bind:key="metamodel.id">
 <!--          <ProjectSelectionRow-->
