@@ -1,5 +1,5 @@
 name: Test Services
-on: push
+on: [push, pull_request]
 
 jobs:
   job_api:
