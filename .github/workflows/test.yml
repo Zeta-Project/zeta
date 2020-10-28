@@ -12,15 +12,13 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: compile
+      - name: uses openjdk
         uses: olafurpg/setup-scala@v10
         with:
            java-version: openjdk@1.11
-
-      - name: sbt test
-        run: |
-          cd api && sbt "compile" "scalastyle" coverage test coverageReport
+      - name: compile
+        run: cd api && sbt "compile" "scalastyle"
+      - name: coverage
+        run: sbt coverage "test" "coverageReport"
       - name: coverage report
-        run: |
-          bash <(curl -s https://codecov.io/bash)
-          
+        run: bash <(curl -s https://codecov.io/bash)
