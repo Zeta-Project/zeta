@@ -19,6 +19,6 @@ jobs:
       - name: compile
         run: cd api && sbt "compile" "scalastyle"
       - name: coverage
-        run: sbt coverage "test" "coverageReport"
+        run: cd api && sbt coverage "test" "coverageReport"
       - name: coverage report
-        run: bash <(curl -s https://codecov.io/bash)
+        run: cd api && bash <(curl -s https://codecov.io/bash)
