@@ -6,6 +6,15 @@
 
 <script>
 import GraphEditor from './graphical-editor/components/graphEditor/GraphEditor'
+import store from '../../../store/index'
+
+
+function refreshGsdlProject(routeTo, next) {
+  store.dispatch('refreshGraph',routeTo.params.id      )
+      .then(() => {
+        next()
+      })
+}
 
 export default {
   name: 'MetamodelGraphicalEditor',
@@ -21,7 +30,13 @@ export default {
     toggleDnd(isDndExpanded) {
       this.isDndExpanded = isDndExpanded;
     }
-  }
+  },
+  beforeRouteEnter(routeTo, routeFrom, next) {
+    refreshGsdlProject(routeTo, next)
+  },
+  beforeRouteUpdate(routeTo, routeFrom, next) {
+    refreshGsdlProject(routeTo, next)
+  },
 }
 </script>
 

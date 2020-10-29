@@ -57,6 +57,7 @@
 
 <script>
     import Vue from 'vue'
+    import { mapState } from 'vuex'
     import licenseData from '../../../../../../../../../yFiles-dev-key/license.json'
     import {
         DefaultLabelStyle,
@@ -85,7 +86,6 @@
     } from "./GraphEditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
-    import {getDefaultGraph} from "../../utils/RESTApi";
     import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../layout/grid/Grid";
@@ -119,7 +119,6 @@
         },
         data: function () {
             return {
-                concept: {},
                 isGraphComponentLoaded: false,
                 isEditEnabled: false,
                 isDndExpanded: false,
@@ -139,7 +138,10 @@
                 } else {
                     return null;
                 }
-            }
+            },
+            ...mapState({
+              concept: state => state.graphEditor.gsdlProject.concept
+            })
         },
         methods: {
             /**
@@ -154,18 +156,18 @@
 
                     // Load graph from definition
                     // TODO replace with actual api call in future
-                    getDefaultGraph()
-                        .then(response => {
-                            this.concept = response;
-                            this.plotDefaultGraph(this.concept.concept);
+                    // getDefaultGraph()
+                    //     .then(response => {
+                    //         this.concept = response;
+                            this.plotDefaultGraph(this.concept);
                             this.executeLayout()
                                 .then(() => {
                                     const isLoaded = true;
                                     resolve(isLoaded);
                                 })
                                 .catch(error => reject(error))
-                        })
-                        .catch(error => reject(error));
+                        // })
+                        // .catch(error => reject(error));
                 })
             },
 
