@@ -26,6 +26,7 @@ jobs:
         with:
           repository: Zeta-Project/yFiles-for-html
           token: ${{ secrets.GitHub_PAT }}
+          path: ../yFiles-for-html
         
       - name: Uses Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
