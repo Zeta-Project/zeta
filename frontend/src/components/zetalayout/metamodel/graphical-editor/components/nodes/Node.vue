@@ -3,18 +3,18 @@
         <svg :width="layout.width" :height="layout.height">
             <rect fill="white"  width="100%" height="100%" />
 
-            <g :style="{ fontSize: '10px', fontColor: 'white', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(220, 20, 60)' :'rgb(96, 125, 139)' )}" >
+            <g :style="{ fontSize: '10px', fontColor: 'white', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(220, 20, 60)' :'rgb(96,125,139)' )}" >
                 <rect x="0%" y="0%" width="100%" :height="45" />
                 <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
 
                 <g>
                     <rect x="0" y="50" width="100%" :height=" 30 " />
                     <g>
-                        <image v-if="!attributes_open" x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
-                        <image v-if="attributes_open"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                        <image v-if="!attributes_open" x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" :xlink:href="triangle" />
+                        <image v-if="attributes_open"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" :xlink:href="triangle90" />
                     </g>
                     <text x="20" y="70" :style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
-                    <image :x="layout.width - 22" y="55" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
+                    <image :x="layout.width - 22" y="55" width="18" :xlink:href="addSign" v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
                     <g v-if="attributes_open">
                         <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
                             <foreignObject x="20" y="38"
@@ -29,7 +29,7 @@
                                 y="45"
                                 :transform="`translate(${0} ${(index + 2)*25})`"
                                 width="18"
-                                xlink:href="../../assets/delete-sign.svg"
+                                :xlink:href="deleteSign"
                                 v-on:click="()=>methods.deleteAttributeFromNode(tag, attribute.name)"/>
                         </g>
                     </g>
@@ -38,11 +38,11 @@
                 <g>
                     <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />
                     <g v-on:click="operations_open=change_status(operations_open)">
-                        <image v-if="!operations_open" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
-                        <image v-if="operations_open"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                        <image v-if="!operations_open" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :xlink:href="triangle" />
+                        <image v-if="operations_open"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :xlink:href="triangle90" />
                     </g>
                     <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{  fontSize: '16px', fill: 'black' }" >Operation:</text>
-                    <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" xlink:href="../../assets/add-sign.svg" v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
+                    <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="18" :xlink:href="addSign" v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
                     <g v-if="operations_open">
                         <g v-for="(method, index) in tag.methods" :key="method.name" >
                             <foreignObject x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
@@ -57,7 +57,7 @@
                                 :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
                                 :transform="`translate(${0} ${(index + 2)*25})`"
                                 width="18"
-                                xlink:href="../../assets/delete-sign.svg"
+                                :xlink:href="deleteSign"
                                 v-on:click="()=>methods.deleteOperationFromNode(tag, method.name)"/>
                         </g>
                     </g>
@@ -91,6 +91,10 @@ import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
         },
         data: function () {
             return {
+                triangle : "../../assets/triangle.svg",
+                triangle90 : "../../assets/triangle_90deg_rotated.svg",
+                addSign : "../../assets/add-sign.svg",
+                deleteSign : "../../assets/delete-sign.svg",
                 attributes_open : false ,
                 operations_open : false ,
                 width : 150,
