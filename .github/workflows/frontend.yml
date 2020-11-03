@@ -12,6 +12,10 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [14.4.0]
 
     steps:
       - name: Checkout Repo
