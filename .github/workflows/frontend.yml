@@ -21,6 +21,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
         
+      - name: Checkout yFiles
+        uses: actions/checkout@v2
+        with:
+          repository: Zeta-Project/yFiles-for-html
+          token: ${{ secrets.GitHub_PAT }}
+        
       - name: Uses Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
