@@ -1,0 +1,25 @@
+name: Frontend
+
+# Run this workflow every time a new commit pushed to your repository
+on: push
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  frontend:
+    # Name the Job
+    name: Frontend
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Runs the Super-Linter action
+      - name: Run Frontend
+        uses: github/frontend@v3
+        env:
+          DEFAULT_BRANCH: 425-github-actions
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
