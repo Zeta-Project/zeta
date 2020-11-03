@@ -1,7 +1,7 @@
 <template>
     <g v-if="tag" class="vue-edge-style-edge uml-edge">       
         <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"/>
-        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" :xlink:href="arrow" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
 
         <!--
 
@@ -23,6 +23,7 @@
         name: 'edge',
         data: function () {
             return {
+                arrow: "../../assets/association-arrow.svg",
                 smoothing: 0,
                 dashStyle: DashStyle.SOLID,
                 sourceArrow: ArrowType.NONE,
