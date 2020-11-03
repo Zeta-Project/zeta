@@ -29,5 +29,6 @@ jobs:
 
       - name: Yarn install and test
         run: |
+          cd frontend
           yarn install
           yarn test
