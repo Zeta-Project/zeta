@@ -15,13 +15,13 @@ jobs:
 
     steps:
       - name: Checkout Repo
-          uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Yarn install
-          uses: borales/actions-yarn@v2.0.0
-          with:
-            cmd: install
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: install
       - name: Yarn test
-          uses: borales/actions-yarn@v2.0.0
-          with:
-            cmd: test
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: test
