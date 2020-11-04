@@ -2,6 +2,45 @@ name: Test Services
 on: [push, pull_request]
 
 jobs:
+  job_frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [15.0.1]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          path: zeta
+
+      - name: Checkout yFiles
+        uses: actions/checkout@v2
+        with:
+          repository: Zeta-Project/yFiles-for-html
+          token: ${{secrets.TOKEN}}
+          path: yFiles-for-html
+
+      - name: Checkout yFiles
+        uses: actions/checkout@v2
+        with:
+          repository: Zeta-Project/yFiles-dev-key
+          token: ${{secrets.TOKEN}}
+          path: yFiles-dev-key
+      
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Change to Frontend and test app
+        run: |
+          cd zeta/frontend
+          yarn install
+          yarn build
+
+
   job_api:
     name: Test api backend
     runs-on: ubuntu-latest
