@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export class ZetaApiWrapper {
 
     constructor() {
@@ -37,14 +39,25 @@ ZetaApiWrapper.prototype.postConceptDefinition = function (metaModelId, jsonValu
 
     const url = this.rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition";
 
-    return fetch(url, {
+    /*return fetch(url, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
         body: jsonValue,
         credentials: "include"
-    });
+    });*/
+    console.log("put:" + url)
+    axios.put(
+        url, jsonValue, {withCredentials: true}
+    ).then(
+        response => {
+            console.log(response)
+        },
+        error => {
+            console.log(error)
+        }
+    )
 };
 
 export function isSuccessStatus(response) {

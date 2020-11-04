@@ -39,7 +39,7 @@ export default {
                     {"type": "Int", "value": "5"}
                 ],
                 "description": "methodDescription",
-                "returnType": "int",
+                "returnType": "Int",
                 "code": "return a + b;"
             },
             {
@@ -94,17 +94,17 @@ export default {
                 "name": "methodOne",
                 "parameters": [
                     {"type": "String", "value": "parameterOne"},
-                    {"type": "Integer", "value": "5"}
+                    {"type": "Int", "value": "5"}
                 ],
                 "description": "description for Method",
-                "returnType": "int",
+                "returnType": "Int",
                 "code": "return a + b;"
             },
             {
                 "name": "MethodTwo",
                 "parameters": [
                     {"type": "String", "value": "parameterString"},
-                    {"type": "Integer", "value": "8"}
+                    {"type": "Int", "value": "8"}
                 ],
                 "description": "",
                 "returnType": "String",

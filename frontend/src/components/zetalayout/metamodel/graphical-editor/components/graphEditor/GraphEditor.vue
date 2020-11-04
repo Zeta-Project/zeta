@@ -412,7 +412,7 @@
             },
 
             saveGraph() {
-                saveGraph(this.$graphComponent, this.concept)
+                saveGraph(this.$graphComponent, this.concept, this.$route.params.id)
             },
 
             /**
