@@ -13,28 +13,21 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
         with:
-          path: main
+          path: zeta
 
       - name: Checkout yFiles
         uses: actions/checkout@v2
         with:
           repository: Zeta-Project/yFiles-for-html
           token: ${{secrets.TOKEN}}
-          path: main1
+          path: yFiles-for-html
 
       - name: Checkout yFiles
         uses: actions/checkout@v2
         with:
           repository: Zeta-Project/yFiles-dev-key
           token: ${{secrets.TOKEN}}
-          path: main2
-
-      - name: tests
-        run: |
-          ls -lah
-          ls -lah main
-          ls -lah main1
-          ls -lah main2
+          path: yFiles-dev-key
       
       - name: Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2-beta
@@ -43,7 +36,7 @@ jobs:
 
       - name: Change to Frontend and test app
         run: |
-          cd frontend
+          cd zeta/frontend
           yarn install
           yarn build
 
