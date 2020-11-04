@@ -12,20 +12,27 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+        with:
+          path: main
 
       - name: Checkout yFiles
         uses: actions/checkout@v2
         with:
           repository: Zeta-Project/yFiles-for-html
           token: ${{secrets.TOKEN}}
-          path: ../
+          path: main1
 
       - name: Checkout yFiles
         uses: actions/checkout@v2
         with:
           repository: Zeta-Project/yFiles-dev-key
           token: ${{secrets.TOKEN}}
-          path: ../
+          path: main2
+
+      - name: tests
+        run: |
+          ls -lah
+          tree
       
       - name: Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2-beta
