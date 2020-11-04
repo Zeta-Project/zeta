@@ -32,7 +32,9 @@ jobs:
       - name: tests
         run: |
           ls -lah
-          tree
+          ls -lah main
+          ls -lah main1
+          ls -lah main2
       
       - name: Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2-beta
