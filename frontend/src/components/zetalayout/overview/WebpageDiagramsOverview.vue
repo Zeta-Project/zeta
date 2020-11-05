@@ -71,9 +71,15 @@ export default {
       axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
           (response) => {
             this.metaModels = response.data.metaModels;
-            this.modelInstances = response.data.modelInstances
+            // this.modelInstances = response.data.modelInstances
           },
           (error) => EventBus.$emit("errorMessage", "Could not load metamodels: " + error)
+      )
+      axios.get("http://localhost:9000/rest/v1/models", {withCredentials: true}).then(
+          (response) => {
+            this.modelInstances = response.data
+          },
+          (error) => EventBus.$emit("errorMessage", "Could not load model instances: " + error)
       )
     },
     routeParamChanged() {

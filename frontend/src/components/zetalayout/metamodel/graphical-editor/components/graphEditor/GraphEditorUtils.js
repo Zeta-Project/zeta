@@ -31,6 +31,7 @@ import {Operation} from "../../uml/operations/Operation";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
+import { EventBus } from "@/eventbus/eventbus";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
@@ -74,7 +75,7 @@ export function getDefaultGraphEditorInputMode() {
  * @param loadedMetaModel
  */
 export function saveGraph(graphComponent, loadedMetaModel, metamodelID) {
-    if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
+    if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0) {
 
         const graph = graphComponent.graph;
 
@@ -105,10 +106,10 @@ export function saveGraph(graphComponent, loadedMetaModel, metamodelID) {
                 }
             ).then(
                 response => {
-                    console.log(response)
+                    EventBus.$emit('successMessage', "Successfully saved concept")
                 },
                 error => {
-                    console.log(error)
+                    EventBus.$emit('errorMessage', "Failed to save concept: " + error)
                 }
             )
 

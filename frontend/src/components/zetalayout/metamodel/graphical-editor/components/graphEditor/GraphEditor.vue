@@ -90,6 +90,8 @@
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../layout/grid/Grid";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+    import axios from "axios"
+    import {EventBus} from "../../../../../../eventbus/eventbus";
 
     License.value = licenseData;
 
@@ -151,21 +153,21 @@
                     this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent);
                     this.initializeDefaultStyles();
                     this.initGrid();
-
-                    // Load graph from definition
-                    // TODO replace with actual api call in future
-                    getDefaultGraph()
-                        .then(response => {
-                            this.concept = response;
-                            this.plotDefaultGraph(this.concept.concept);
-                            this.executeLayout()
-                                .then(() => {
+                    const uuid = this.$route.params.id
+                    axios.get("http://localhost:9000/rest/v1/meta-models/" + uuid + "/definition", {withCredentials: true})
+                        .then(
+                            response => {
+                              this.concept = response.data
+                              this.plotDefaultGraph(this.concept)
+                              this.executeLayout()
+                                  .then(() => {
                                     const isLoaded = true;
                                     resolve(isLoaded);
-                                })
-                                .catch(error => reject(error))
-                        })
-                        .catch(error => reject(error));
+                                  })
+                                  .catch(error => reject(error))
+                            }
+                        )
+                        .catch(error => reject(error))
                 })
             },
 

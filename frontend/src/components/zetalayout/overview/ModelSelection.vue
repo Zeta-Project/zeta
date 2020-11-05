@@ -10,16 +10,17 @@
       </div>
 
       <div class="list-group" v-else>
-        <a v-for="model in modelInstances" v-bind:key="model.id" href="@routes.ScalaRoutes.getModelEditor(model.id)"
-           class="list-group-item list-item-container">
-          {{ model.name }}
-          <div v-on:click="deleteModelInstance"
+        <div v-for="model in modelInstances" v-bind:key="model.id" class="list-group-item list-item-container">
+          <div v-on:click="deleteModelInstance(model.id)"
                class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip"
                title="Delete model instance"></div>
-          <div v-on:click="validateModelInstance"
+          <div v-on:click="validateModelInstance(model.id)"
                class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up"
                data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-        </a>
+          <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
+            <div>{{ model.name }}</div>
+          </router-link>
+        </div>
       </div>
 
       <div class="panel-footer">
@@ -59,7 +60,7 @@ export default {
       ModelInstanceUtils.createInstance(this.inputModelName, this.$route.params.id)
     },
     deleteModelInstance(modelId) {
-      ModelInstanceUtils.deleteInstance(modelId, this.$route.params.id)
+      ModelInstanceUtils.deleteInstance(modelId)
     },
     validateModelInstance(modelId) {
       ValidatorUtils.validate(modelId)
