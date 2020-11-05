@@ -129,9 +129,10 @@ export default (function () {
       Returns the name of the given reference.
 
       TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
+      Not proud of this code :(
      */
     Graph.prototype.getReferenceName = function (reference) {
-        return reference.style.model.name;
+        return reference.labels.$f.text;
     };
 
     /*
