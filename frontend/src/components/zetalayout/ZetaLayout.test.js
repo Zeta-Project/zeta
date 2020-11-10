@@ -1,8 +1,20 @@
-import { shallowMount } from '@vue/test-utils'
-import ZetaLayout from './ZetaLayout.vue'
+import { mount } from '@vue/test-utils'
+// import ZetaLayout from './ZetaLayout.vue'
 
-describe('ZetaLayout Test', () => {
-    it('init test', () => {
-        const wrapper = shallowMount(ZetaLayout)
+// The component to test
+const MessageComponent = {
+    template: '<p>{{ msg }}</p>',
+    props: ['msg']
+}
+
+test('displays message', () => {
+    // mount() returns a wrapped Vue component we can interact with
+    const wrapper = mount(MessageComponent, {
+        propsData: {
+            msg: 'Hello world'
+        }
     })
+
+    // Assert the rendered text of the component
+    expect(wrapper.text()).toContain('Hello world')
 })

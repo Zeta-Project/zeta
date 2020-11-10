@@ -28,6 +28,10 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "babel-core": "^7.0.0-bridge.0",
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-syntax-jsx": "^7.12.1",
+    "@babel/preset-react": "^7.12.5",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0-0",
@@ -40,6 +44,14 @@
     "vue-template-compiler": "^2.6.11"
   },
   "jest": {
-    "cacheDirectory": "./node_modules/.cache/jest"
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      ".*\\.(js)$": "babel-jest"
+    }
   }
 }
