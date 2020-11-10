@@ -39,6 +39,7 @@ jobs:
           cd zeta/frontend
           yarn install
           yarn build
+          yarn test
 
 
   job_api:
