@@ -42,8 +42,10 @@ import 'jquery/src/jquery.js'
 import 'bootstrap'
 
 import axios from 'axios'
+import Vuetify from "vuetify";
 
 Vue.use(VueMaterial)
+Vue.use(Vuetify)
 Vue.use(VueRouter)
 Vue.use({
     install(Vue) {
