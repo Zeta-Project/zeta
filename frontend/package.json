@@ -5,8 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "npm run unit",
-    "unit": "jest --coverage"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "ace-grammar": "github:foo123/ace-grammar#1.0.3",
