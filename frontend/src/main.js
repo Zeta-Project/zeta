@@ -42,6 +42,7 @@ import 'jquery/src/jquery.js'
 import 'bootstrap'
 
 import axios from 'axios'
+import vuetify from './plugins/vuetify';
 
 Vue.use(VueMaterial)
 Vue.use(VueRouter)
@@ -61,5 +62,6 @@ Vue.config.productionTip = false
 new Vue({
     render: h => h(App),
     router,
+    vuetify,
     store
 }).$mount('#app')

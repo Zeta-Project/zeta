@@ -1,46 +1,63 @@
 <template>
-  <div v-on:dragover="dragover" v-on:drop="preventDrop">
-    <div class="row">
+  <v-container v-on:dragover="dragover" v-on:drop="preventDrop">
+    <v-row>
+      <v-col md="4">
+        <ProjectSelection
+          :meta-models="metaModels"
+          :gdsl-project="gdslProject"
+        />
+      </v-col>
 
-      <ProjectSelection class="col-md-4" v-bind:meta-models="metaModels" v-bind:gdsl-project="gdslProject"/>
+      <v-col md="4">
+        <EditorSelection
+          v-if="gdslProject"
+          :gdsl-project="gdslProject"
+          :model-instances="modelInstances"
+        />
+      </v-col>
 
-      <EditorSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
-                       :model-instances="modelInstances"/>
+      <v-col md="4">
+        <ModelSelection
+          v-if="gdslProject"
+          :gdsl-project="gdslProject"
+          :model-instances="modelInstances"
+        />
+      </v-col>
+    </v-row>
 
-      <ModelSelection class="col-md-4" v-if="gdslProject" :gdsl-project="gdslProject"
-                      :model-instances="modelInstances"/>
-    </div>
-
-    <div class="bottom-link right">
-      <a href="@routes.ScalaRoutes.getWebApp()">
-        <button class="btn">
-          Generators App <span class="glyphicon glyphicon-chevron-right"></span>
-        </button>
-      </a>
-    </div>
-  </div>
+    <v-row>
+      <div class="bottom-link right">
+        <a href="@routes.ScalaRoutes.getWebApp()">
+          <button class="btn">
+            Generators App
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </button>
+        </a>
+      </div>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import axios from "axios";
-import {EventBus} from "@/eventbus/eventbus"
+import { EventBus } from "@/eventbus/eventbus";
 import ProjectSelection from "./ProjectSelection";
 import EditorSelection from "./EditorSelection";
 import ModelSelection from "./ModelSelection";
 
 export default {
-  name: 'DiagramsOverview',
-  components: {ModelSelection, EditorSelection, ProjectSelection},
+  name: "DiagramsOverview",
+  components: { ModelSelection, EditorSelection, ProjectSelection },
   props: {
-    msg: String
+    msg: String,
   },
   data() {
     return {
       metaModels: [
         {
           id: "",
-          name: "loading..."
-        }
+          name: "loading...",
+        },
       ],
       gdslProject: {
         id: "",
@@ -49,7 +66,7 @@ export default {
         diagram: "",
         shape: "",
         style: "",
-        validator: ""
+        validator: "",
       },
       modelInstances: [
         /*{
@@ -63,79 +80,96 @@ export default {
 
       uploadText: "Drag and Drop .zeta file here...",
       importProjectName: "",
-      file: null
-    }
+      file: null,
+    };
   },
   methods: {
     loadProjects() {
-      axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
+      axios
+        .get("http://localhost:9000/overview", { withCredentials: true })
+        .then(
           (response) => {
             this.metaModels = response.data.metaModels;
             // this.modelInstances = response.data.modelInstances
           },
-          (error) => EventBus.$emit("errorMessage", "Could not load metamodels: " + error)
-      )
-      axios.get("http://localhost:9000/rest/v1/models", {withCredentials: true}).then(
+          (error) =>
+            EventBus.$emit(
+              "errorMessage",
+              "Could not load metamodels: " + error
+            )
+        );
+      axios
+        .get("http://localhost:9000/rest/v1/models", { withCredentials: true })
+        .then(
           (response) => {
-            this.modelInstances = response.data
+            this.modelInstances = response.data;
           },
-          (error) => EventBus.$emit("errorMessage", "Could not load model instances: " + error)
-      )
+          (error) =>
+            EventBus.$emit(
+              "errorMessage",
+              "Could not load model instances: " + error
+            )
+        );
     },
     routeParamChanged() {
       if (!this.$route.params.id || this.$route.params.id === "") {
-        this.gdslProject = null
-        EventBus.$emit("gdslProjectUnselected")
+        this.gdslProject = null;
+        EventBus.$emit("gdslProjectUnselected");
       } else {
-        axios.get(
-            "http://localhost:9000/rest/v1/meta-models/" + this.$route.params.id,
-            {withCredentials: true}
-        ).then(
+        axios
+          .get(
+            "http://localhost:9000/rest/v1/meta-models/" +
+              this.$route.params.id,
+            { withCredentials: true }
+          )
+          .then(
             (response) => {
               this.gdslProject = response.data;
-              EventBus.$emit("gdslProjectSelected", response.data)
+              EventBus.$emit("gdslProjectSelected", response.data);
             },
-            (error) => EventBus.$emit("errorMessage", "Could not load selected metamodel: " + error)
-        )
+            (error) =>
+              EventBus.$emit(
+                "errorMessage",
+                "Could not load selected metamodel: " + error
+              )
+          );
       }
     },
 
     dragover(event) {
       event.preventDefault();
       event.stopPropagation();
-      this.uploadText = "Drag here"
+      this.uploadText = "Drag here";
     },
     preventDrop(event) {
       event.preventDefault();
-    }
+    },
   },
   created() {
-    EventBus.$on('metaModelAdded', metamodel => {
-      this.metaModels.push(metamodel)
+    EventBus.$on("metaModelAdded", (metamodel) => {
+      this.metaModels.push(metamodel);
     });
-    EventBus.$on('metaModelRemoved', metamodelID => {
-      let i = this.metaModels.map(item => item.id).indexOf(metamodelID) // find index of your object
-      this.metaModels.splice(i, 1)
-      if (this.$route.params.id === metamodelID) this.$router.push("/zeta/overview").catch(err => {
-      })
+    EventBus.$on("metaModelRemoved", (metamodelID) => {
+      let i = this.metaModels.map((item) => item.id).indexOf(metamodelID); // find index of your object
+      this.metaModels.splice(i, 1);
+      if (this.$route.params.id === metamodelID)
+        this.$router.push("/zeta/overview").catch((err) => {});
     });
-    EventBus.$on('reloadProjects', () => {
-      this.loadProjects()
+    EventBus.$on("reloadProjects", () => {
+      this.loadProjects();
     });
-    EventBus.$on('projectSelected', metaModelId => {
-      this.selectedProjectId = metaModelId
-    })
-
+    EventBus.$on("projectSelected", (metaModelId) => {
+      this.selectedProjectId = metaModelId;
+    });
   },
   mounted() {
-    this.loadProjects()
-    this.routeParamChanged()
+    this.loadProjects();
+    this.routeParamChanged();
   },
   watch: {
-    '$route': 'routeParamChanged'
-  }
-}
-
+    $route: "routeParamChanged",
+  },
+};
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
