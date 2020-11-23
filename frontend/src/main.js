@@ -42,10 +42,9 @@ import 'jquery/src/jquery.js'
 import 'bootstrap'
 
 import axios from 'axios'
-import Vuetify from "vuetify";
+import vuetify from "./components/zetalayout/overview/vuetify";
 
 Vue.use(VueMaterial)
-Vue.use(Vuetify)
 Vue.use(VueRouter)
 Vue.use({
     install(Vue) {
@@ -61,6 +60,7 @@ enableWorkarounds()
 Vue.config.productionTip = false
 
 new Vue({
+    vuetify,
     render: h => h(App),
     router,
     store
