@@ -18,16 +18,11 @@
           <v-stepper-step :complete="stepCounter > 4" step="4">Diagram</v-stepper-step>
         </v-stepper-header>
 
-
-        <v-stepper-items>
-
-      <!--STEP1-->
-          <v-stepper-content step="1">
             <v-dialog v-model="editProjectDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
               <template v-slot:activator="{ on, attrs }">
                 <div id="app" data-app>
                 <v-btn class="list-group-item my-auto" v-bind="attrs" v-on="on">
-                  Start edit project
+                  Edit project
                 </v-btn>
                 </div>
               </template>
@@ -54,15 +49,14 @@
                   </v-stepper>
 
                   <v-toolbar-items>
-                    <v-btn small color="primary" @click="showStepElement(stepCounter)">Continue</v-btn>
+                    <v-btn :disabled="continueBtnIsHidden" color="primary" v-on:click="initializeEditor(), stepCounter++, showStepElement(stepCounter)">Continue</v-btn>
                   </v-toolbar-items>
                 </v-toolbar>
                 <div>
-                  <GraphicalEditor v-if="!step12IsHidden" ></GraphicalEditor>
+                  <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
                 </div>
 
-                  <div v-if="step12IsHidden" class="row">
-
+                  <div  v-show="step1IsHidden" class="row">
                     <div class="side-box col-md-3">
                       <div id="source-code-inspection"></div>
                       <div id="online-users"></div>
@@ -83,7 +77,7 @@
                             </span>
                             </div>
                             <div class="panel-body editor-body">
-                              <div class="editor2"></div>
+                              <div :onfocusin="true" class="editor"></div>
                             </div>
                           </div>
                         </div>
@@ -95,14 +89,14 @@
                             <span class="editor-button">
                               <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
                               <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-                              <span disabled class="js-save btn btn-sm btn-primary" title="Save Document">
+                              <span :disabled="step3IsHidden" class="js-save btn btn-sm btn-primary" title="Save Document">
                                 Save
                                 <span class="glyphicon glyphicon-floppy-disk"></span>
                               </span>
                             </span>
                           </div>
                           <div class="panel-body editor-body">
-                            <div class="editor2"></div>
+                            <div v-show="!step3IsHidden" class="editor"></div>
                           </div>
                         </div>
                       </div>
@@ -112,77 +106,22 @@
                             <div class="panel-heading">
                               <span class="editor-title">{{step4}}</span>
                               <span class="editor-button">
-                              <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
-                              <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-                              <span disabled class="js-save btn btn-sm btn-primary" title="Save Document">
-                                Save
-                                <span class="glyphicon glyphicon-floppy-disk"></span>
+                                <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
+                                <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
+                                <span :disabled="step4IsHidden" class="js-save btn btn-sm btn-primary" title="Save Document">
+                                  Save
+                                  <span class="glyphicon glyphicon-floppy-disk"></span>
+                                </span>
                               </span>
-                            </span>
                             </div>
                             <div class="panel-body editor-body">
-                              <div class="editor2"></div>
+                              <div v-show="!step4IsHidden" class="editor"></div>
                             </div>
                           </div>
                         </div>
-
                   </div>
-
               </v-card>
             </v-dialog>
-            <!--   <br>
-               <div>
-                 <div class="col-md-4"></div>
-                  <div class="col-md-4"></div>
-                  <v-btn color="primary" class="col-md-4 list-group-item my-auto" @click="stepCounter = 2">Continue</v-btn>
-             </div> -->
-          </v-stepper-content>
-
-      <!--STEP2-->
-          <!--:to="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'"-->
-          <v-stepper-content step="2">
-          <!--  <v-btn class="list-group-item my-auto"  v-bind="attrs" v-on="on">
-              Edit diagram
-            </v-btn>
-            <br>
-            <div>
-              <v-btn margin-bottom="15px" class="col-md-4 list-group-item my-auto" @click="stepCounter = 1">Back</v-btn>
-              <div class="col-md-4"></div>
-              <v-btn class="col-md-4 list-group-item my-auto" @click="stepCounter = 3">Continue</v-btn>
-            </div>
-            -->
-          </v-stepper-content>
-
-      <!--STEP3-->
-          <v-stepper-content step="3">
-        <!--    <v-btn class="list-group-item my-auto"  v-bind="attrs" v-on="on">
-              Edit diagram
-            </v-btn>
-            <br>
-            <div>
-              <v-btn margin-bottom="15px" class="col-md-4 list-group-item my-auto" @click="stepCounter = 2">Back</v-btn>
-              <div class="col-md-4"></div>
-              <v-btn class="col-md-4 list-group-item my-auto" @click="stepCounter = 4">Continue</v-btn>
-            </div>
-            -->
-          </v-stepper-content>
-
-      <!--STEP4-->
-          <v-stepper-content step="4">
-         <!--   <v-btn class="list-group-item my-auto"  v-bind="attrs" v-on="on">
-              Edit diagram
-            </v-btn>
-            <br>
-            <div>
-              <v-btn margin-bottom="15px" class="col-md-4 list-group-item my-auto" @click="stepCounter = 2">Back</v-btn>
-              <div class="col-md-4"></div>
-              <div class="col-md-4"></div>
-            </div>
-            -->
-          </v-stepper-content>
-
-        </v-stepper-items>
-
       </v-stepper>
 <!--
       <div class="list-group">
@@ -213,81 +152,6 @@
       </div>
     </div>
 
-
-<!--
-
-    <div>
-      <v-dialog v-model="dialogTextEditor"  fullscreen transition="dialog-bottom-transition">
-        <template v-slot:activator="{ on, attrs }">
-
-        </template>
-        <v-card>
-          <br><br>
-          <v-btn class="mx-2" fab color="white" @click="editProjectDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-
-          <div class="row">
-
-               <div class="side-box col-md-3">
-                <div id="source-code-inspection"></div>
-                <div id="online-users"></div>
-                <div id="outline-nodes"></div>
-              </div>
-
-
-            <v-card class="col-md-3" ><h1>Shape</h1>
-              <div class="container code-editor editor-box" :data-meta-model-id="gdslProject.id" :data-dsl-type="dslType">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <span class="editor-title">{{ dslType }}</span>
-                    <span class="editor-button">
-              <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
-              <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-              <span class="js-save btn btn-sm btn-primary" title="Save Document">
-                  Save <span class="glyphicon glyphicon-floppy-disk"></span>
-              </span>
-          </span>
-                  </div>
-                  <div class="panel-body editor-body">
-                    <div class="editor"></div>
-                  </div>
-                </div>
-              </div>
-            </v-card>
-
-
-          <v-card class="col-md-3" ><h1>Style</h1>
-            <div class="container code-editor editor-box" :data-meta-model-id="gdslProject.id" :data-dsl-type="dslType">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="editor-title">{{ dslType }}</span>
-                  <span class="editor-button">
-              <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
-              <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-              <span class="js-save btn btn-sm btn-primary" title="Save Document">
-                  Save <span class="glyphicon glyphicon-floppy-disk"></span>
-              </span>
-          </span>
-                </div>
-                <div class="panel-body editor-body">
-                  <div class="editor"></div>
-                </div>
-              </div>
-            </div>
-          </v-card>
-
-
-
-            <v-card class="col-md-3" ><h1>Diagram</h1></v-card>
-          </div>
-        </v-card>
-      </v-dialog>
-    </div>
--->
-
-
-
   </v-app>
 </template>
 <script>
@@ -308,14 +172,18 @@ export default {
   data(){
     return{
       step1: "Concept Editor",
-      step2: "Shape",
-      step3: "Style",
-      step4: "Diagram",
+      step2: "shape",
+      step3: "style",
+      step4: "diagram",
       editProjectDialog: false,
-      step12IsHidden: false,
-      step234IsHidden: true,
+      step1IsHidden: false,
+      step2IsHidden: true,
+      step3IsHidden: true,
+      step4IsHidden: true,
       dialogTextEditor: true,
+      continueBtnIsHidden: false,
       stepCounter: 1,
+      dslType: "",
     }
   },
   methods: {
@@ -326,32 +194,19 @@ export default {
       ValidatorUtils.show(this.$route.params.id)
     },
     showStepElement(step){
-      this.stepCounter++
-      if(step === 1) { if(this.step12IsHidden) {this.step12IsHidden = false; this.step234IsHidden = true}
-                            else {this.step12IsHidden = true; this.step234IsHidden = false;
-                                  //new EditorSelection($('.code-editor'), $('.code-editor').data('meta-model-id'), $('.code-editor').data("shape"));
-                                  this.initializeEditor()
-
-                                  }
-                        }
-      if(step === 2) {this.step12IsHidden = true
-        }
-      if(step === 3) {
-
-      }if(step === 4) {
-        }
+      console.log("STEP: " + step)
+      if(step === 1) { if(this.step1IsHidden) {this.step1IsHidden = false; this.step2IsHidden = true}
+                          else {this.step1IsHidden = true; this.step2IsHidden = false; this.dslType = "shape"}}
+      if(step === 2) {this.step1IsHidden = true, new EditorSelection(elements[0], $(elements[0]).data('meta-model-id'), $(elements[0]).data('dsl-type'))}
+      if(step === 3) {this.step3IsHidden = false, new EditorSelection(elements[1], $(elements[1]).data('meta-model-id'), $(elements[1]).data('dsl-type'))}
+      if(step === 4) {this.step4IsHidden = false, new EditorSelection(elements[2], $(elements[2]).data('meta-model-id'), $(elements[2]).data('dsl-type'))}
+      if(step === 5) this.continueBtnIsHidden = true
     },
     initializeEditor () {
-      console.log("111")
-      $('.code-editor').each((i, e) => new EditorSelection(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
-      console.log("333")
+      elements = []
+      $('.code-editor').each((i, e) => elements.push(e))
     },
-    mounted() {
-      this.initializeEditor()
-    },
-    watch: {
-      '$route': 'initializeEditor'
-    }
+
   }
 }
 import $ from "jquery";
@@ -365,16 +220,19 @@ import {CodeOutline} from "../metamodel/code-editor/code-outline";
 import {OnlineSocket} from "../metamodel/code-editor/online-socket";
 import axios from 'axios'
 
-
 const modesForModel = {
   'diagram': diagramLanguage,
   'shape': shapeLanguage,
   'style': styleLanguage
 };
-class EditorSelection{
+
+
+//export var st
+
+var elements = []
+class EditorSelection {
   constructor(element, metaModelId, dslType) {
-    console.log("YES")
-    this.$element = (element);
+    this.$element = $(element);
     this.metaModelId = metaModelId;
     this.dslType = dslType;
     this.editor = this.initAceEditor(element.querySelector('.editor'));
@@ -386,6 +244,7 @@ class EditorSelection{
     let area = "codeEditor-" + dslType + "-" + metaModelId;
     this.onlineSocket = new OnlineSocket(area);
   }
+
   initAceEditor(element) {
     const editor = ace.edit(element);
     editor.setTheme("ace/theme/xcode");
@@ -412,11 +271,40 @@ class EditorSelection{
     const session = ace.createEditSession(content, modesForModel[this.dslType]);
     this.editor.setSession(session);
   }
+
+  saveSourceCode(code) {
+    axios.put(
+        'http://localhost:9000/rest/v1/meta-models/' + this.metaModelId + '/' + this.dslType,
+        JSON.stringify(code),
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+    ).then(
+        (response) => {
+          this.toggleSaveNotifications('.js-save-successful');
+          this.sourceCodeInspector.runInspection();
+        },
+        (error) => {
+          this.toggleSaveNotifications('.js-save-failed');
+          console.error(`Save failed`, error);
+        }
+    )
+  }
+
+  toggleSaveNotifications(element) {
+    this.$element.find(element).stop(true, true).fadeIn(400).delay(3000).fadeOut(400);
+  }
+}
+
+export class stepperNumber1 {
 }
 
 </script>
-<style scoped>
 
+<style scoped>
 ul {
   list-style-type: none;
   padding: 0;
