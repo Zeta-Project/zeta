@@ -8,8 +8,8 @@
          data-toggle="modal" :data-target="'#duplicateModal-' + id" title="Duplicate project"/>
     <div v-on:click="selectedProjectId = id" class="delete-list-item invite-to-project glyphicon glyphicon-send"
          data-toggle="modal" :data-target="'#inviteModal-' + id" title="Invite other users"/>
-    <router-link style="text-decoration: none; color: initial" :to="'/zeta/overview/' + id">
-      <div> {{ name }}</div>
+    <router-link  style="text-decoration: none; color: initial" :to="'/zeta/overview/' + id">
+      <div v-on:click="initStepper()"> {{ name }}</div>
     </router-link>
 
     <!-- invite modal -->
@@ -66,6 +66,7 @@
 </template>
 <script>
 import ProjectUtils from "./ProjectUtils";
+import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
   name: "ProjectSelectionRow",
@@ -81,6 +82,9 @@ export default {
     }
   },
   methods: {
+    initStepper(){
+      EventBus.$emit("initSteps",1)
+    },
     deleteProject() {
       ProjectUtils.deleteProject(this.id)
     },
