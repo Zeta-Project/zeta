@@ -90,6 +90,8 @@
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../layout/grid/Grid";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+    import axios from "axios"
+    import {EventBus} from "../../../../../../eventbus/eventbus";
 
     License.value = licenseData;
 
@@ -154,11 +156,6 @@
                     this.initializeDefaultStyles();
                     this.initGrid();
 
-                    // Load graph from definition
-                    // TODO replace with actual api call in future
-                    // getDefaultGraph()
-                    //     .then(response => {
-                    //         this.concept = response;
                             this.plotDefaultGraph(this.concept);
                             this.executeLayout()
                                 .then(() => {
@@ -166,8 +163,6 @@
                                     resolve(isLoaded);
                                 })
                                 .catch(error => reject(error))
-                        // })
-                        // .catch(error => reject(error));
                 })
             },
 
@@ -414,7 +409,7 @@
             },
 
             saveGraph() {
-                saveGraph(this.$graphComponent, this.concept)
+                saveGraph(this.$graphComponent, this.concept, this.$route.params.id)
             },
 
             /**

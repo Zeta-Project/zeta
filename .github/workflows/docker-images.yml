@@ -1,0 +1,49 @@
+name: Build Container
+
+on:
+  push:
+    branches:
+      - dev
+      - master
+  pull_request:
+    branches:
+      - dev
+      - master
+
+jobs:
+  job_frontend:
+    name: Build frontend image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Dockerfile build
+        uses: docker/build-push-action@v2
+        env:
+          TOKEN: ${{secrets.TOKEN}}
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          push: false
+          tags: zeta/frontend:latest
+          build-args: |
+            YFILES_ACCESS=${{secrets.TOKEN}}
+  job_backend:
+    name: Build backend image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Dockerfile build api
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./api/Dockerfile
+          push: false
+          tags: zeta/api:latest
+          build-args: |
+            APPLICATION_SECRET=superSecret
+            ZETA_MONGODB_SERVER=mongodb
+            ZETA_DEPLOYMENT=production
