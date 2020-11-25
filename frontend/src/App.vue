@@ -74,16 +74,18 @@ export default {
       this.timer = setTimeout(()=>{ this.setSuccessMessage('') }, 5000);
     })
 
-    axios.interceptors.response.use(function (response) {
+    axios.interceptors.response.use(response => {
       if(
           response.request.responseURL !== response.config.url &&
           response.request.responseURL.endsWith("/signIn")
       ) {
         localStorage.removeItem("user-token");
+        console.log(this.$router)
         this.$router.push('/account/signIn')
+
       }
       return response
-    }, function (err) {
+    }, err => {
       return new Promise(function (resolve, reject) {
         if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
           // if you ever get an unauthorized, logout the user
