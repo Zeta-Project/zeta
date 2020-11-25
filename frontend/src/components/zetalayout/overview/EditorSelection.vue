@@ -15,13 +15,13 @@
           <v-divider></v-divider>
           <v-stepper-step :complete="stepCounter > 3" step="3">Style</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="stepCounter > 4" step="4">Diagram</v-stepper-step>
+          <v-stepper-step :complete="stepCounter === 4" step="4">Diagram</v-stepper-step>
         </v-stepper-header>
 
             <v-dialog v-model="editProjectDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
               <template v-slot:activator="{ on, attrs }">
                 <div id="app" data-app>
-                <v-btn class="list-group-item my-auto" v-bind="attrs" v-on="on">
+                <v-btn v-on:click="showStepElement(stepCounter)" class="list-group-item my-auto" v-bind="attrs" v-on="on">
                   Edit project
                 </v-btn>
                 </div>
@@ -44,7 +44,7 @@
                       <v-divider></v-divider>
                       <v-stepper-step @click="showStepElement(stepCounter=3)":complete="stepCounter > 3" step="3">{{step3}}</v-stepper-step>
                       <v-divider></v-divider>
-                      <v-stepper-step @click="showStepElement(stepCounter=4)" :complete="stepCounter > 4" step="4">{{step4}}</v-stepper-step>
+                      <v-stepper-step @click="showStepElement(stepCounter=4)" :complete="stepCounter === 4" step="4">{{step4}}</v-stepper-step>
                     </v-stepper-header>
                   </v-stepper>
 
@@ -156,8 +156,8 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import CodeEditor from '../metamodel/CodeEditor'
 import GraphicalEditor from '../metamodel/GraphicalEditor'
+import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
   name: 'EditorSelection',
@@ -166,7 +166,6 @@ export default {
     modelInstances: {},
   },
   components: {
-    CodeEditor,
     GraphicalEditor,
   },
   data(){
@@ -186,6 +185,11 @@ export default {
       dslType: "",
     }
   },
+  mounted() {
+    EventBus.$on("initSteps",(data) => {
+      this.stepCounter = data
+    })
+  },
   methods: {
     validatorGenerate() {
       ValidatorUtils.generate(this.$route.params.id)
@@ -194,13 +198,11 @@ export default {
       ValidatorUtils.show(this.$route.params.id)
     },
     showStepElement(step){
-      console.log("STEP: " + step)
-      if(step === 1) { if(this.step1IsHidden) {this.step1IsHidden = false; this.step2IsHidden = true}
-                          else {this.step1IsHidden = true; this.step2IsHidden = false; this.dslType = "shape"}}
+      if(step === 1) {if(!this.step1IsHidden) {this.step1IsHidden = false; this.step2IsHidden = true}
+                          else {this.step1IsHidden = false; this.step2IsHidden = true; this.step3IsHidden = true; this.step4IsHidden = true; this.continueBtnIsHidden=false; this.dslType = "shape"}}
       if(step === 2) {this.step1IsHidden = true, new EditorSelection(elements[0], $(elements[0]).data('meta-model-id'), $(elements[0]).data('dsl-type'))}
       if(step === 3) {this.step3IsHidden = false, new EditorSelection(elements[1], $(elements[1]).data('meta-model-id'), $(elements[1]).data('dsl-type'))}
-      if(step === 4) {this.step4IsHidden = false, new EditorSelection(elements[2], $(elements[2]).data('meta-model-id'), $(elements[2]).data('dsl-type'))}
-      if(step === 5) this.continueBtnIsHidden = true
+      if(step === 4) {this.step4IsHidden = false, new EditorSelection(elements[2], $(elements[2]).data('meta-model-id'), $(elements[2]).data('dsl-type')); this.continueBtnIsHidden = true}
     },
     initializeEditor () {
       elements = []
@@ -297,9 +299,6 @@ class EditorSelection {
   toggleSaveNotifications(element) {
     this.$element.find(element).stop(true, true).fadeIn(400).delay(3000).fadeOut(400);
   }
-}
-
-export class stepperNumber1 {
 }
 
 </script>
