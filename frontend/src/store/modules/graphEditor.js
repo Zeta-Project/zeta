@@ -1,12 +1,9 @@
 import axios from 'axios'
 import {
-    // DEFINITION_REQUEST,
-    // DEFINITION_REQUEST_SUCCESS, DIAGRAM_REQUEST,
-    GSDL_REQUEST,
+    DEFINITION_REQUEST_SUCCESS,
+    DIAGRAM_REQUEST_SUCCESS,
     GSDL_REQUEST_SUCCESS,
-    // SHAPE_REQUEST,
     SHAPE_REQUEST_SUCCESS,
-    // STYLE_REQUEST,
     STYLE_REQUEST_SUCCESS
 } from "../actions/graphEditor";
 
@@ -22,19 +19,26 @@ let state = {
         validator: "None"
     },
     dslType: '',
-    // definition: {},
-    // diagram: {},
+    definition: {},
+    diagram: {},
     shape: {},
     style: {}
 }
 
 const actions = {
     refreshGraph: ({dispatch, commit}, id) => {
+
         return dispatch('refreshGsdl', id)
             .then(
                 () => dispatch('refreshShape', id)
                     .then(
                         () => dispatch('refreshStyle', id)
+                            .then(
+                                () => dispatch('refreshDefinition', id)
+                                    .then(
+                                        () => dispatch('refreshDiagram', id)
+                                    )
+                            )
                     )
             )
 
@@ -52,19 +56,19 @@ const actions = {
             // (error) => EventBus.$emit("errorMessage", "Could not load selected metamodel: " + error)
         )
     },
-    // [DEFINITION_REQUEST]: ({commit}, id) => {
-    //     axios.get(
-    //         "http://localhost:9000/rest/v1/meta-models/" + id + "/definition",
-    //         {withCredentials: true}
-    //     ).then(
-    //         (response) => {
-    //             commit(DEFINITION_REQUEST_SUCCESS, response)
-    //         }
-    //     )
-    // },
+    refreshDefinition: ({commit}, id) => {
+        axios.get(
+            "http://localhost:9000/rest/v2/meta-models/" + id + "/definition",
+            {withCredentials: true}
+        ).then(
+            (response) => {
+                commit(DEFINITION_REQUEST_SUCCESS, response)
+            }
+        )
+    },
     refreshShape: ({commit}, id) => {
         axios.get(
-            "http://localhost:9000/rest/v1/meta-models/" + id + "/shape",
+            "http://localhost:9000/rest/v2/meta-models/" + id + "/shape",
             {withCredentials: true}
         ).then(
             (response) => {
@@ -74,7 +78,7 @@ const actions = {
     },
     refreshStyle: ({commit}, id) => {
         axios.get(
-            "http://localhost:9000/rest/v1/meta-models/" + id + "/style",
+            "http://localhost:9000/rest/v2/meta-models/" + id + "/style",
             {withCredentials: true}
         ).then(
             (response) => {
@@ -82,16 +86,16 @@ const actions = {
             }
         )
     },
-    // [DIAGRAM_REQUEST]: ({commit, id}) => {
-    //     axios.get(
-    //         "http://localhost:9000/rest/v1/meta-models/" + id + "/diagram",
-    //         {withCredentials: true}
-    //     ).then(
-    //         (response) => {
-    //             commit(DIAGRAM_REQUEST_SUCCESS, response)
-    //         },
-    //     )
-    // },
+    refreshDiagram: ({commit, id}) => {
+        axios.get(
+            "http://localhost:9000/rest/v2/meta-models/" + id + "/diagram",
+            {withCredentials: true}
+        ).then(
+            (response) => {
+                commit(DIAGRAM_REQUEST_SUCCESS, response)
+            },
+        )
+    },
 
 
     // "http://localhost:9000" + "/rest/v1/meta-models/" + metaModelId + "/definition"
@@ -101,14 +105,17 @@ const mutations = {
     [GSDL_REQUEST_SUCCESS]: (state, resp) => {
         state.gsdlProject = resp;
     },
-    // [DEFINITION_REQUEST_SUCCESS]: (state, resp) => {
-    //     state.definition = resp;
-    // },
+    [DEFINITION_REQUEST_SUCCESS]: (state, resp) => {
+        state.definition = resp;
+    },
     [SHAPE_REQUEST_SUCCESS]: (state, resp) => {
         state.shape = resp;
     },
     [STYLE_REQUEST_SUCCESS]: (state, resp) => {
         state.style = resp;
+    },
+    [DIAGRAM_REQUEST_SUCCESS]: (state, resp) => {
+        state.diagram = resp;
     },
 
 }
