@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import GraphEditor from './graphical-editor/components/graphEditor/GraphEditor'
+import GraphEditor from './components/graphEditor/GraphEditor'
 
 export default {
   name: 'MetamodelGraphicalEditor',
