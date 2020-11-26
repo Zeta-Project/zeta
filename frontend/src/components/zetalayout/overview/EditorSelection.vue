@@ -53,7 +53,7 @@
                   </v-toolbar-items>
                 </v-toolbar>
                 <div>
-                  <MetamodelGraphicalEditor v-if="!step1IsHidden"></MetamodelGraphicalEditor>
+                  <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
                 </div>
 
                   <div  v-show="step1IsHidden" class="row">
@@ -156,7 +156,7 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import MetamodelGraphicalEditor from '../metamodel/GraphicalEditor'
+import GraphicalEditor from '../metamodel/GraphicalEditor'
 import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
@@ -166,7 +166,7 @@ export default {
     modelInstances: {},
   },
   components: {
-    MetamodelGraphicalEditor,
+    GraphicalEditor,
   },
   data(){
     return{
@@ -182,12 +182,15 @@ export default {
       dialogTextEditor: true,
       continueBtnIsHidden: false,
       stepCounter: 1,
-      dslType: "",
+      dslType: ""
     }
   },
   mounted() {
     EventBus.$on("initSteps",(data) => {
       this.stepCounter = data
+    })
+    EventBus.$on("gdslProjectSelected", gdslProject => {
+      metamodelId = gdslProject.id
     })
   },
   methods: {
@@ -200,9 +203,9 @@ export default {
     showStepElement(step){
       if(step === 1) {if(!this.step1IsHidden) {this.step1IsHidden = false; this.step2IsHidden = true}
                           else {this.step1IsHidden = false; this.step2IsHidden = true; this.step3IsHidden = true; this.step4IsHidden = true; this.continueBtnIsHidden=false; this.dslType = "shape"}}
-      if(step === 2) {this.step1IsHidden = true, new EditorSelection(elements[0], $(elements[0]).data('meta-model-id'), $(elements[0]).data('dsl-type'))}
-      if(step === 3) {this.step3IsHidden = false, new EditorSelection(elements[1], $(elements[1]).data('meta-model-id'), $(elements[1]).data('dsl-type'))}
-      if(step === 4) {this.step4IsHidden = false, new EditorSelection(elements[2], $(elements[2]).data('meta-model-id'), $(elements[2]).data('dsl-type')); this.continueBtnIsHidden = true}
+      if(step === 2) {this.step1IsHidden = true, new EditorSelection(elements[0], metamodelId, $(elements[0]).data('dsl-type'))}
+      if(step === 3) {this.step3IsHidden = false, new EditorSelection(elements[1], metamodelId, $(elements[1]).data('dsl-type'))}
+      if(step === 4) {this.step4IsHidden = false, new EditorSelection(elements[2], metamodelId, $(elements[2]).data('dsl-type')); this.continueBtnIsHidden = true}
     },
     initializeEditor () {
       elements = []
@@ -216,7 +219,7 @@ import 'brace';
 import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
-import {styleLanguage, diagramLanguage, shapeLanguage} from '../metamodel/code-editor/ace-grammar';
+import {styleLanguage, diagramLanguage, shapeLanguage} from './../metamodel/code-editor/ace-grammar';
 import {SourceCodeInspector} from "../metamodel/code-editor/source-code-inspector";
 import {CodeOutline} from "../metamodel/code-editor/code-outline";
 import {OnlineSocket} from "../metamodel/code-editor/online-socket";
@@ -228,10 +231,8 @@ const modesForModel = {
   'style': styleLanguage
 };
 
-
-//export var st
-
 var elements = []
+var metamodelId
 class EditorSelection {
   constructor(element, metaModelId, dslType) {
     this.$element = $(element);
