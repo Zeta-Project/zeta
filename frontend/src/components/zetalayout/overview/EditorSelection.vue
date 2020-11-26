@@ -156,7 +156,7 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import GraphicalEditor from '../metamodel/GraphicalEditor'
+import GraphicalEditor from "src/components/zetalayout/metamodel/GraphicalEditor"
 import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
@@ -220,9 +220,9 @@ import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
 import {styleLanguage, diagramLanguage, shapeLanguage} from './ace-grammar';
-import {SourceCodeInspector} from "../metamodel/code-editor/source-code-inspector";
-import {CodeOutline} from "../metamodel/code-editor/code-outline";
-import {OnlineSocket} from "../metamodel/code-editor/online-socket";
+import {SourceCodeInspector} from "src/components/zetalayout/metamodel/code-editor/source-code-inspector";
+import {CodeOutline} from "./code-editor/code-outline";
+import {OnlineSocket} from "./code-editor/online-socket";
 import axios from 'axios'
 
 const modesForModel = {
