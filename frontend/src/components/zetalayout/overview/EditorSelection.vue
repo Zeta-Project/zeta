@@ -219,7 +219,7 @@ import 'brace';
 import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
-import {styleLanguage, diagramLanguage, shapeLanguage} from './../metamodel/code-editor/ace-grammar';
+import {styleLanguage, diagramLanguage, shapeLanguage} from './ace-grammar';
 import {SourceCodeInspector} from "../metamodel/code-editor/source-code-inspector";
 import {CodeOutline} from "../metamodel/code-editor/code-outline";
 import {OnlineSocket} from "../metamodel/code-editor/online-socket";
