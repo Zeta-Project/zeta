@@ -53,7 +53,7 @@
                   </v-toolbar-items>
                 </v-toolbar>
                 <div>
-                  <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
+                  <MetamodelGraphicalEditor v-if="!step1IsHidden"></MetamodelGraphicalEditor>
                 </div>
 
                   <div  v-show="step1IsHidden" class="row">
@@ -156,7 +156,7 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import GraphicalEditor from '../metamodel/GraphicalEditor'
+import MetamodelGraphicalEditor from '../metamodel/GraphicalEditor'
 import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
@@ -166,7 +166,7 @@ export default {
     modelInstances: {},
   },
   components: {
-    GraphicalEditor,
+    MetamodelGraphicalEditor,
   },
   data(){
     return{
