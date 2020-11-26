@@ -156,7 +156,7 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import GraphicalEditor from './../metamodel/GraphicalEditor'
+import GraphicalEditor from './GraphicalEditor'
 import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
