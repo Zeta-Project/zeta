@@ -8,6 +8,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@mdi/font": "^5.8.55",
     "ace-grammar": "github:foo123/ace-grammar#1.0.3",
     "axios": "^0.20.0",
     "bootstrap": "3.4.1",
@@ -15,13 +16,19 @@
     "brace": "^0.11.1",
     "core-js": "^3.6.5",
     "jquery": "^3.5.1",
+    "node-sass": "^5.0.0",
     "popper.js": "^1.16.1",
     "portal-vue": "^2.1.7",
+    "sass": "^1.29.0",
+    "sass-loader": "^10.0.5",
     "string-replace-loader": "2.3.0",
     "typescript": "^3.9.7",
     "vue": "^2.6.10",
+    "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-material": "^1.0.0-beta-11",
     "vue-router": "^3.4.3",
+    "vuetify": "^2.3.16",
+    "vuetify-loader": "^1.6.0",
     "vuex": "^3.5.1",
     "yfiles": "file:../../yFiles-for-html",
     "zxcvbn": "^4.4.2"
