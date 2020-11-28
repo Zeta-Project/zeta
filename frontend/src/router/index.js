@@ -2,7 +2,7 @@ import VueRouter from 'vue-router'
 
 import DiagramsOverview from '@/components/zetalayout/overview/WebpageDiagramsOverview'
 import MetamodelCodeEditor from '@/components/zetalayout/metamodel/CodeEditor'
-import MetamodelGraphicalEditor from '@/components/zetalayout/metamodel/GraphicalEditor'
+import MetamodelGraphicalEditor from '@/components/zetalayout/overview/GraphicalEditor'
 import ZetaLayout from '@/components/zetalayout/ZetaLayout'
 import AccountLayout from '@/components/accountlayout/AccountLayout'
 import SignIn from '@/components/accountlayout/signin/SignIn'
