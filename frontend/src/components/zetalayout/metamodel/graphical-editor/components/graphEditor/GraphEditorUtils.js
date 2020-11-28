@@ -30,6 +30,8 @@ import {Parameter} from "../../uml/parameters/Parameter";
 import {Operation} from "../../uml/operations/Operation";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+import axios from "axios";
+import { EventBus } from "@/eventbus/eventbus";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
@@ -72,8 +74,8 @@ export function getDefaultGraphEditorInputMode() {
  * @param graphComponent
  * @param loadedMetaModel
  */
-export function saveGraph(graphComponent, loadedMetaModel) {
-    if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
+export function saveGraph(graphComponent, loadedMetaModel, metamodelID) {
+    if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0) {
 
         const graph = graphComponent.graph;
 
@@ -81,7 +83,7 @@ export function saveGraph(graphComponent, loadedMetaModel) {
         const exportedMetaModel = exporter.export();
         if (exportedMetaModel.isValid()) {
             console.log(exportedMetaModel)
-            const data = JSON.stringify({
+            let data = JSON.stringify({
                 name: loadedMetaModel.name,
                 classes: exportedMetaModel.getClasses(),
                 references: exportedMetaModel.getReferences(),
@@ -91,14 +93,26 @@ export function saveGraph(graphComponent, loadedMetaModel) {
                 uiState: JSON.stringify({"empty": "value"})
             });
 
-            ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data)
-                .then(isSuccessStatus)
-                .then(() => {
-                    showSnackbar("Meta model saved successfully!")
-                })
-                .catch(reason => {
-                    showSnackbar("Problem to save meta model: " + reason)
-                });
+            // ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data)
+            const url = "http://localhost:9000" + "/rest/v1/meta-models/" + metamodelID + "/definition";
+            axios.put(
+                url,
+                data,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then(
+                response => {
+                    EventBus.$emit('successMessage', "Successfully saved concept")
+                },
+                error => {
+                    EventBus.$emit('errorMessage', "Failed to save concept: " + error)
+                }
+            )
+
 
         } else {
             let errorMessage = "";

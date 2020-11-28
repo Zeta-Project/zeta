@@ -1,14 +1,15 @@
 import {ZetaApiWrapper} from "./ZetaApiWrapper";
 import {saveAs} from "file-saver";
 import definition from "../devEnv/graphData/definition";
+import axios from "axios"
 
 export let defaultGraph = null;
 
 /**
  * Simulates an REST call to return a predefined, hard-coded graph
  */
-export function getDefaultGraph() {
-    let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
+export function getDefaultGraph(uuid) {
+    //let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
 
     return new Promise((resolve, reject) => {
         if (process.env.NODE_ENV === 'remote') {

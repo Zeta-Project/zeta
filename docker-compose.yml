@@ -35,7 +35,6 @@ services:
        - 9000:9000
      depends_on:
        - "mongodb"
-       - "frontend"
      command: ["-Dlogger.play=ERROR","-Dlogger.application=ERROR","-Dzeta.webapp.host=frontend", "project server", "run"]
 
 # --> temporarily deactivated: generation will not currently take place in the dockers <--
