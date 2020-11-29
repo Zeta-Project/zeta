@@ -3,7 +3,9 @@ package de.htwg.zeta.server.silhouette
 import javax.inject.Inject
 
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
+import controllers.Assets.{Unauthorized, Forbidden}
 import de.htwg.zeta.server.routing.routes
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
@@ -28,7 +30,7 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthenticated(implicit request: RequestHeader): Future[Result] = {
-    Future.successful(Results.Redirect(routes.ScalaRoutes.getSignIn()))
+    Future.successful(Unauthorized)
   }
 
   /**
@@ -40,6 +42,6 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthorized(implicit request: RequestHeader): Future[Result] = {
-    Future.successful(Results.Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> Messages("access.denied")))
+    Future.successful(Forbidden)
   }
 }
