@@ -52,7 +52,7 @@ class SignUpController @Inject()(
     SignUpForm.form.bindFromRequest()(request).fold(
       form => Future.successful(NotAcceptable),
       data => {
-        val result = Ok//Redirect(routes.ScalaRoutes.getSignUp()).flashing("info" -> messages("sign.up.email.sent", data.email))
+        val result = Ok
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
         val userId = loginInfoRepo.read(loginInfo)
         userId.flatMap(userId =>
@@ -66,13 +66,11 @@ class SignUpController @Inject()(
   }
 
   private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent], messages: Messages): Future[Result] = {
-    val url = routes.ScalaRoutes.getSignIn().absoluteURL()(request)
     mailerClient.send(Email(
       subject = messages("email.already.signed.up.subject"),
       from = messages("email.from"),
       to = Seq(data.email),
-      bodyText = Some(views.txt.silhouette.emails.alreadySignedUp(user, url, messages).body),
-      bodyHtml = Some(views.html.silhouette.emails.alreadySignedUp(user, url, messages).body)
+      bodyText = Some("Already signed up")
     ))
 
     Future.successful(result)
@@ -89,7 +87,6 @@ class SignUpController @Inject()(
       token <- tokenCache.create(user.id)
     } yield {
       val url = routes.ScalaRoutes.getAccountActivate(token).absoluteURL()(request)
-      println(Some(views.txt.silhouette.emails.signUp(user, url, messages).body))
       mailerClient.send(Email(
         subject = messages("email.sign.up.subject"),
         from = messages("email.from"),
