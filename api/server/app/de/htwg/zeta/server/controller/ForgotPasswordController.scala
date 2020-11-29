@@ -35,17 +35,6 @@ class ForgotPasswordController @Inject()(
     implicit val ec: ExecutionContext
 ) extends BaseController {
 
-  /** Views the `Forgot Password` page.
-   *
-   * @param request  The request
-   * @param messages The messages
-   * @return The result to display.
-   */
-  def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok(views.html.silhouette.forgotPassword(ForgotPasswordForm.form, request, messages)))
-  }
-
-
   /** Sends an email with password reset instructions.
    *
    * It sends an email to the given address if it exists in the database. Otherwise we do not show the user
@@ -60,18 +49,17 @@ class ForgotPasswordController @Inject()(
       form => Future.successful(NotAcceptable),
       email => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
-        val result = Ok//Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
+        val result = Ok
         val userId = loginInfoRepo.read(loginInfo)
         val user = userId.flatMap(userId => userRepo.read(userId))
         user.flatMap(user => {
           tokenCache.create(user.id).map { token =>
-            val url = routes.ScalaRoutes.getPasswordReset(token).absoluteURL()(request)
             mailerClient.send(Email(
               subject = messages("email.reset.password.subject"),
               from = messages("email.from"),
               to = Seq(email),
-              bodyText = Some(views.txt.silhouette.emails.resetPassword(user, url, messages).body),
-              bodyHtml = Some(views.html.silhouette.emails.resetPassword(user, url, messages).body)
+              bodyText = Some(views.txt.silhouette.emails.resetPassword(user, "url", messages).body),
+              bodyHtml = Some(views.html.silhouette.emails.resetPassword(user, "url", messages).body)
             ))
             result
           }

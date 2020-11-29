@@ -41,7 +41,6 @@ trait RouteController extends InjectedController {
 
   protected object UnAuthenticatedSocket extends UnAuthenticatedWebSocket(routeCont.abstractWebSocketDependencies)
 
-
   protected object BasicGet extends BasicAction(routeCont.abstractActionDependencies)
 
   protected object BasicPost extends BasicAction(routeCont.abstractActionDependencies)
@@ -70,49 +69,24 @@ class ScalaRoutes @Inject()(
 
   def getSocketConnection: WebSocket = webSocket.socket
 
-  // # CSRF Toke
-  def getCSRF(): Action[AnyContent] = AuthenticatedGet(webpageController.csrf _)
-
-  // # Home page
-  def getIndex(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)
-
   def getUser(): Action[AnyContent] = AuthenticatedGet(applicationController.user _)
 
-  def getSignout: Action[AnyContent] = AuthenticatedGet(applicationController.signOut _)
+  def getSignOut(): Action[AnyContent] = AuthenticatedGet(applicationController.signOut _)
 
-  // TODO: Remove
-  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(webpageController.csrf _)
+  def postSignUp(): Action[AnyContent] = BasicPost(signUpController.submit_json _)
 
-  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit_json _)
-
-  // TODO: Remove
-  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(webpageController.csrf _)
-
-  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit_json _)
-
-  // TODO: Remove
-  def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(forgotPasswordController.view _)
+  def postSignIn(): Action[AnyContent] = BasicPost(signInController.submit_json _)
 
   def postPasswordForgot(): Action[AnyContent] = UnAuthenticatedPost(forgotPasswordController.submit _)
 
-  // TODO: Remove
-  def getPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedGet(resetPasswordController.view(token: java.util.UUID) _)
-
   def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(resetPasswordController.submit(token: java.util.UUID) _)
-
-  // TODO: Remove
-  def getPasswordChange(): Action[AnyContent] = AuthenticatedGet(changePasswordController.view _)
 
   def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(changePasswordController.submit _)
 
 
   def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(activateAccountController.send(email) _) // TODO send email per API??
 
-  def getAccountActivate(token: UUID): Action[AnyContent] = UnAuthenticatedGet(activateAccountController.activate(token: java.util.UUID) _)
-
-
-  // ### Webpage
-  def getWebpage(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)
+  def getAccountActivate(token: UUID): Action[AnyContent] = BasicGet(activateAccountController.activate(token: java.util.UUID) _)
 
   def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(webpageController.diagramsOverviewShortInfo _)
 
@@ -120,7 +94,6 @@ class ScalaRoutes @Inject()(
 
 
   // # metamodel editor
-  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelController.metaModelEditor(metaModelId) _)
 
   def getMetamodelSocket(metaModelId: UUID): WebSocket = AuthenticatedSocket(metaModelController.metaModelSocket(metaModelId) _)
 
@@ -266,10 +239,6 @@ class ScalaRoutes @Inject()(
   def getAllDslV1(id: UUID): Action[AnyContent] = AuthenticatedGet(dslRestApi.getTotalApiV1(id) _)
 
 
-  // ### Code Editor
-  def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
-    AuthenticatedGet(codeEditorController.codeEditor(metaModelId, dslType) _)
-
   // # Map static resources from the /public folder to the /assets URL path
   def getAssets(file: String): Action[AnyContent] = assets.at(path = "/public", file)
 
@@ -285,11 +254,11 @@ class ScalaRoutes @Inject()(
 
   def getKlimaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getKlimaCodeViewer(modelId) _)
 
-  def getMethodClassCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(codeEditorController.methodClassCodeEditor(metaModelId, methodName, className) _)
+  def getMethodClassCodeEditorContent(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(codeEditorController.methodClassCodeEditorContent(metaModelId, methodName, className) _)
 
-  def getMethodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(codeEditorController.methodReferenceCodeEditor(metaModelId, methodName, referenceName) _)
+  def getMethodReferenceCodeEditorContent(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(codeEditorController.methodReferenceCodeEditorContent(metaModelId, methodName, referenceName) _)
 
-  def getMethodCommonCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(codeEditorController.methodMainCodeEditor(metaModelId, methodName) _)
+  def getMethodCommonCodeEditorContent(metaModelId: UUID, methodName: String) = AuthenticatedGet(codeEditorController.methodMainCodeEditorContent(metaModelId, methodName) _)
 
 }
 

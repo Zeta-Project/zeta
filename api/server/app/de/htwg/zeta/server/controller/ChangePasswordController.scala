@@ -35,17 +35,6 @@ class ChangePasswordController @Inject()(
 ) extends InjectedController {
 
   /**
-   * Views the `Change Password` page.
-   *
-   * @param request  The request
-   * @param messages The messages
-   * @return The result to display.
-   */
-  def view(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Result = {
-    Ok(views.html.silhouette.changePassword(ChangePasswordForm.form, request.identity.user, request, messages))
-  }
-
-  /**
    * Changes the password.
    *
    * @param request  The request
@@ -61,11 +50,11 @@ class ChangePasswordController @Inject()(
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           val passwordInfo = passwordHasherRegistry.current.hash(newPassword)
           authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-            Ok//Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("success" -> messages("password.changed"))
+            Ok
           }
         }.recover {
           case _: ProviderException =>
-            Unauthorized//Redirect(routes.ScalaRoutes.getPasswordChange()).flashing("error" -> messages("current.password.invalid"))
+            Unauthorized
         }
       }
     )
