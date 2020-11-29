@@ -1,44 +1,57 @@
 <template>
-  <div >
-    <div id="model-instance-container" class="panel panel-default">
-      <div class="panel-heading">
-        <strong>Model Instances</strong>
+  <v-app id="model-selection">
+    <v-card>
+      <v-card-title class="font-weight-bold headline">
+        Model Instances
+      </v-card-title>
+
+      <v-divider class="ma-0"></v-divider>
+
+      <v-card-text v-if="!modelInstances.length" class="body-1">
+        There are no model instances.
+      </v-card-text>
+
+      <div v-else>
+        <v-list-item v-for="model in modelInstances" v-bind:key="model.id">
+          <v-list-item-content>
+            <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
+              <v-list-item-title v-text="model.name"></v-list-item-title>
+            </router-link>
+          </v-list-item-content>
+
+          <v-list-item-action>
+            <v-btn icon @click="deleteModelInstance(model.id)">
+              <v-icon color="black">mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item-action>
+
+          <v-list-item-action>
+            <v-btn icon @click="validateModelInstance(model.id)">
+              <v-icon color="black">mdi-thumb-up</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </v-list-item>
       </div>
 
-      <div class="panel-body" v-if="!modelInstances.length">
-        <span class="text-muted">There are no model instances.</span>
-      </div>
+      <v-divider class="ma-0"></v-divider>
 
-      <div class="list-group" v-else>
-        <div v-for="model in modelInstances" v-bind:key="model.id" class="list-group-item list-item-container">
-          <div v-on:click="deleteModelInstance(model.id)"
-               class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip"
-               title="Delete model instance"></div>
-          <div v-on:click="validateModelInstance(model.id)"
-               class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up"
-               data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-          <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
-            <div>{{ model.name }}</div>
-          </router-link>
-        </div>
+      <div class="ma-2">
+        <v-form>
+          <v-text-field
+              id="inputModelName"
+              v-model="inputModelName"
+              :append-outer-icon="inputModelName ? 'mdi-note-plus' : ''"
+              outlined
+              clearable
+              label="New model name"
+              type="text"
+              @click:append-outer="createModelInstance"
+              v-on:keyup.enter="createModelInstance"
+          ></v-text-field>
+        </v-form>
       </div>
-
-      <div class="panel-footer">
-        <form>
-          <div class="input-group">
-            <input v-on:keyup.enter="createModelInstance" v-model="inputModelName" type="text" class="form-control"
-                   id="inputModelName" placeholder="New model name" autocomplete="off">
-            <span class="input-group-btn">
-                  <button v-on:click="createModelInstance" type=button id="btnCreateModelInstance"
-                          class="btn btn-default" data-toggle="tooltip" title="Create model instace">
-                    <span class="glyphicon glyphicon-plus" aria-hidden=true></span>
-                  </button>
-                </span>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+    </v-card>
+  </v-app>
 </template>
 <script>
 import ModelInstanceUtils from "./ModelInstanceUtils";
