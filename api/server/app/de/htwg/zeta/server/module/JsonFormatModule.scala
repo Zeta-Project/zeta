@@ -110,7 +110,7 @@ class JsonFormatModule extends ScalaModule {
   @Singleton
   def provideGDSLInstanceProjectFormat(
       gDSLInstanceFormat: GraphicalDslInstanceFormat,
-      gDSLProjectFormat: GdslProjectFormat,
+      gDSLProjectFormat: GdslProjectFormat
   ): GDSLInstanceProjectFormat = {
     new GDSLInstanceProjectFormat(gDSLInstanceFormat, gDSLProjectFormat)
   }

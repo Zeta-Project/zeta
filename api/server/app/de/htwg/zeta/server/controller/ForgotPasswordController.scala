@@ -35,6 +35,7 @@ class ForgotPasswordController @Inject()(
     implicit val ec: ExecutionContext
 ) extends BaseController {
 
+  // TODO: New Workflow. See: https://github.com/Zeta-Project/zeta/issues/456
   /** Sends an email with password reset instructions.
    *
    * It sends an email to the given address if it exists in the database. Otherwise we do not show the user
@@ -54,12 +55,14 @@ class ForgotPasswordController @Inject()(
         val user = userId.flatMap(userId => userRepo.read(userId))
         user.flatMap(user => {
           tokenCache.create(user.id).map { token =>
+            // TODO: Replace URL
+            val url = routes.ScalaRoutes.postPasswordForgot().absoluteURL()(request)
             mailerClient.send(Email(
               subject = messages("email.reset.password.subject"),
               from = messages("email.from"),
               to = Seq(email),
-              bodyText = Some(views.txt.silhouette.emails.resetPassword(user, "url", messages).body),
-              bodyHtml = Some(views.html.silhouette.emails.resetPassword(user, "url", messages).body)
+              bodyText = Some(views.txt.silhouette.emails.resetPassword(user, url, messages).body),
+              bodyHtml = Some(views.html.silhouette.emails.resetPassword(user, url, messages).body)
             ))
             result
           }
