@@ -42,7 +42,8 @@ import 'jquery/src/jquery.js'
 import 'bootstrap'
 
 import axios from 'axios'
-import vuetify from "./components/zetalayout/overview/vuetify";
+
+import vuetify from './plugins/vuetify'
 
 Vue.use(VueMaterial)
 Vue.use(VueRouter)
