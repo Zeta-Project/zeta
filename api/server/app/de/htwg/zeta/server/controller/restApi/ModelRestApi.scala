@@ -29,6 +29,12 @@ import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
+import de.htwg.zeta.common.format.entity.FileFormat
+import de.htwg.zeta.common.format.model.GDSLInstanceProjectFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.instance.GdslInstanceProject
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
@@ -44,11 +50,15 @@ import play.api.mvc.Results
  * REST-ful API for model definitions
  */
 class ModelRestApi @Inject()(
+    graphicalDslRepo: AccessRestrictedGdslProjectRepository,
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: GdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
+    gdslProjectFormat: GdslProjectFormat,
+    GDSLInstanceProjectFormat: GDSLInstanceProjectFormat,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
+    fileFormat: FileFormat,
     projectExporter: ProjectExporter,
     projectImporter: ProjectImporter,
     implicit val ec: ExecutionContext
@@ -115,12 +125,13 @@ class ModelRestApi @Inject()(
 
   /** returns whole model structure */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, modelEntity =>
-      Ok(graphicalDslInstanceFormat.writes(modelEntity))
-    )
+    protectedReadFuture(id, request, (modelEntity: GraphicalDslInstance) => {
+      protectedGDSLRead(modelEntity.graphicalDslId,request)
+        .map(gDSLP => GDSLInstanceProjectFormat.writes(GdslInstanceProject.apply(modelEntity, gDSLP)))
+        .map(p => Ok(p))
+    })
   }
 
-  // FIXME duplicate method (same as get)
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: GraphicalDslInstance) => Ok(graphicalDslInstanceFormat.writes(m)))
@@ -217,13 +228,19 @@ class ModelRestApi @Inject()(
     protectedReadFuture[A](id, request, me => Future(trans(me)))
   }
 
+  private def protectedGDSLRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A]): Future[GdslProject] = {
+    graphicalDslRepo
+      .restrictedTo(request.identity.id)
+      .read(id)
+  }
+
   def getScalaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
       graphicalDslInstance <- modelEntityRepo.read(modelId)
       metaModelEntity <- metaModelEntityRepo.read(graphicalDslInstance.graphicalDslId)
     } yield {
       val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.concept, graphicalDslInstance).toList
-      Ok(views.html.codeViewer.ScalaCodeViewer(files))
+      Ok (JsArray(files.map(f => fileFormat.writes(f))))
     }
   }
 
@@ -245,7 +262,9 @@ class ModelRestApi @Inject()(
     } yield {
       filesOrFail match {
         case Left(fail) => BadRequest(fail)
-        case Right(files) => Ok(views.html.codeViewer.ScalaCodeViewer(files))
+        case Right(files) => Ok {
+          JsArray(files.map(f => fileFormat.writes(f)))
+        }
       }
     }
   }

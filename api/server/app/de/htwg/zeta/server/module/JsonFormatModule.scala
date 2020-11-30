@@ -12,6 +12,7 @@ import de.htwg.zeta.common.format.entity.GeneratorImageFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
 import de.htwg.zeta.common.format.entity.UserFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.GDSLInstanceProjectFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.format.project.AttributeFormat
@@ -103,6 +104,15 @@ class JsonFormatModule extends ScalaModule {
       methodFormat: MethodFormat
   ): GraphicalDslInstanceFormat = {
     new GraphicalDslInstanceFormat(nodeFormat, edgeFormat, attributeFormat, attributeValueFormat, methodFormat)
+  }
+
+  @Provides
+  @Singleton
+  def provideGDSLInstanceProjectFormat(
+      gDSLInstanceFormat: GraphicalDslInstanceFormat,
+      gDSLProjectFormat: GdslProjectFormat
+  ): GDSLInstanceProjectFormat = {
+    new GDSLInstanceProjectFormat(gDSLInstanceFormat, gDSLProjectFormat)
   }
 
   @Provides

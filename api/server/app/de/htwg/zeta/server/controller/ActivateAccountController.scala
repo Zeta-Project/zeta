@@ -44,7 +44,6 @@ class ActivateAccountController @Inject()(
   def send(email: String)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("activation.email.sent", decodedEmail))
 
     val userId = loginInfoRepo.read(loginInfo)
     val user = userId.flatMap(userId => userRepo.read(userId))
@@ -61,10 +60,12 @@ class ActivateAccountController @Inject()(
             bodyHtml = Some(views.html.silhouette.emails.activateAccount(user, url, messages).body)
           ))
         }
+        Accepted
+      } else {
+        Ok
       }
-      result
     }.recover {
-      case _ => result
+      case _ => Forbidden
     }
 
   }
@@ -78,11 +79,9 @@ class ActivateAccountController @Inject()(
    */
   def activate(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     tokenCache.read(token).flatMap(userId =>
-      userRepo.update(userId, _.copy(activated = true)).map(_ =>
-        Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("account.activated"))
-      )
+      userRepo.update(userId, _.copy(activated = true)).map(_ => Accepted)
     ).recover {
-      case _ => Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.activation.link"))
+      case _ => Forbidden("Invalid activation link")
     }
   }
 
