@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="font-weight-bold headline">
+    <v-card-title>
       Model Instances
     </v-card-title>
 
