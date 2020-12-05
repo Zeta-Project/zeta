@@ -20,6 +20,8 @@
             <DndPanel
                     v-if="graphComponent"
                     :graph-component="graphComponent"
+                    :shape="shape"
+                    :diagram="diagram"
                     :is-expanded="isDndExpanded"
                     :passive-supported="true"
                     @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
@@ -127,7 +129,9 @@
                 isDndExpanded: false,
                 grid: null,
                 selectedItem: null,
-                sharedData: {focusedNodeData: null, focusedEdgeData: null}
+                sharedData: {focusedNodeData: null, focusedEdgeData: null},
+                diagram: null,
+                shape: null
             }
         },
         computed: {
@@ -158,7 +162,7 @@
                         .then(
                             response => {
                               this.concept = response.data
-                              this.plotDefaultGraph(this.concept)
+                              // this.plotDefaultGraph(this.concept)
                               this.executeLayout()
                                   .then(() => {
                                     const isLoaded = true;
@@ -166,8 +170,25 @@
                                   })
                                   .catch(error => reject(error))
                             }
-                        )
-                        .catch(error => reject(error))
+                        ).catch(error => reject(error))
+
+                        const metamodelId = "034473e6-ca73-477f-a913-9dc6046528af"
+
+                        axios.get(
+                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/shape", {withCredentials: true}
+                        ).then(
+                            response => {
+                              this.shape = response.data
+                            }
+                        ).catch(error => reject(error))
+
+                        axios.get(
+                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/diagram", {withCredentials: true}
+                        ).then(
+                            response => {
+                              this.diagram = response.data
+                            }
+                        ).catch(error => reject(error))
                 })
             },
 

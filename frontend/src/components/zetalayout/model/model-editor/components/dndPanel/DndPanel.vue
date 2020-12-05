@@ -39,7 +39,7 @@
     export default {
         name: 'DndPanel',
         mounted() {
-            this.panelItems = this.getPanelItems(this.graphComponent)
+            this.panelItems = this.getPanelItems(this.graphComponent, this.diagram)
             const nodes = document.querySelectorAll('#drag-and-drop-panel')
             this.div = nodes[nodes.length - 1]
             // Append svg images as draggable nodes to the drag-and-drop-panel
@@ -52,11 +52,39 @@
                 div: ''
             }
         },
+        props: {
+          graphComponent: {
+            type: Object,
+            required: true,
+          },
+          shape: {
+            type: Object,
+            required: true,
+          },
+          diagram: {
+            type: Object,
+            required: true,
+          },
+          isExpanded: {
+            type: Boolean,
+            required: true
+          },
+          passiveSupported: {
+            type: Boolean,
+            required: true
+          },
+          title: {
+            type: String,
+            default: function () {
+              return 'Drag and Drop Panel'
+            }
+          }
+        },
         methods: {
             /**
              * Return panel items
              **/
-            getPanelItems(graphComponent) {
+            getPanelItems(graphComponent, diagram) {
                 let methods = {}
                 methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
                 methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
@@ -65,11 +93,27 @@
                 methods.changeInputMode = () => this.$emit('change-input-mode');
                 const NodeConstructor = Vue.extend(Node);
                 // Create node and push them into the itemContainer
+
                 const node = new SimpleNode();
                 node.layout = new Rect(0, 0, 150, 250);
                 // Set the style of the node in the dnd panel
                 node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
-                return [{element: node, tooltip: 'Node'}]
+
+                const nodeList = [{element: node, tooltip: 'Node'}]
+
+                this.diagram.diagrams[0].palettes.forEach(diagramKey => {
+                  const node = new SimpleNode();
+                  node.layout = new Rect(0, 0, 150, 250);
+                  // Set the style of the node in the dnd panel
+                  node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
+
+                  //console.log(diagramKey)
+                  nodeList.push({element: node, tooltip: diagramKey.name})
+                })
+
+                console.log(this.shape)
+
+                return nodeList
             },
 
             /**
@@ -337,26 +381,6 @@
                         touchStartListener,
                         this.passiveSupported ? {passive: false} : false
                     )
-                }
-            }
-        },
-        props: {
-            graphComponent: {
-                type: Object,
-                required: true,
-            },
-            isExpanded: {
-                type: Boolean,
-                required: true
-            },
-            passiveSupported: {
-                type: Boolean,
-                required: true
-            },
-            title: {
-                type: String,
-                default: function () {
-                    return 'Drag and Drop Panel'
                 }
             }
         }
