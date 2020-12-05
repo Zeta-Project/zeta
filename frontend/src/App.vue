@@ -80,7 +80,6 @@ export default {
           response.request.responseURL.endsWith("/signIn")
       ) {
         localStorage.removeItem("user-token");
-        console.log(this.$router)
         this.$router.push('/account/signIn')
 
       }
