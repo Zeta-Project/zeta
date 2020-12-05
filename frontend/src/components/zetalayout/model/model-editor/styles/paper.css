@@ -1,0 +1,25 @@
+.content {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 25px;
+   transition: left 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s,
+   right 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s;
+}
+
+#graphComponent {
+
+   position: absolute;
+   left: 0;
+   top: 80px;
+   right: 0;
+   bottom: 0;
+   background-color: #ffffff;
+}
+
+@media screen and (max-height: 500px) {
+   #graphComponent {
+      top: 60px;
+   }
+}

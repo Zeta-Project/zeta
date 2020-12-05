@@ -17,7 +17,7 @@
           <div v-on:click="validateModelInstance(model.id)"
                class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up"
                data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-          <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
+          <router-link style="text-decoration: none; color: initial" :to="'/zeta/model/editor/' + model.id">
             <div>{{ model.name }}</div>
           </router-link>
         </div>
