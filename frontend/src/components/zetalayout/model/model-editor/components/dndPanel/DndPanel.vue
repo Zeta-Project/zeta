@@ -39,7 +39,7 @@
     export default {
         name: 'DndPanel',
         mounted() {
-            this.panelItems = this.getPanelItems(this.graphComponent, this.diagram)
+            this.panelItems = this.getPanelItems(this.graphComponent, this.shape, this.diagram)
             const nodes = document.querySelectorAll('#drag-and-drop-panel')
             this.div = nodes[nodes.length - 1]
             // Append svg images as draggable nodes to the drag-and-drop-panel
@@ -84,7 +84,7 @@
             /**
              * Return panel items
              **/
-            getPanelItems(graphComponent, diagram) {
+            getPanelItems(graphComponent, shape, diagram) {
                 let methods = {}
                 methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
                 methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
@@ -101,17 +101,28 @@
 
                 const nodeList = [{element: node, tooltip: 'Node'}]
 
-                this.diagram.diagrams[0].palettes.forEach(diagramKey => {
+                console.log(graphComponent)
+                console.log(diagram)
+                console.log(shape)
+
+                diagram.diagrams[0].palettes.forEach(diagramKey => {
                   const node = new SimpleNode();
-                  node.layout = new Rect(0, 0, 150, 250);
+
+                  const shapeNode = shape.nodes.filter(x => {
+                    return x.name === diagramKey.nodes[0]
+                  })
+                  const size = shapeNode[0].size
+
+                  const width = size.widthMin
+                  const height = size.heightMin
+
+                  node.layout = new Rect(0, 0, width, height);
                   // Set the style of the node in the dnd panel
                   node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
 
                   //console.log(diagramKey)
                   nodeList.push({element: node, tooltip: diagramKey.name})
                 })
-
-                console.log(this.shape)
 
                 return nodeList
             },
