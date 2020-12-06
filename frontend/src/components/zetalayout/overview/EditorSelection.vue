@@ -1,66 +1,75 @@
 <template>
-  <div class="panel panel-default overlay-container">
-    <div v-if="modelInstances.length" class="overlay" data-toggle="tooltip"
-         title="Locked because there are model instances"></div>
-    <div class="panel-heading">
-      <strong>Edit project <em>{{ gdslProject.name }}</em></strong>
-    </div>
+  <v-card>
+    <v-overlay v-if="modelInstances.length" :absolute="true" :opacity="0.85">
+      <v-icon x-large>mdi-folder-lock</v-icon>
+      <div>
+        Locked because there are model instances
+      </div>
+    </v-overlay>
 
-    <v-stepper v-model="stepCounter">
-      <v-stepper-header>
-        <v-stepper-step :complete="stepCounter > 1" step="1">Concept<br>Editor</v-stepper-step>
-        <v-divider></v-divider>
-        <v-stepper-step :complete="stepCounter > 2" step="2">Shape</v-stepper-step>
-        <v-divider></v-divider>
-        <v-stepper-step :complete="stepCounter > 3" step="3">Style</v-stepper-step>
-        <v-divider></v-divider>
-        <v-stepper-step :complete="stepCounter === 4" step="4">Diagram</v-stepper-step>
-      </v-stepper-header>
+    <v-card-title>
+      Edit project {{ gdslProject.name }}
+    </v-card-title>
+
+    <v-divider class="ma-0"></v-divider>
+
+    <v-card-text>
+      <v-stepper v-model="stepCounter">
+        <v-stepper-header>
+          <v-stepper-step :complete="stepCounter > 1" step="1">Concept<br>Editor</v-stepper-step>
+          <v-divider></v-divider>
+          <v-stepper-step :complete="stepCounter > 2" step="2">Shape</v-stepper-step>
+          <v-divider></v-divider>
+          <v-stepper-step :complete="stepCounter > 3" step="3">Style</v-stepper-step>
+          <v-divider></v-divider>
+          <v-stepper-step :complete="stepCounter === 4" step="4">Diagram</v-stepper-step>
+        </v-stepper-header>
+      </v-stepper>
 
       <v-dialog v-model="editProjectDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
           <div id="app" data-app>
-            <v-btn v-on:click="showStepElement(stepCounter)" class="list-group-item my-auto" v-bind="attrs" v-on="on">
+            <v-btn v-on:click="showStepElement(stepCounter)" class="mt-4" color="primary" depressed v-bind="attrs" v-on="on">
               Edit project
             </v-btn>
           </div>
         </template>
 
         <v-card>
-          <br><br>
-          <v-toolbar dark color="primary">
+          <v-toolbar dark color="primary" class="rounded-0">
             <v-btn icon dark @click="editProjectDialog = false">
               <v-icon>mdi-close</v-icon>
             </v-btn>
             <v-toolbar-title>Edit project</v-toolbar-title>
             <v-spacer></v-spacer>
 
-            <v-stepper v-model="stepCounter">
-              <v-stepper-header>
-                <v-stepper-step @click="showStepElement(stepCounter=1)" :complete="stepCounter > 1" step="1">
-                  {{ step1 }}
-                </v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step @click="showStepElement(stepCounter=2)" :complete="stepCounter > 2" step="2">
-                  {{ step2 }}
-                </v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step @click="showStepElement(stepCounter=3)" :complete="stepCounter > 3" step="3">
-                  {{ step3 }}
-                </v-stepper-step>
-                <v-divider></v-divider>
-                <v-stepper-step @click="showStepElement(stepCounter=4)" :complete="stepCounter === 4" step="4">
-                  {{ step4 }}
-                </v-stepper-step>
-              </v-stepper-header>
-            </v-stepper>
-
             <v-toolbar-items>
-              <v-btn :disabled="continueBtnIsHidden" color="primary"
+              <v-stepper v-model="stepCounter" class="elevation-0 rounded-0">
+                <v-stepper-header>
+                  <v-stepper-step @click="showStepElement(stepCounter=1)" :complete="stepCounter > 1" step="1">
+                    {{ step1 }}
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step @click="showStepElement(stepCounter=2)" :complete="stepCounter > 2" step="2">
+                    {{ step2 }}
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step @click="showStepElement(stepCounter=3)" :complete="stepCounter > 3" step="3">
+                    {{ step3 }}
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step @click="showStepElement(stepCounter=4)" :complete="stepCounter === 4" step="4">
+                    {{ step4 }}
+                  </v-stepper-step>
+                </v-stepper-header>
+              </v-stepper>
+
+              <v-btn :disabled="continueBtnIsHidden" text
                      v-on:click="initializeEditor(), stepCounter++, showStepElement(stepCounter)">Continue
               </v-btn>
             </v-toolbar-items>
           </v-toolbar>
+
           <div>
             <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
           </div>
@@ -139,7 +148,7 @@
           </div>
         </v-card>
       </v-dialog>
-    </v-stepper>
+    </v-card-text>
     <!--
           <div class="list-group">
             <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
@@ -156,19 +165,28 @@
             </router-link>
           </div>
     -->
-    <div class="panel-footer dropdown">
-      <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="true">
-        Validator
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="btnValidator">
-        <li><a v-on:click="validatorGenerate" id="validatorGenerate">Generate / Update Validator</a></li>
-        <li><a v-on:click="validatorShow" id="validatorShow">Show Validation Rules</a></li>
-      </ul>
-    </div>
-  </div>
 
+    <v-divider class="ma-0"></v-divider>
+
+    <v-card-actions>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn color="secondary" outlined v-on="on">
+            Validator
+            <v-icon class="ml-1">mdi-chevron-down</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-on:click="validatorGenerate" id="validatorGenerate">
+            <v-list-item-title>Generate / Update Validator</v-list-item-title>
+          </v-list-item>
+          <v-list-item v-on:click="validatorShow" id="validatorShow">
+            <v-list-item-title>Show Validation Rules</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-card-actions>
+  </v-card>
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
