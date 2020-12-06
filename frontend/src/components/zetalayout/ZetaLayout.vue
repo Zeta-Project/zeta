@@ -369,15 +369,9 @@ paper-button::shadow #ripple {
   border-radius: 3px;
   text-align: center;
   overflow: auto;
-  font-size: 35px;
   padding: 20px 0 0 0;
   color: darkslategray;
   cursor: pointer;
-}
-
-/* hide 'upload project' button */
-#file{
-  display: none;
 }
 
 /* Thumbnail */
