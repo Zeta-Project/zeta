@@ -1,19 +1,32 @@
 package de.htwg.zeta.server.controller.restApi
 
+import java.io.InvalidObjectException
 import java.time.Instant
 import java.util.UUID
 import java.util.zip.ZipFile
+import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
+import de.htwg.zeta.common.format.entity.FileFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.GDSLInstanceProjectFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
+import de.htwg.zeta.common.format.project.TaskResultFormat
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.instance.GdslInstanceProject
+import de.htwg.zeta.common.models.project.TaskResult
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
+import de.htwg.zeta.parser.GraphicalDSLParser
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
@@ -25,16 +38,6 @@ import de.htwg.zeta.server.util.FileZipper
 import de.htwg.zeta.server.util.ProjectExporter
 import de.htwg.zeta.server.util.ProjectImporter
 import grizzled.slf4j.Logging
-import javax.inject.Inject
-
-import scala.concurrent.ExecutionContext
-
-import de.htwg.zeta.common.format.entity.FileFormat
-import de.htwg.zeta.common.format.model.GDSLInstanceProjectFormat
-import de.htwg.zeta.common.format.project.GdslProjectFormat
-import de.htwg.zeta.common.models.project.GdslProject
-import de.htwg.zeta.common.models.project.instance.GdslInstanceProject
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
@@ -54,8 +57,9 @@ class ModelRestApi @Inject()(
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: GdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
-    gdslProjectFormat: GdslProjectFormat,
     GDSLInstanceProjectFormat: GDSLInstanceProjectFormat,
+    taskResultFormat: TaskResultFormat,
+    graphicalDslParser: GraphicalDSLParser,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
     fileFormat: FileFormat,
@@ -126,9 +130,19 @@ class ModelRestApi @Inject()(
   /** returns whole model structure */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedReadFuture(id, request, (modelEntity: GraphicalDslInstance) => {
-      protectedGDSLRead(modelEntity.graphicalDslId,request)
-        .map(gDSLP => GDSLInstanceProjectFormat.writes(GdslInstanceProject.apply(modelEntity, gDSLP)))
-        .map(p => Ok(p))
+      protectedGDSLRead(modelEntity.graphicalDslId, request)
+        .map (
+          gDSL => {
+            graphicalDslParser.parse(gDSL.concept,gDSL.style,gDSL.shape,gDSL.diagram).fold[(Concept,GraphicalDsl)](
+              errorResult =>
+                throw new InvalidObjectException(
+                  taskResultFormat.writes(TaskResult.error(errorResult.errorDsl, errorResult.errors, errorResult.position)).toString()
+                ),
+              successResult => (gDSL.concept,successResult)
+            )
+          })
+        .map((gDSL) => GDSLInstanceProjectFormat.writes(GdslInstanceProject.apply(modelEntity,gDSL._1,gDSL._2.shape,gDSL._2.diagrams,gDSL._2.styles)))
+        .map(project => Ok(project))
     })
   }
 
@@ -240,7 +254,7 @@ class ModelRestApi @Inject()(
       metaModelEntity <- metaModelEntityRepo.read(graphicalDslInstance.graphicalDslId)
     } yield {
       val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.concept, graphicalDslInstance).toList
-      Ok (JsArray(files.map(f => fileFormat.writes(f))))
+      Ok(JsArray(files.map(f => fileFormat.writes(f))))
     }
   }
 

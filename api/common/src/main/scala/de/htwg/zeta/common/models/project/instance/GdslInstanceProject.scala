@@ -1,7 +1,9 @@
 package de.htwg.zeta.common.models.project.instance
 
-import de.htwg.zeta.common.models.entity.GraphicalDslRelease
-import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.gdsl.diagram.Diagram
+import de.htwg.zeta.common.models.project.gdsl.shape.Shape
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 
 /**
  * A Instance of a GdslInstanceProject (formaly named Model)
@@ -12,11 +14,14 @@ import de.htwg.zeta.common.models.project.GdslProject
  */
 case class GdslInstanceProject(
     gDSLInstance: GraphicalDslInstance,
-    gDSLProject: GdslProject
+    concept: Concept,
+    shape: Shape,
+    diagram: List[Diagram],
+    style: List[Style]
 )
 
 object GdslInstanceProject {
-  def empty(gDSLInstance: GraphicalDslInstance, gDSLProject: GdslProject): GdslInstanceProject = {
-    GdslInstanceProject (gDSLInstance, gDSLProject)
+  def empty(gDSLInstance: GraphicalDslInstance, concept: Concept,shape: Shape, diagram: List[Diagram], style: List[Style]): GdslInstanceProject = {
+    GdslInstanceProject (gDSLInstance, concept,shape,diagram,style)
   }
 }

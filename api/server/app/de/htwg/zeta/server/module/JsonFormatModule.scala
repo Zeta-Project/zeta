@@ -25,6 +25,9 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
+import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
+import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import net.codingwell.scalaguice.ScalaModule
 
 class JsonFormatModule extends ScalaModule {
@@ -110,9 +113,12 @@ class JsonFormatModule extends ScalaModule {
   @Singleton
   def provideGDSLInstanceProjectFormat(
       gDSLInstanceFormat: GraphicalDslInstanceFormat,
-      gDSLProjectFormat: GdslProjectFormat
+      conceptFormat: ConceptFormat,
+      shapeFormat: ShapeFormat,
+      diagramFormat: DiagramsFormat,
+      styleFormat: StylesFormat
   ): GDSLInstanceProjectFormat = {
-    new GDSLInstanceProjectFormat(gDSLInstanceFormat, gDSLProjectFormat)
+    new GDSLInstanceProjectFormat(gDSLInstanceFormat, conceptFormat,shapeFormat,diagramFormat,styleFormat)
   }
 
   @Provides
