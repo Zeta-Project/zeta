@@ -1,43 +1,46 @@
 <template>
   <div class="zeta">
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-overview">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <router-link class="navbar-brand" to="/">
-            <img src="../../assets/zeta_logo.png" class="navbar-logo">
-          </router-link>
-        </div>
+    <v-app-bar dense>
+      <v-toolbar-title>
+        <router-link to="/">
+          <img class="v-navbar-logo" src="../../assets/zeta_logo.png" contain />
+        </router-link>
+      </v-toolbar-title>
+      <v-breadcrumbs v-if="gdslProject && $vuetify.breakpoint.smAndUp">
+        <v-icon>mdi-chevron-right</v-icon>
+        <v-breadcrumbs-item>
+          <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">{{ gdslProject.name }}</router-link>
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
 
-        <div class="collapse navbar-collapse" id="navbar-collapse-overview">
-          <ul class="nav navbar-nav">
-            <li v-if="gdslProject"><!--<a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a>-->
-              <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">
-                {{gdslProject.name}}
-              </router-link>
-            </li>
-          </ul>
+      <v-spacer></v-spacer>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <div v-bind="attrs" v-on="on">
+            <v-app-bar-nav-icon v-if="$vuetify.breakpoint.xsOnly"></v-app-bar-nav-icon>
+            <v-btn text v-if="$vuetify.breakpoint.smAndUp">
+              {{ user.firstName }} {{ user.lastName }}
+              <v-icon>mdi-chevron-down</v-icon>
+            </v-btn>
+          </div>
+        </template>
 
-          <ul class="nav navbar-nav navbar-right">
-            <li v-if="user" class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                <span>{{ user.firstName }} {{user.lastName}}</span>
-                <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu navbar-right" role="menu">
-                <li><router-link to="/account/password/change">Change Password</router-link></li>
-                <li><a href="" @click="logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/account/password/change">Change Password</router-link>
+            </v-list-item-title>
+          </v-list-item>
+
+          <v-list-item>
+            <v-list-item-title>
+              <a href="" @click="logout">Logout</a>
+            </v-list-item-title>
+          </v-list-item>
+
+        </v-list>
+      </v-menu>
+    </v-app-bar>
 
     <router-view />
 
@@ -105,26 +108,16 @@ export default {
 
 <style>
 
+.v-navbar-logo {
+  max-width: 40px;
+  max-height: 40px;
+}
+
+
 .zeta {
   background-color: white;
   width: 100%;
   height: 100%;
-}
-
-.navbar-default {
-  background-color: #f5f5f5;
-  border-color: #f5f5f5;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-}
-
-.navbar-default .dropdown-menu {
-  border: 1px solid transparent;
-  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
 
 .panel-default {
@@ -142,28 +135,6 @@ export default {
   background-color: #5bc0de;
   border-color: #46b8da;
 }
-
-.navbar-default {
-  z-index: 999;
-}
-
-.navbar-default .navbar-nav > li > a {
-  color: #444;
-  font-weight: bold;
-}
-
-.navbar-default .navbar-nav > li:hover > a {
-  color: #e30a5e;
-}
-
-.navbar-breadcrumb::before {
-  content: "\E258";
-  font-family: 'Glyphicons Halflings';
-  position: absolute;
-  left: -5px;
-  font-size: 0.9em;
-}
-
 .modal-header.modal-header-primary {
   color: #fff;
   background-color: #337ab7;
@@ -183,11 +154,6 @@ export default {
 }
 
 /* end bootstrap theme corrects */
-
-.navbar-logo {
-  max-height: 40px;
-  margin-top: -11px;
-}
 
 .bottom-link {
   position: absolute;
