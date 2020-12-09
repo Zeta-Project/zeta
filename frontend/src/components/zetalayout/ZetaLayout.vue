@@ -1,49 +1,49 @@
 <template>
   <div class="zeta">
-    <v-app-bar dense>
+    <v-app-bar app>
       <v-toolbar-title>
         <router-link to="/">
-          <img class="v-navbar-logo" src="../../assets/zeta_logo.png" contain />
+          <img class="v-navbar-logo" src="../../assets/zeta_logo.png" contain/>
         </router-link>
       </v-toolbar-title>
       <v-breadcrumbs v-if="gdslProject && $vuetify.breakpoint.smAndUp">
         <v-icon>mdi-chevron-right</v-icon>
         <v-breadcrumbs-item>
-          <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">{{ gdslProject.name }}</router-link>
+          <router-link tag="span" class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">
+            {{ gdslProject.name }}
+          </router-link>
         </v-breadcrumbs-item>
       </v-breadcrumbs>
-
-      <v-spacer></v-spacer>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on">
-            <v-app-bar-nav-icon v-if="$vuetify.breakpoint.xsOnly"></v-app-bar-nav-icon>
-            <v-btn text v-if="$vuetify.breakpoint.smAndUp">
+      <v-spacer/>
+      <v-toolbar-items class="hidden-xs-only">
+        <v-menu offset-y v-if="user">
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on">
               {{ user.firstName }} {{ user.lastName }}
               <v-icon>mdi-chevron-down</v-icon>
             </v-btn>
-          </div>
-        </template>
-
-        <v-list>
-          <v-list-item>
-            <v-list-item-title>
-              <router-link to="/account/password/change">Change Password</router-link>
-            </v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>
-              <a href="" @click="logout">Logout</a>
-            </v-list-item-title>
-          </v-list-item>
-
-        </v-list>
-      </v-menu>
+          </template>
+          <v-list>
+            <v-list-item v-for="(item, index) in userMenu" :key="index" @click="item.method">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+      <span class="hidden-sm-and-up">
+        <v-app-bar-nav-icon @click="sidebar = !sidebar"/>
+      </span>
     </v-app-bar>
-
-    <router-view />
-
+    <v-navigation-drawer v-model="sidebar" app>
+      <v-list>
+        <v-list-item v-for="(item, index) in userMenu" :key="index" @click="item.method">
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-content>
+      <router-view/>
+    </v-content>
   </div>
 </template>
 
@@ -51,10 +51,10 @@
 import {AUTH_LOGOUT} from "@/store/actions/auth";
 import axios from 'axios'
 import {EventBus} from "@/eventbus/eventbus";
+
 export default {
   name: 'ZetaLayout',
-  components: {
-  },
+  components: {},
   data() {
     return {
       user: {
@@ -72,11 +72,19 @@ export default {
         shape: "",
         style: "",
         validator: ""
-      }
+      },
+      userMenu: [
+        {title: "Change Password", method: this.changePassword},
+        {title: "Logout", method: this.logout}
+      ],
+      sidebar: false
     }
   },
   methods: {
-    logout: function() {
+    changePassword: function () {
+      this.$router.push('/account/password/change')
+    },
+    logout: function () {
       this.$store.dispatch(AUTH_LOGOUT).then(() => {
         this.$router.push('/account/signIn')
       })
@@ -93,7 +101,7 @@ export default {
 
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
-          if(response.data.csrf) this.logout()
+          if (response.data.csrf) this.logout()
 
           this.user = response.data.user;
         },
@@ -122,8 +130,8 @@ export default {
 
 .panel-default {
   border: none;
-  -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+  -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .form-control {
@@ -135,16 +143,19 @@ export default {
   background-color: #5bc0de;
   border-color: #46b8da;
 }
+
 .modal-header.modal-header-primary {
   color: #fff;
   background-color: #337ab7;
   border-radius: 5px 5px 0 0;
 }
+
 .modal-header.modal-header-info {
   color: #fff;
   background-color: #5bc0de;
   border-radius: 6px 6px 0 0;
 }
+
 .modal-header.modal-header-info .close:hover,
 .modal-header.modal-header-info .close,
 .modal-header.modal-header-primary .close:hover,
@@ -159,6 +170,7 @@ export default {
   position: absolute;
   bottom: 15px;
 }
+
 .bottom-link.right {
   right: 15px;
 }
@@ -341,7 +353,7 @@ paper-button::shadow #ripple {
 }
 
 /* Thumbnail */
-.thumbnail{
+.thumbnail {
   width: 80px;
   height: 80px;
   padding: 2px;
@@ -350,7 +362,7 @@ paper-button::shadow #ripple {
   float: left;
 }
 
-.size{
-  font-size:12px;
+.size {
+  font-size: 12px;
 }
 </style>
