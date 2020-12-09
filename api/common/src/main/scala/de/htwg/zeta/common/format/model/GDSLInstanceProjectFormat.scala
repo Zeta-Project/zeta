@@ -22,7 +22,7 @@ class GDSLInstanceProjectFormat(
     concept: String = "concept",
     shape: String = "shape",
     diagram: String = "diagram",
-    style: String = "style",
+    style: String = "style"
 ) extends OFormat[GdslInstanceProject] {
 
   override def writes(instance: GdslInstanceProject): JsObject = Json.obj(
