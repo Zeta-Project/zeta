@@ -37,11 +37,10 @@
     <v-divider class="ma-0"></v-divider>
 
     <v-card-actions>
-      <v-form>
         <v-text-field
             id="inputModelName"
             v-model="inputModelName"
-            :append-outer-icon="'mdi-note-plus'"
+            :append-outer-icon="'mdi-plus-box'"
             outlined
             clearable
             hide-details
@@ -50,7 +49,6 @@
             @click:append-outer="createModelInstance"
             v-on:keyup.enter="createModelInstance"
         ></v-text-field>
-      </v-form>
     </v-card-actions>
   </v-card>
 </template>
