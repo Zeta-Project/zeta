@@ -40,13 +40,13 @@
         <v-text-field
             id="inputModelName"
             v-model="inputModelName"
-            :append-outer-icon="'mdi-plus-box'"
+            :append-icon="'mdi-plus-box'"
             outlined
             clearable
             hide-details
             label="New model name"
             type="text"
-            @click:append-outer="createModelInstance"
+            @click:append="createModelInstance"
             v-on:keyup.enter="createModelInstance"
         ></v-text-field>
     </v-card-actions>
