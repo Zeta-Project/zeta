@@ -5,6 +5,8 @@
         <span class="headline">Projects</span>
       </v-card-title>
 
+      <v-divider class="ma-0"/>
+
       <v-card-text v-if="!metaModels || metaModels.length === 0">
         There are no projects.
       </v-card-text>
@@ -23,7 +25,9 @@
         </v-list-item-group>
       </v-list>
 
-      <div class="ma-2">
+      <v-divider class="ma-0"/>
+
+      <v-card-actions>
         <v-text-field
             id="inputProjectName"
             v-model="inputProjectName"
@@ -38,18 +42,19 @@
             @click:append-outer="toggleDialog"
             v-on:keyup.enter="createProject"
         />
-      </div>
+      </v-card-actions>
     </v-card>
 
+    <!-- import dialog -->
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <span class="headline">Import Project</span>
-          <v-spacer />
+          <v-spacer/>
           <v-btn
               icon
               @click.stop="toggleDialog">
-            <v-icon >
+            <v-icon>
               mdi-close
             </v-icon>
           </v-btn>
@@ -84,6 +89,7 @@
                 required
                 outlined
                 hide-details
+                clearable
             ></v-text-field>
           </v-form>
         </v-card-text>
@@ -114,7 +120,6 @@ export default {
   data() {
     return {
       inputProjectName: "",
-      // uploadText: "Drag and Drop .zeta file here...",
       importProjectName: "",
       file: null,
       invalidImportFile: false,
