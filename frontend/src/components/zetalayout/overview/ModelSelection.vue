@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Model Instances
+      <span class="headline">Model Instances</span>
     </v-card-title>
 
     <v-divider class="ma-0"></v-divider>

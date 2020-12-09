@@ -8,7 +8,7 @@
     </v-overlay>
 
     <v-card-title>
-      Edit project {{ gdslProject.name }}
+      <span class="headline">Edit project {{ gdslProject.name }}</span>
     </v-card-title>
 
     <v-divider class="ma-0"></v-divider>
