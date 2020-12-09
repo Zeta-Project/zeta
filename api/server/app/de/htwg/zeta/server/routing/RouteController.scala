@@ -60,7 +60,6 @@ class ScalaRoutes @Inject()(
     protected val webCont: WebControllerContainer
 ) extends RouteController with WebController {
 
-
   def getSocketDeveloper: WebSocket = AuthenticatedSocket(backendController.developer() _)
 
   def getSocketGenerator(id: UUID): WebSocket = AuthenticatedSocket(backendController.generator(id) _)
@@ -246,10 +245,6 @@ class ScalaRoutes @Inject()(
 
   def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(dynamicFileController.serveFile(id, name) _)
 
-  def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(webAppController.get(path) _)
-
-  def getStaticFiles(path: String): Action[AnyContent] = webAppController.static(path)
-
   def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getScalaCodeViewer(modelId) _)
 
   def getKlimaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getKlimaCodeViewer(modelId) _)
@@ -259,13 +254,6 @@ class ScalaRoutes @Inject()(
   def getMethodReferenceCodeEditorContent(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(codeEditorController.methodReferenceCodeEditorContent(metaModelId, methodName, referenceName) _)
 
   def getMethodCommonCodeEditorContent(metaModelId: UUID, methodName: String) = AuthenticatedGet(codeEditorController.methodMainCodeEditorContent(metaModelId, methodName) _)
-
-}
-
-class ScalaRoutesApi @Inject()(
-                                protected val routeCont: RouteControllerContainer,
-                                protected val webCont: WebControllerContainer
-                              ) extends RouteController with WebController {
 
   def triggerParse(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.triggerParse(metaModelId) _)
 

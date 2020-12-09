@@ -62,10 +62,10 @@ HEAD          /metamodels/:metaModelId/validator                                
 
 ### REST API V2
 
-GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      de.htwg.zeta.server.routing.ScalaRoutesApi.triggerParse(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/shape                                             de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelShape(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/style                                             de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelStyle(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelDiagram(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      de.htwg.zeta.server.routing.ScalaRoutes.triggerParse(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/shape                                             de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelShape(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/style                                             de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelStyle(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelDiagram(metaModelId: java.util.UUID)
 
 ### Model REST API
 GET           /rest/v1/models                                                                     de.htwg.zeta.server.routing.ScalaRoutes.getModelsNoArgs
@@ -140,8 +140,4 @@ GET           /codeEditorCommonMethod/:metaModelId/:methodName                  
 GET           /assets/*file                                                                       de.htwg.zeta.server.routing.ScalaRoutes.getAssets(file)
 GET           /webjars/*file                                                                      de.htwg.zeta.server.routing.ScalaRoutes.getWebjars(file)
 GET           /model_specific/:id/*file                                                           de.htwg.zeta.server.routing.ScalaRoutes.getMode_specific(id: java.util.UUID, file: String)
-
-GET           /app                                                                                de.htwg.zeta.server.routing.ScalaRoutes.getWebApp(page = "")
-GET           /app/*path                                                                          de.htwg.zeta.server.routing.ScalaRoutes.getWebApp(path)
-GET           /static/*path                                                                       de.htwg.zeta.server.routing.ScalaRoutes.getStaticFiles(path)
 
