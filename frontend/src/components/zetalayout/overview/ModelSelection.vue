@@ -70,6 +70,7 @@ export default {
   methods: {
     createModelInstance() {
       ModelInstanceUtils.createInstance(this.inputModelName, this.$route.params.id)
+      this.inputModelName = "";
     },
     deleteModelInstance(modelId) {
       ModelInstanceUtils.deleteInstance(modelId)

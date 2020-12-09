@@ -147,6 +147,7 @@ export default {
     },
     createProject() {
       ProjectUtils.createProject(this.inputProjectName);
+      this.inputProjectName = "";
     },
     onFileChange(file) {
       this.file = file;
