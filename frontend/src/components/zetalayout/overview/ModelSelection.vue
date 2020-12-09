@@ -12,21 +12,19 @@
       </div>
 
       <div v-else>
-        <v-list-item v-for="model in modelInstances" v-bind:key="model.id">
+        <v-list-item v-for="model in modelInstances" v-bind:key="model.id" :to="'/zeta/metamodel/editor/' + model.id">
           <v-list-item-content>
-            <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
-              <v-list-item-title v-text="model.name"></v-list-item-title>
-            </router-link>
+            <v-list-item-title v-text="model.name"/>
           </v-list-item-content>
 
           <v-list-item-action>
-            <v-btn icon @click="deleteModelInstance(model.id)">
+            <v-btn icon @click.prevent.stop="deleteModelInstance(model.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-list-item-action>
 
           <v-list-item-action>
-            <v-btn icon @click="validateModelInstance(model.id)">
+            <v-btn icon @click.prevent.stop="validateModelInstance(model.id)">
               <v-icon>mdi-thumb-up</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -37,18 +35,18 @@
     <v-divider class="ma-0"></v-divider>
 
     <v-card-actions>
-        <v-text-field
-            id="inputModelName"
-            v-model="inputModelName"
-            :append-icon="'mdi-plus-box'"
-            outlined
-            clearable
-            hide-details
-            label="New model name"
-            type="text"
-            @click:append="createModelInstance"
-            v-on:keyup.enter="createModelInstance"
-        ></v-text-field>
+      <v-text-field
+          id="inputModelName"
+          v-model="inputModelName"
+          :append-icon="'mdi-plus-box'"
+          outlined
+          clearable
+          hide-details
+          label="New model name"
+          type="text"
+          @click:append="createModelInstance"
+          v-on:keyup.enter="createModelInstance"
+      ></v-text-field>
     </v-card-actions>
   </v-card>
 </template>
@@ -84,6 +82,6 @@ export default {
 <style scoped>
 
 a {
-  color: #42b983;
+  text-decoration: none !important;
 }
 </style>
