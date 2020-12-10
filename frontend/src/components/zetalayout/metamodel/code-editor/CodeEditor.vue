@@ -260,7 +260,7 @@ class CodeEditor {
 
 .editor {
   height: 500px; /* fallback for older browsers */
-  height: calc(100vh - 140px);
+  height: calc(100vh - 170px);
 }
 
 .editor-body {
@@ -527,7 +527,7 @@ class CodeEditor {
   }
 
   .editor {
-    height: calc(100vh - 140px - 45px);
+    height: calc(100vh - 170px - 45px);
   }
 
   .editor-box {

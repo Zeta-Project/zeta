@@ -1,7 +1,6 @@
 <template>
     <div>
         <Toolbar
-                class="toolbar"
                 v-if="graphComponent"
                 :graph-component="graphComponent"
                 :isEditEnabled="isEditEnabled"

@@ -29,7 +29,8 @@
       <v-dialog v-model="editProjectDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
           <div id="app" data-app>
-            <v-btn v-on:click="showStepElement(stepCounter)" class="mt-4" color="primary" depressed v-bind="attrs" v-on="on">
+            <v-btn v-on:click="showStepElement(stepCounter)" class="mt-4" color="primary" depressed v-bind="attrs"
+                   v-on="on">
               Edit project
             </v-btn>
           </div>
@@ -70,85 +71,93 @@
             </v-toolbar-items>
           </v-toolbar>
 
-          <div>
-            <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
-          </div>
+          <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
 
-          <div v-show="step1IsHidden" class="row">
-            <div class="side-box col-md-3">
-              <div id="source-code-inspection"></div>
-              <div id="online-users"></div>
-              <div id="outline-nodes"></div>
-            </div>
+          <v-container fluid class="py-0">
+            <v-row v-show="step1IsHidden">
+              <v-col md="3">
+                <div id="source-code-inspection"></div>
+                <div id="online-users"></div>
+                <div id="outline-nodes"></div>
+              </v-col>
 
-            <div class="container code-editor editor-box col-md-3" :data-meta-model-id="gdslProject.id"
-                 :data-dsl-type="step2">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="editor-title">{{ step2 }}</span>
-                  <span class="editor-button">
-                              <span class="label label-success js-save-successful"
-                                    style="display: none">Saving succeed</span>
-                              <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-                              <span class="js-save btn btn-sm btn-primary" title="Save Document">
-                                Save
-                                <span class="glyphicon glyphicon-floppy-disk"></span>
-                              </span>
-                            </span>
-                </div>
-                <div class="panel-body editor-body">
-                  <div :onfocusin="true" class="editor"></div>
-                </div>
-              </div>
-            </div>
+              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step2">
+                <v-card>
+                  <v-card-title>
+                    <span>{{ step2 }}</span>
+                    <v-spacer></v-spacer>
+                    <span class="editor-button">
+                      <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
+                        Saving succeed
+                      </v-chip>
+                      <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
+                        Saving failed
+                      </v-chip>
+                      <v-btn class="js-save" icon color="primary">
+                        <v-icon>mdi-content-save</v-icon>
+                      </v-btn>
+                    </span>
+                  </v-card-title>
 
-            <div class="container code-editor editor-box col-md-3" :data-meta-model-id="gdslProject.id"
-                 :data-dsl-type="step3">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="editor-title">{{ step3 }}</span>
-                  <span class="editor-button">
-                              <span class="label label-success js-save-successful"
-                                    style="display: none">Saving succeed</span>
-                              <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-                              <span :disabled="step3IsHidden" class="js-save btn btn-sm btn-primary"
-                                    title="Save Document">
-                                Save
-                                <span class="glyphicon glyphicon-floppy-disk"></span>
-                              </span>
-                            </span>
-                </div>
-                <div class="panel-body editor-body">
-                  <div v-show="!step3IsHidden" class="editor"></div>
-                </div>
-              </div>
-            </div>
+                  <v-card-text>
+                    <div :onfocusin="true" class="editor"></div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
 
-            <div class="container code-editor editor-box col-md-3" :data-meta-model-id="gdslProject.id"
-                 :data-dsl-type="step4">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <span class="editor-title">{{ step4 }}</span>
-                  <span class="editor-button">
-                                <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
-                                <span class="label label-danger js-save-failed"
-                                      style="display: none">Saving failed</span>
-                                <span :disabled="step4IsHidden" class="js-save btn btn-sm btn-primary"
-                                      title="Save Document">
-                                  Save
-                                  <span class="glyphicon glyphicon-floppy-disk"></span>
-                                </span>
-                              </span>
-                </div>
-                <div class="panel-body editor-body">
-                  <div v-show="!step4IsHidden" class="editor"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step3">
+                <v-card>
+                  <v-card-title>
+                    <span>{{ step3 }}</span>
+                    <v-spacer></v-spacer>
+                    <span class="editor-button">
+                      <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
+                        Saving succeed
+                      </v-chip>
+                      <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
+                        Saving failed
+                      </v-chip>
+                      <v-btn :disabled="step3IsHidden" class="js-save" icon color="primary">
+                        <v-icon>mdi-content-save</v-icon>
+                      </v-btn>
+                    </span>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <div v-show="!step3IsHidden" class="editor"></div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+
+              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step4">
+                <v-card>
+                  <v-card-title>
+                    <span>{{ step4 }}</span>
+                    <v-spacer></v-spacer>
+                    <span class="editor-button">
+                      <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
+                        Saving succeed
+                      </v-chip>
+                      <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
+                        Saving failed
+                      </v-chip>
+                      <v-btn :disabled="step4IsHidden" class="js-save" icon color="primary">
+                        <v-icon>mdi-content-save</v-icon>
+                      </v-btn>
+                    </span>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <div v-show="!step4IsHidden" class="editor"></div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card>
       </v-dialog>
     </v-card-text>
+
     <!--
           <div class="list-group">
             <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
