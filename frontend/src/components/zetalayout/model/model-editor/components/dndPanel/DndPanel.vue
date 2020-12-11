@@ -9,6 +9,7 @@
 
 <script>
 import {
+  DefaultLabelStyle,
   DragDropEffects,
   DragDropItem,
   DragSource,
@@ -17,7 +18,7 @@ import {
   ILabel,
   IListEnumerable,
   INode,
-  Insets,
+  Insets, InteriorLabelModel,
   IPort,
   IStripe,
   LabelDropInputMode,
@@ -26,7 +27,7 @@ import {
   Point,
   PortDropInputMode,
   Rect, ShapeNodeShape, ShapeNodeStyle, SimpleLabel,
-  SimpleNode,
+  SimpleNode, Size,
   SvgExport,
   VoidNodeStyle
 } from "yfiles";
@@ -118,22 +119,37 @@ import {
 
                     const node = new SimpleNode();
 
+                    let simpleLabel = new SimpleLabel()
+                    simpleLabel.owner = node
+                    simpleLabel.layoutParameter = InteriorLabelModel.CENTER
+                    simpleLabel.style = new DefaultLabelStyle({
+                      verticalTextAlignment: "center",
+                      horizontalTextAlignment: "center"
+                    })
+
+                    if(typeof shapeNode.childGeoElements[0] !== 'undefined') {
+                      simpleLabel.text = shapeNode.childGeoElements[0].identifier
+                    }
+
                     switch (type) {
                       case "rectangle":
                         node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
                         node.style = new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+                        node.labels = new ListEnumerable([simpleLabel])
 
                         nodeList.push({element: node, tooltip: diagramKey.name})
                         break;
                       case "roundedRectangle":
                         node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
                         node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ROUND_RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+                        node.labels = new ListEnumerable([simpleLabel])
 
                         nodeList.push({element: node, tooltip: diagramKey.name})
                         break;
                       case "ellipse":
                         node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
                         node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ELLIPSE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+                        node.labels = new ListEnumerable([simpleLabel])
 
                         nodeList.push({element: node, tooltip: diagramKey.name})
                         break;
