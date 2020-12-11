@@ -8,28 +8,28 @@
 </template>
 
 <script>
-    import {
-        DragDropEffects,
-        DragDropItem,
-        DragSource,
-        GraphComponent,
-        IEdge,
-        ILabel,
-        IListEnumerable,
-        INode,
-        Insets,
-        IPort,
-        IStripe,
-        LabelDropInputMode,
-        ListEnumerable,
-        NodeDropInputMode,
-        Point,
-        PortDropInputMode,
-        Rect,
-        SimpleNode,
-        SvgExport,
-        VoidNodeStyle
-    } from "yfiles";
+import {
+  DragDropEffects,
+  DragDropItem,
+  DragSource,
+  GraphComponent,
+  IEdge,
+  ILabel,
+  IListEnumerable,
+  INode,
+  Insets,
+  IPort,
+  IStripe,
+  LabelDropInputMode,
+  ListEnumerable,
+  NodeDropInputMode,
+  Point,
+  PortDropInputMode,
+  Rect, ShapeNodeShape, ShapeNodeStyle, SimpleLabel,
+  SimpleNode,
+  SvgExport,
+  VoidNodeStyle
+} from "yfiles";
     import {addClass, removeClass} from "../../utils/Bindings";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
     import Vue from "vue";
@@ -85,43 +85,62 @@
              * Return panel items
              **/
             getPanelItems(graphComponent, shape, diagram) {
-                let methods = {}
+                /*let methods = {}
                 methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
                 methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
                 methods.deleteAttributeFromNode = (node, attribute) => this.$emit('delete-attribute-from-node', node, attribute);
                 methods.deleteOperationFromNode = (node, attribute) => this.$emit('delete-operation-from-node', node, attribute);
-                methods.changeInputMode = () => this.$emit('change-input-mode');
-                const NodeConstructor = Vue.extend(Node);
+                methods.changeInputMode = () => this.$emit('change-input-mode');*/
+                //const NodeConstructor = Vue.extend(Node);
+
                 // Create node and push them into the itemContainer
 
-                const node = new SimpleNode();
+                /*const node = new SimpleNode();
                 node.layout = new Rect(0, 0, 150, 250);
                 // Set the style of the node in the dnd panel
-                node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
+                node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);*/
 
-                const nodeList = [{element: node, tooltip: 'Node'}]
+                const nodeList = [] // {element: node, tooltip: 'Node'}
 
                 console.log(graphComponent)
                 console.log(diagram)
                 console.log(shape)
 
                 diagram.diagrams[0].palettes.forEach(diagramKey => {
-                  const node = new SimpleNode();
-
-                  const shapeNode = shape.nodes.filter(x => {
+                  const shapeNodes = shape.nodes.filter(x => {
                     return x.name === diagramKey.nodes[0]
+                  })[0]
+
+                  shapeNodes.geoElements.forEach(function(shapeNode) {
+                    console.log(shapeNode);
+
+                    const type = shapeNode.type
+
+                    const node = new SimpleNode();
+
+                    switch (type) {
+                      case "rectangle":
+                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
+                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+
+                        nodeList.push({element: node, tooltip: diagramKey.name})
+                        break;
+                      case "roundedRectangle":
+                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
+                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ROUND_RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+
+                        nodeList.push({element: node, tooltip: diagramKey.name})
+                        break;
+                      case "ellipse":
+                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
+                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ELLIPSE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
+
+                        nodeList.push({element: node, tooltip: diagramKey.name})
+                        break;
+                      default:
+                        console.log("Not implemented yet: " + type);
+                    }
                   })
-                  const size = shapeNode[0].size
-
-                  const width = size.widthMin
-                  const height = size.heightMin
-
-                  node.layout = new Rect(0, 0, width, height);
-                  // Set the style of the node in the dnd panel
-                  node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
-
-                  //console.log(diagramKey)
-                  nodeList.push({element: node, tooltip: diagramKey.name})
                 })
 
                 return nodeList
