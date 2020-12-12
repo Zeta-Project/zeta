@@ -2,22 +2,19 @@
   <v-app>
     <div class="alerts">
       <transition name="fade">
-        <div v-if="errorMessage" class="col-md-6 col-md-offset-3 alert alert-danger">
-          <a href="#" class="close" @click="setErrorMessage('')">&times;</a>
+        <v-alert dense type="error" v-if="errorMessage" dismissible class="col-md-6 offset-md-3">
           <strong>Error!</strong> {{ errorMessage }}
-        </div>
+        </v-alert>
       </transition>
       <transition name="fade">
-        <div v-if="infoMessage" class="col-md-6 col-md-offset-3 alert alert-info">
-          <a href="#" class="close" @click="setInfoMessage('')">&times;</a>
+        <v-alert dense type="info" v-if="infoMessage" dismissible class="col-md-6 offset-md-3">
           <strong>Info!</strong> {{ infoMessage }}
-        </div>
+        </v-alert>
       </transition>
       <transition name="fade">
-        <div v-if="successMessage" class="col-md-6 col-md-offset-3 alert alert-success">
-          <a href="#" class="close" @click="setSuccessMessage('')">&times;</a>
+        <v-alert dense type="success" v-if="successMessage" dismissible class="col-md-6 offset-md-3">
           <strong>Success!</strong> {{ successMessage }}
-        </div>
+        </v-alert>
       </transition>
     </div>
 
