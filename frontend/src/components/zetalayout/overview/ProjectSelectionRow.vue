@@ -45,7 +45,6 @@
   </v-list-item>
 </template>
 <script>
-import ProjectUtils from './ProjectUtils';
 import {EventBus} from '@/eventbus/eventbus'
 import InviteToProjectDialog from './dialogs/InviteToProjectDialog';
 import DuplicateProjectDialog from './dialogs/DuplicateProjectDialog';
@@ -72,20 +71,20 @@ export default {
       this.showDuplicationDialog = !this.showDuplicationDialog;
     },
     initStepper() {
-      EventBus.$emit("initSteps", 1);
+      EventBus.$emit('initSteps', 1);
     },
     deleteProject() {
-      ProjectUtils.deleteProject(this.id);
+      this.$emit('delete-project', this.id)
     },
     exportProject() {
-      ProjectUtils.exportProject(this.id);
+      this.$emit('export-project', this.id)
     },
     duplicate(projectName) {
-      ProjectUtils.duplicateProject(this.id, projectName);
+      this.$emit('duplicate-project', this.id, projectName)
       this.toggleDuplicationDialog();
     },
     invite(email) {
-      ProjectUtils.inviteToProject(this.id, email);
+      this.$emit('invite-to-project', this.id, email)
       this.toggleInvitationDialog();
     }
   }

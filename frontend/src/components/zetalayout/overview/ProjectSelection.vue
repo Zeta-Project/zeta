@@ -20,6 +20,10 @@
                 v-bind:is-selected="
                 gdslProject && metamodel.id === gdslProject.id
               "
+                @delete-project="onDeleteProject"
+                @export-project="onExportProject"
+                @duplicate-project="onDuplicateProject"
+                @invite-to-project="onInviteToProject"
             />
           </v-list-item>
         </v-list-item-group>
@@ -82,6 +86,18 @@ export default {
       ProjectUtils.importProject(file, projectName);
       this.toggleDialog();
     },
-  },
+    onDeleteProject(id) {
+      ProjectUtils.deleteProject(id);
+    },
+    onExportProject(id) {
+      ProjectUtils.exportProject(id);
+    },
+    onDuplicateProject(id, projectName) {
+      ProjectUtils.duplicateProject(id, projectName);
+    },
+    onInviteToProject(id, email) {
+      ProjectUtils.inviteToProject(id, email);
+    }
+  }
 };
 </script>
