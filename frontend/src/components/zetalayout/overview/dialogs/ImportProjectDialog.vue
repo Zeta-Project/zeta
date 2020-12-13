@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     onCancel() {
-      this.$emit('cancel-import');
+      this.$emit('cancel');
       this.cleanUp();
     },
     onImport() {

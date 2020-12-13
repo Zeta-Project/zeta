@@ -48,7 +48,7 @@
     <!-- import dialog -->
     <ImportProjectDialog
         :show-dialog="showDialog"
-        @cancel-import="toggleDialog"
+        @cancel="toggleDialog"
         @import="importProject" />
   </div>
 </template>
