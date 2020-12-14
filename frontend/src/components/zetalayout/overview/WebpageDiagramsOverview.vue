@@ -1,26 +1,26 @@
 <template>
   <v-container fill-height v-on:dragover="dragover" v-on:drop="preventDrop">
     <v-row>
-      <v-col md="4">
+      <v-col md="4" class="webpage-diagram-overview-column">
         <ProjectSelection
-          :meta-models="metaModels"
-          :gdsl-project="gdslProject"
+            :meta-models="metaModels"
+            :gdsl-project="gdslProject"
         />
       </v-col>
 
-      <v-col md="4">
+      <v-col md="4" class="webpage-diagram-overview-column">
         <EditorSelection
-          v-if="gdslProject"
-          :gdsl-project="gdslProject"
-          :model-instances="modelInstances"
+            v-if="gdslProject"
+            :gdsl-project="gdslProject"
+            :model-instances="modelInstances"
         />
       </v-col>
 
-      <v-col md="4">
+      <v-col md="4" class="webpage-diagram-overview-column">
         <ModelSelection
-          v-if="gdslProject"
-          :gdsl-project="gdslProject"
-          :model-instances="modelInstances"
+            v-if="gdslProject"
+            :gdsl-project="gdslProject"
+            :model-instances="modelInstances"
         />
       </v-col>
     </v-row>
@@ -35,14 +35,14 @@
 
 <script>
 import axios from "axios";
-import { EventBus } from "@/eventbus/eventbus";
+import {EventBus} from "@/eventbus/eventbus";
 import ProjectSelection from "./ProjectSelection";
 import EditorSelection from "./EditorSelection";
 import ModelSelection from "./ModelSelection";
 
 export default {
   name: "DiagramsOverview",
-  components: { ModelSelection, EditorSelection, ProjectSelection },
+  components: {ModelSelection, EditorSelection, ProjectSelection},
   props: {
     msg: String,
   },
@@ -81,30 +81,30 @@ export default {
   methods: {
     loadProjects() {
       axios
-        .get("http://localhost:9000/overview", { withCredentials: true })
-        .then(
-          (response) => {
-            this.metaModels = response.data.metaModels;
-            // this.modelInstances = response.data.modelInstances
-          },
-          (error) =>
-            EventBus.$emit(
-              "errorMessage",
-              "Could not load metamodels: " + error
-            )
-        );
+          .get("http://localhost:9000/overview", {withCredentials: true})
+          .then(
+              (response) => {
+                this.metaModels = response.data.metaModels;
+                // this.modelInstances = response.data.modelInstances
+              },
+              (error) =>
+                  EventBus.$emit(
+                      "errorMessage",
+                      "Could not load metamodels: " + error
+                  )
+          );
       axios
-        .get("http://localhost:9000/rest/v1/models", { withCredentials: true })
-        .then(
-          (response) => {
-            this.modelInstances = response.data;
-          },
-          (error) =>
-            EventBus.$emit(
-              "errorMessage",
-              "Could not load model instances: " + error
-            )
-        );
+          .get("http://localhost:9000/rest/v1/models", {withCredentials: true})
+          .then(
+              (response) => {
+                this.modelInstances = response.data;
+              },
+              (error) =>
+                  EventBus.$emit(
+                      "errorMessage",
+                      "Could not load model instances: " + error
+                  )
+          );
     },
     routeParamChanged() {
       if (!this.$route.params.id || this.$route.params.id === "") {
@@ -112,22 +112,22 @@ export default {
         EventBus.$emit("gdslProjectUnselected");
       } else {
         axios
-          .get(
-            "http://localhost:9000/rest/v1/meta-models/" +
-              this.$route.params.id,
-            { withCredentials: true }
-          )
-          .then(
-            (response) => {
-              this.gdslProject = response.data;
-              EventBus.$emit("gdslProjectSelected", response.data);
-            },
-            (error) =>
-              EventBus.$emit(
-                "errorMessage",
-                "Could not load selected metamodel: " + error
-              )
-          );
+            .get(
+                "http://localhost:9000/rest/v1/meta-models/" +
+                this.$route.params.id,
+                {withCredentials: true}
+            )
+            .then(
+                (response) => {
+                  this.gdslProject = response.data;
+                  EventBus.$emit("gdslProjectSelected", response.data);
+                },
+                (error) =>
+                    EventBus.$emit(
+                        "errorMessage",
+                        "Could not load selected metamodel: " + error
+                    )
+            );
       }
     },
 
@@ -148,7 +148,8 @@ export default {
       let i = this.metaModels.map((item) => item.id).indexOf(metamodelID); // find index of your object
       this.metaModels.splice(i, 1);
       if (this.$route.params.id === metamodelID)
-        this.$router.push("/zeta/overview").catch((err) => {});
+        this.$router.push("/zeta/overview").catch((err) => {
+        });
     });
     EventBus.$on("reloadProjects", () => {
       this.loadProjects();
@@ -171,5 +172,9 @@ export default {
   position: absolute;
   right: 1rem;
   bottom: 1rem;
+}
+
+.webpage-diagram-overview-column {
+  min-width: 470px;
 }
 </style>
