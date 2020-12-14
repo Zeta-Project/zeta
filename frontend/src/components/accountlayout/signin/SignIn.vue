@@ -2,7 +2,7 @@
   <v-container class="col-md-4 col-md-offset-3">
     <v-form
         ref="form"
-        @submit="validate"
+        @submit.prevent="validate"
         lazy-validation
     >
       <p class="font-weight-bold">
