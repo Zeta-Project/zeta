@@ -1,145 +1,103 @@
 <template>
   <div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <strong>Projects</strong>
-      </div>
+    <v-card>
+      <v-card-title>
+        <span class="headline">Projects</span>
+      </v-card-title>
 
-      <div class="list-group" v-if="metaModels !== undefined && metaModels.length">
+      <v-divider class="ma-0"/>
 
-        <div v-for="metamodel in metaModels" v-bind:key="metamodel.id">
-<!--          <ProjectSelectionRow-->
-<!--              v-bind:id="metamodel.id"-->
-<!--              v-bind:name="metamodel.name"-->
-<!--              v-bind:is-selected="gdslProject && metamodel.id === gdslProject.id"-->
-<!--          />-->
-          <ProjectSelectionRow
-                        v-bind:id="metamodel.id"
-                        v-bind:name="metamodel.name"
-                        v-bind:is-selected="gdslProject && metamodel.id === gdslProject.id" />
-<!--        </div>-->
-        </div>
-
-      </div>
-
-      <div class="panel-body" v-else>
+      <v-card-text v-if="!metaModels || metaModels.length === 0">
         There are no projects.
-      </div>
+      </v-card-text>
 
-      <div class="panel-footer">
-        <form>
-          <div class="input-group">
-            <input v-model="inputProjectName" v-on:keyup.enter="createProject" type="text" class="form-control"
-                   id="inputProjectName" placeholder="New project name" autocomplete="off">
-            <span class="input-group-btn">
-                <button v-on:click="createProject" type=button id="btnCreateMetaModel" class="btn btn-default"
-                        data-toggle="#tooltip" title="Create project">
-                  <span class="glyphicon glyphicon-plus" aria-hidden=true></span>
-                </button>
-              <!-- launch import modal -->
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#importModal"
-                        title="Import project">
-                  <span class="glyphicon glyphicon-import" aria-hidden=true></span>
-                </button>
-              </span>
-          </div>
-          <div>
+      <v-list v-else>
+        <v-list-item-group>
+          <v-list-item v-for="(metamodel, i) in metaModels" :key="i">
+            <ProjectSelectionRow
+                v-bind:id="metamodel.id"
+                v-bind:name="metamodel.name"
+                v-bind:is-selected="
+                gdslProject && metamodel.id === gdslProject.id
+              "
+                @delete-project="onDeleteProject"
+                @export-project="onExportProject"
+                @duplicate-project="onDuplicateProject"
+                @invite-to-project="onInviteToProject"
+            />
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
 
+      <v-divider class="ma-0"/>
 
-            <!-- import modal -->
-            <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
-                 aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header modal-header-info">
-                    <span class="modal-title" id="importModalLabel">Import project</span>
-                    <button id="close-import-modal" type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="form-group">
-                      <!-- drop area -->
-                      <input v-on:change="onFileChange" ref="file" type="file" accept=".zeta" name="file" id="file">
-                      <!-- Drag and Drop container-->
-                      <div v-on:click="openFileManager" v-on:drop="dropFile" class="upload-area" id="uploadfile">
-                        <span id="uploadtext">{{ uploadText }}</span>
-                      </div>
-                    </div>
-                    <input v-model="importProjectName" type="text" class="form-control" id="importProjectName"
-                           placeholder="New Project Name" autocomplete="off">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button v-on:click="importProject" id="start-import-btn" type="button" class="btn btn-info"
-                            data-dismiss="modal" :disabled="!(isValidZetaProjectFile() && isValidProjectName())">
-                      Import
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- end import modal -->
+      <v-card-actions>
+        <v-text-field
+            id="inputProjectName"
+            v-model="inputProjectName"
+            :append-icon="'mdi-plus-box'"
+            :append-outer-icon="'mdi-import'"
+            hide-details
+            outlined
+            clearable
+            label="New project name"
+            type="text"
+            @click:append="createProject"
+            @click:append-outer="toggleDialog"
+            v-on:keyup.enter="createProject"
+        />
+      </v-card-actions>
+    </v-card>
 
-        </form>
-      </div>
-    </div>
+    <!-- import dialog -->
+    <ImportProjectDialog
+        :show-dialog="showDialog"
+        @cancel="toggleDialog"
+        @import="importProject" />
   </div>
 </template>
 <script>
-import ProjectSelectionRow from "./ProjectSelectionRow"
+import ProjectSelectionRow from "./ProjectSelectionRow";
+import ImportProjectDialog from "./dialogs/ImportProjectDialog";
 import ProjectUtils from "./ProjectUtils";
 
 export default {
   name: "ProjectSelection",
-  components: {ProjectSelectionRow},
+  components: {ProjectSelectionRow, ImportProjectDialog},
   props: {
     metaModels: Array,
-    gdslProject: Object
+    gdslProject: Object,
   },
   data() {
     return {
       inputProjectName: "",
-      uploadText: "Drag and Drop .zeta file here...",
-      importProjectName: "",
-      file: null
-    }
+      showDialog: false,
+    };
   },
   methods: {
+    toggleDialog() {
+      this.showDialog = !this.showDialog;
+    },
     createProject() {
-      ProjectUtils.createProject(this.inputProjectName)
+      ProjectUtils.createProject(this.inputProjectName);
+      this.inputProjectName = "";
     },
-    onFileChange(event) {
-      this.file = event.target.files[0];
-      this.onProjectSelected();
+    importProject(file, projectName) {
+      ProjectUtils.importProject(file, projectName);
+      this.toggleDialog();
     },
-    onProjectSelected() {
-      if (this.isValidZetaProjectFile()) {
-        this.uploadText = this.file.name
-        this.importProjectName = this.file.name.split(".zeta")[0].split("_")[0];
-      } else {
-        this.uploadText = "Invalid zeta project file!"
-      }
+    onDeleteProject(id) {
+      ProjectUtils.deleteProject(id);
     },
-    dropFile(event) {
-      event.preventDefault();
-      this.file = event.dataTransfer.files[0];
-      this.onProjectSelected();
+    onExportProject(id) {
+      ProjectUtils.exportProject(id);
     },
-    openFileManager() {
-      this.$refs.file.click()
+    onDuplicateProject(id, projectName) {
+      ProjectUtils.duplicateProject(id, projectName);
     },
-    importProject() {
-      ProjectUtils.importProject(this.file, this.importProjectName)
-    },
-    isValidZetaProjectFile() {
-      return this.file && this.file.name.endsWith(".zeta");
-    },
-    isValidProjectName() {
-      return this.importProjectName.trim() !== "";
+    onInviteToProject(id, email) {
+      ProjectUtils.inviteToProject(id, email);
     }
   }
-}
+};
 </script>

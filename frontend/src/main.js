@@ -37,12 +37,13 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
-import 'bootstrap/less/bootstrap.less'
+// import 'bootstrap/less/bootstrap.less'
 import 'jquery/src/jquery.js'
-import 'bootstrap'
+// import 'bootstrap'
 
 import axios from 'axios'
-import vuetify from './plugins/vuetify';
+
+import vuetify from './plugins/vuetify'
 
 Vue.use(VueMaterial)
 Vue.use(VueRouter)
@@ -60,8 +61,8 @@ enableWorkarounds()
 Vue.config.productionTip = false
 
 new Vue({
+    vuetify,
     render: h => h(App),
     router,
-    vuetify,
     store
 }).$mount('#app')

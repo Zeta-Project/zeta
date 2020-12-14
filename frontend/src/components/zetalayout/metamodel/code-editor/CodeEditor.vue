@@ -66,10 +66,10 @@ import 'brace';
 import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
-import {styleLanguage, diagramLanguage, shapeLanguage} from './code-editor/ace-grammar';
-import {SourceCodeInspector} from "./code-editor/source-code-inspector";
-import {CodeOutline} from "./code-editor/code-outline";
-import {OnlineSocket} from "./code-editor/online-socket";
+import {styleLanguage, diagramLanguage, shapeLanguage} from './utils/ace-grammar';
+import {SourceCodeInspector} from "./utils/source-code-inspector";
+import {CodeOutline} from "./utils/code-outline";
+import {OnlineSocket} from "./utils/online-socket";
 import axios from 'axios'
 
 
@@ -260,7 +260,7 @@ class CodeEditor {
 
 .editor {
   height: 500px; /* fallback for older browsers */
-  height: calc(100vh - 140px);
+  height: calc(100vh - 170px);
 }
 
 .editor-body {
@@ -527,7 +527,7 @@ class CodeEditor {
   }
 
   .editor {
-    height: calc(100vh - 140px - 45px);
+    height: calc(100vh - 170px - 45px);
   }
 
   .editor-box {
