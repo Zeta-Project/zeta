@@ -22,6 +22,7 @@
                     :graph-component="graphComponent"
                     :shape="shape"
                     :diagram="diagram"
+                    :styleModel="styleModel"
                     :is-expanded="isDndExpanded"
                     :passive-supported="true"
                     @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
@@ -131,7 +132,8 @@
                 selectedItem: null,
                 sharedData: {focusedNodeData: null, focusedEdgeData: null},
                 diagram: null,
-                shape: null
+                shape: null,
+                styleModel: null
             }
         },
         computed: {
@@ -187,6 +189,14 @@
                         ).then(
                             response => {
                               this.diagram = response.data
+                            }
+                        ).catch(error => reject(error))
+
+                        axios.get(
+                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/style", {withCredentials: true}
+                        ).then(
+                            response => {
+                              this.styleModel = response.data
                             }
                         ).catch(error => reject(error))
                 })
