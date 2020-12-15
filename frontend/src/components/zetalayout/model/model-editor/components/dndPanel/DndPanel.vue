@@ -40,7 +40,7 @@ import {
     export default {
         name: 'DndPanel',
         mounted() {
-            this.panelItems = this.getPanelItems(this.graphComponent, this.shape, this.diagram)
+            this.panelItems = this.getPanelItems(this.graphComponent, this.shape, this.diagram, this.styleModel)
             const nodes = document.querySelectorAll('#drag-and-drop-panel')
             this.div = nodes[nodes.length - 1]
             // Append svg images as draggable nodes to the drag-and-drop-panel
@@ -66,6 +66,10 @@ import {
             type: Object,
             required: true,
           },
+          styleModel: {
+            type: Object,
+            required: true,
+          },
           isExpanded: {
             type: Boolean,
             required: true
@@ -85,7 +89,7 @@ import {
             /**
              * Return panel items
              **/
-            getPanelItems(graphComponent, shape, diagram) {
+            getPanelItems(graphComponent, shape, diagram, styleModel) {
                 /*let methods = {}
                 methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
                 methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
@@ -106,11 +110,13 @@ import {
                 console.log(graphComponent)
                 console.log(diagram)
                 console.log(shape)
+                console.log(styleModel)
 
                 diagram.diagrams[0].palettes.forEach(diagramKey => {
                   const shapeNodes = shape.nodes.filter(x => {
                     return x.name === diagramKey.nodes[0]
                   })[0]
+
 
                   shapeNodes.geoElements.forEach(function(shapeNode) {
                     console.log(shapeNode);
