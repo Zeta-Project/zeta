@@ -16,6 +16,7 @@
                 @mouseover="!isDndExpanded && toggleDnd()"
                 @mouseleave="isDndExpanded && toggleDnd()"
                 v-show="isEditEnabled"
+                v-if="diagram !== null && shape !== null && concept !== null"
         >
             <DndPanel
                     v-if="graphComponent"
