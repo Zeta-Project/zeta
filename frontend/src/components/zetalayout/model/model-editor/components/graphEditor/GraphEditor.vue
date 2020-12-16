@@ -178,7 +178,7 @@
                             "http://localhost:9000/rest/v1/models/" + uuid , {withCredentials: true}
                             ).then(
                                 response => {
-                                  const metamodelId = response.data.graphicalDslId;
+                                  const metamodelId = response.data.model.graphicalDslId;
 
                                   axios.get(
                                       "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/shape", {withCredentials: true}
@@ -204,7 +204,7 @@
                                       }
                                   ).catch(error => reject(error))
                                 }
-                        )
+                        ).catch(error => reject(error))
                   }
                 )
             },
