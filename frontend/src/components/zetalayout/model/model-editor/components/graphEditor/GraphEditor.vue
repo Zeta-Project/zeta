@@ -174,32 +174,39 @@
                             }
                         ).catch(error => reject(error))
 
-                        const metamodelId = "034473e6-ca73-477f-a913-9dc6046528af"
-
                         axios.get(
-                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/shape", {withCredentials: true}
-                        ).then(
-                            response => {
-                              this.shape = response.data
-                            }
-                        ).catch(error => reject(error))
+                            "http://localhost:9000/rest/v1/models/" + uuid , {withCredentials: true}
+                            ).then(
+                                response => {
+                                  const metamodelId = response.data.graphicalDslId;
 
-                        axios.get(
-                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/diagram", {withCredentials: true}
-                        ).then(
-                            response => {
-                              this.diagram = response.data
-                            }
-                        ).catch(error => reject(error))
+                                  axios.get(
+                                      "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/shape", {withCredentials: true}
+                                  ).then(
+                                      response => {
+                                        this.shape = response.data
+                                      }
+                                  ).catch(error => reject(error))
 
-                        axios.get(
-                            "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/style", {withCredentials: true}
-                        ).then(
-                            response => {
-                              this.styleModel = response.data
-                            }
-                        ).catch(error => reject(error))
-                })
+                                  axios.get(
+                                      "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/diagram", {withCredentials: true}
+                                  ).then(
+                                      response => {
+                                        this.diagram = response.data
+                                      }
+                                  ).catch(error => reject(error))
+
+                                  axios.get(
+                                      "http://localhost:9000/rest/v2/meta-models/" + metamodelId + "/style", {withCredentials: true}
+                                  ).then(
+                                      response => {
+                                        this.styleModel = response.data
+                                      }
+                                  ).catch(error => reject(error))
+                                }
+                        )
+                  }
+                )
             },
 
             initializeDefaultStyles() {
