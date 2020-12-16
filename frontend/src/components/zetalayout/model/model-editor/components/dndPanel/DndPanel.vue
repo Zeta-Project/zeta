@@ -121,6 +121,8 @@ import {
                   shapeNodes.geoElements.forEach(function(shapeNode) {
                     console.log(shapeNode);
 
+                    const type = shapeNode.type
+
                     const fontStyle = new Font({
                       fontFamily: shapeNode.style.fontFamily,
                       fontSize:shapeNode.style.font.size
@@ -142,6 +144,7 @@ import {
 
                     switch (type) {
                       case "rectangle":
+
                         node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
                         node.style = new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
                         node.labels = new ListEnumerable([simpleLabel])
