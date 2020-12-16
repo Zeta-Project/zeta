@@ -11,7 +11,6 @@ import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
-import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.WebSocketController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
@@ -51,7 +50,6 @@ class WebControllerContainer @Inject() private(
     val metaModelRestApi: Provider[GraphicalDslRestApi],
     val metaModelRestApiV2: Provider[v2.GraphicalDslRestApi],
     val modelRestApi: Provider[ModelRestApi],
-    val webApp: Provider[WebAppController],
     val generatorImageRestApi: Provider[GeneratorImageRestApi],
     val generatorRestApi: Provider[GeneratorRestApi],
     val filterRestApi: Provider[FilterRestApi],

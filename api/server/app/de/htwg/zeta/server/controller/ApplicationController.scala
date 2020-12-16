@@ -22,15 +22,6 @@ class ApplicationController @Inject()(
     silhouette: Silhouette[ZetaEnv]
 ) extends InjectedController {
 
-  /** Handles the index action.
-   *
-   * @param request The request
-   * @return The result to display.
-   */
-  def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.webpage.WebpageIndex(Some(request.identity.user)))
-  }
-
   /** Get the user id of the logged in user
    *
    * @param request The request
@@ -46,7 +37,7 @@ class ApplicationController @Inject()(
    * @return The result to display.
    */
   def signOut(request: SecuredRequest[ZetaEnv, AnyContent]): Future[AuthenticatorResult] = {
-    val result = Ok//Redirect(routes.ScalaRoutes.getIndex())
+    val result = Ok
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, result)(request)
   }

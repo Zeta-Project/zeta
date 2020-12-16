@@ -37,21 +37,6 @@ class ResetPasswordController @Inject()(
     implicit val ec: ExecutionContext
 ) extends InjectedController {
 
-  /** Views the `Reset Password` page.
-   *
-   * @param token    The token to identify a user.
-   * @param request  request
-   * @param messages messages
-   * @return The result to display.
-   */
-  def view(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    tokenCache.read(token).map { _ =>
-      Ok(views.html.silhouette.resetPassword(ResetPasswordForm.form, token, request, messages))
-    }.recover {
-      case _ => Redirect(routes.ScalaRoutes.getSignIn()).flashing(error -> messages(invalidResetLink))
-    }
-  }
-
   /** Resets the password.
    *
    * @param token    The token to identify a user.
@@ -67,14 +52,11 @@ class ResetPasswordController @Inject()(
           userRepo.read(userId).flatMap(user => {
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)
             val passwordInfo = passwordHasherRegistry.current.hash(password)
-            authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-              Ok
-              //Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("password.reset"))
-            }
+            authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map(_ => Ok)
           })
         })
     }).recover {
-      case _ => NotAcceptable//Redirect(routes.ScalaRoutes.getSignIn()).flashing(error -> messages(invalidResetLink))
+      case _ => NotAcceptable
     }
   }
 

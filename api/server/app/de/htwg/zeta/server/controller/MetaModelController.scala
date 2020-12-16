@@ -26,14 +26,7 @@ class MetaModelController @Inject()(
     implicit val ec: ExecutionContext
 ) extends InjectedController {
 
-  def metaModelEditor(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
-      Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity.user), metaModelId, metaModelEntity))
-    }.recover {
-      case e: Exception => BadRequest(e.getMessage)
-    }
-  }
-
+  // TODO: Replace with new meta model graphic editor in frontend
   def metaModelSocket(metaModelUuid: UUID)
     (securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): (Props, MessageFlowTransformer[JsValue, JsValue]) = {
     (MetaModelWsActor.props(out, metaModelUuid, mediator), MessageFlowTransformer.jsonMessageFlowTransformer)

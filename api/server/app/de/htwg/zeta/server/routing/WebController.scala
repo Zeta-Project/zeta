@@ -10,7 +10,6 @@ import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
-import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.WebSocketController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
@@ -52,7 +51,6 @@ trait WebController {
   protected lazy val metaModelRestApi: GraphicalDslRestApi = webCont.metaModelRestApi.get()
   protected lazy val metaModelRestApiV2: v2.GraphicalDslRestApi = webCont.metaModelRestApiV2.get()
   protected lazy val modelRestApi: ModelRestApi = webCont.modelRestApi.get()
-  protected lazy val webAppController: WebAppController = webCont.webApp.get()
   protected lazy val generatorImageRestApi: GeneratorImageRestApi = webCont.generatorImageRestApi.get()
   protected lazy val generatorRestApi: GeneratorRestApi = webCont.generatorRestApi.get()
   protected lazy val filterRestApi: FilterRestApi = webCont.filterRestApi.get()

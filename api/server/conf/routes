@@ -11,36 +11,26 @@ GET           /socket/user/:model                                               
 GET           /socket                                                                             de.htwg.zeta.server.routing.ScalaRoutes.getSocketConnection
 
 # Home page
-GET           /                                                                                   de.htwg.zeta.server.routing.ScalaRoutes.getIndex
-GET           /csrf                                                                               de.htwg.zeta.server.routing.ScalaRoutes.getCSRF
 GET           /user                                                                               de.htwg.zeta.server.routing.ScalaRoutes.getUser
-GET           /signOut                                                                            de.htwg.zeta.server.routing.ScalaRoutes.getSignout
+GET           /signOut                                                                            de.htwg.zeta.server.routing.ScalaRoutes.getSignOut
 
-GET           /signUp                                                                             de.htwg.zeta.server.routing.ScalaRoutes.getSignUp
 POST          /signUp                                                                             de.htwg.zeta.server.routing.ScalaRoutes.postSignUp
 
-GET           /signIn                                                                             de.htwg.zeta.server.routing.ScalaRoutes.getSignIn
 POST          /signIn                                                                             de.htwg.zeta.server.routing.ScalaRoutes.postSignIn
 
-GET           /password/forgot                                                                    de.htwg.zeta.server.routing.ScalaRoutes.getPasswordForgot
 POST          /password/forgot                                                                    de.htwg.zeta.server.routing.ScalaRoutes.postPasswordForgot
-GET           /password/reset/:token                                                              de.htwg.zeta.server.routing.ScalaRoutes.getPasswordReset(token: java.util.UUID)
 POST          /password/reset/:token                                                              de.htwg.zeta.server.routing.ScalaRoutes.postPasswordReset(token: java.util.UUID)
-GET           /password/change                                                                    de.htwg.zeta.server.routing.ScalaRoutes.getPasswordChange
 POST          /password/change                                                                    de.htwg.zeta.server.routing.ScalaRoutes.postPasswordChange
 
 GET           /account/email/:email                                                               de.htwg.zeta.server.routing.ScalaRoutes.getAccountEmail(email: String)
 GET           /account/activate/:token                                                            de.htwg.zeta.server.routing.ScalaRoutes.getAccountActivate(token: java.util.UUID)
 
 
-### Webpage
-GET           /webpage                                                                            de.htwg.zeta.server.routing.ScalaRoutes.getWebpage
 GET           /overview                                                                           de.htwg.zeta.server.routing.ScalaRoutes.getOverviewNoArgs
 GET           /overview/:id                                                                       de.htwg.zeta.server.routing.ScalaRoutes.getOverview(id: java.util.UUID)
 
 
 # metamodel editor
-GET           /metamodel/editor/:metaModelId                                                      de.htwg.zeta.server.routing.ScalaRoutes.getMetamodelEditor(metaModelId: java.util.UUID)
 GET           /metamodel/socket/:metaModelId                                                      de.htwg.zeta.server.routing.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
 
 ### model editor
@@ -72,10 +62,10 @@ HEAD          /metamodels/:metaModelId/validator                                
 
 ### REST API V2
 
-GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      de.htwg.zeta.server.routing.ScalaRoutesApi.triggerParse(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/shape                                             de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelShape(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/style                                             de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelStyle(metaModelId: java.util.UUID)
-GET           /rest/v2/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutesApi.getMetaModelDiagram(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      de.htwg.zeta.server.routing.ScalaRoutes.triggerParse(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/shape                                             de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelShape(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/style                                             de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelStyle(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/diagram                                           de.htwg.zeta.server.routing.ScalaRoutes.getMetaModelDiagram(metaModelId: java.util.UUID)
 
 ### Model REST API
 GET           /rest/v1/models                                                                     de.htwg.zeta.server.routing.ScalaRoutes.getModelsNoArgs
@@ -139,22 +129,15 @@ PUT           /rest/v1/files/:id/*name                                          
 GET           /rest/v1/dsl/:id/*apiType                                                           de.htwg.zeta.server.routing.ScalaRoutes.getDslV1(id: java.util.UUID, apiType: String)
 GET           /rest/v1/totalDsl/:id                                                               de.htwg.zeta.server.routing.ScalaRoutes.getAllDslV1(id: java.util.UUID)
 
-### Code Editor
-GET           /codeEditor/editor/:metaModelId/:dslType                                            de.htwg.zeta.server.routing.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
-
 GET           /codeViewerScala/:modelId                                                           de.htwg.zeta.server.routing.ScalaRoutes.getScalaCodeViewer(modelId:java.util.UUID)
 GET           /klimaCodeGenerator/:modelId                                                        de.htwg.zeta.server.routing.ScalaRoutes.getKlimaCodeViewer(modelId:java.util.UUID)
-GET           /codeEditorClassMethod/:metaModelId/:className/:methodName                          de.htwg.zeta.server.routing.ScalaRoutes.getMethodClassCodeEditor(metaModelId: java.util.UUID, methodName: String, className: String)
-GET           /codeEditorReferenceMethod/:metaModelId/:referenceName/:methodName                  de.htwg.zeta.server.routing.ScalaRoutes.getMethodReferenceCodeEditor(metaModelId: java.util.UUID, methodName: String, referenceName: String)
-GET           /codeEditorCommonMethod/:metaModelId/:methodName                                    de.htwg.zeta.server.routing.ScalaRoutes.getMethodCommonCodeEditor(metaModelId:java.util.UUID, methodName: String)
+GET           /codeEditorClassMethod/:metaModelId/:className/:methodName                          de.htwg.zeta.server.routing.ScalaRoutes.getMethodClassCodeEditorContent(metaModelId: java.util.UUID, methodName: String, className: String)
+GET           /codeEditorReferenceMethod/:metaModelId/:referenceName/:methodName                  de.htwg.zeta.server.routing.ScalaRoutes.getMethodReferenceCodeEditorContent(metaModelId: java.util.UUID, methodName: String, referenceName: String)
+GET           /codeEditorCommonMethod/:metaModelId/:methodName                                    de.htwg.zeta.server.routing.ScalaRoutes.getMethodCommonCodeEditorContent(metaModelId:java.util.UUID, methodName: String)
 
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                                       de.htwg.zeta.server.routing.ScalaRoutes.getAssets(file)
 GET           /webjars/*file                                                                      de.htwg.zeta.server.routing.ScalaRoutes.getWebjars(file)
 GET           /model_specific/:id/*file                                                           de.htwg.zeta.server.routing.ScalaRoutes.getMode_specific(id: java.util.UUID, file: String)
-
-GET           /app                                                                                de.htwg.zeta.server.routing.ScalaRoutes.getWebApp(page = "")
-GET           /app/*path                                                                          de.htwg.zeta.server.routing.ScalaRoutes.getWebApp(path)
-GET           /static/*path                                                                       de.htwg.zeta.server.routing.ScalaRoutes.getStaticFiles(path)
 
