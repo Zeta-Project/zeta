@@ -27,9 +27,9 @@ import {
   Point,
   PortDropInputMode,
   Rect, ShapeNodeShape, ShapeNodeStyle, SimpleLabel,
-  SimpleNode, Size,
+  VoidNodeStyle, Font, FontStyle,
   SvgExport,
-  VoidNodeStyle
+  SimpleNode, Size
 } from "yfiles";
     import {addClass, removeClass} from "../../utils/Bindings";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
@@ -121,14 +121,17 @@ import {
                   shapeNodes.geoElements.forEach(function(shapeNode) {
                     console.log(shapeNode);
 
-                    const type = shapeNode.type
+                    const fontStyle = new Font({
+                      fontFamily: shapeNode.style.fontFamily,
+                      fontSize:shapeNode.style.font.size
+                    })
 
                     const node = new SimpleNode();
-
                     let simpleLabel = new SimpleLabel()
                     simpleLabel.owner = node
                     simpleLabel.layoutParameter = InteriorLabelModel.CENTER
                     simpleLabel.style = new DefaultLabelStyle({
+                      font: fontStyle,
                       verticalTextAlignment: "center",
                       horizontalTextAlignment: "center"
                     })
