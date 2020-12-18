@@ -1,136 +1,153 @@
 <template>
-    <div class="full-control" v-if="edge">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <div class="list">
-            <md-list :md-expand-single="false">
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Meta-Information</span>
-                    <md-list slot="md-expand">
-                        <md-list-item class="md-inset">
-                            <md-field
-                                    v-if="edge.labels"
-                                    v-for="(label, index) in edge.labels"
-                                    :key="`${edge.name}-labels-${index}`"
-                            >
-                                <label>Name</label>
-                                <md-input :value="label.text" @input="name => $emit('on-edge-name-change', edge, name)"/>
-                            </md-field>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-field>
-                                <label>Description</label>
-                                <md-input v-model="edge.style.model.description" />
-                            </md-field>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget" @change="$emit('on-edge-style-change', edge)">sourceDeletionDeletesTarget</md-checkbox>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-checkbox v-model="edge.style.model.targetDeletionDeletesSource" @change="$emit('on-edge-style-change', edge)">targetDeletionDeletesSource</md-checkbox>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
+  <v-expansion-panels class="ma-1 full-control" multiple>
 
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Attributes</span>
-                    <md-list slot="md-expand">
-                        <md-list-item
-                                v-if="edge.style.model.attributes"
-                                v-for="(attribute, index) in edge.style.model.attributes"
-                                :key="`${edge.style.model.name}-properties-attributes-${index}`"
-                                class="md-inset"
-                        >
-                            <md-field>
-                                <label>Name</label>
-                                <md-input v-model="attribute.name"/>
-                            </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', edge.style.model, attribute.name)">
-                                <md-icon class="fa fa-trash" />
-                            </md-button>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', edge.style.model, 'default')">Add Attribute</md-button>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Meta-Information</v-expansion-panel-header>
 
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Operations</span>
-                    <md-list slot="md-expand">
-                        <md-list-item
-                                v-if="edge.style.model.operations"
-                                v-for="(operation, index) in edge.style.model.operations"
-                                :key="`${edge.style.model.name}-properties-operations-${index}`"
-                                class="md-inset"
-                        >
-                            <md-field>
-                                <label>Name</label>
-                                <md-input v-model="operation.name" />
-                            </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', edge.style.model, operation.name)">
-                                <md-icon
-                                        class="fa fa-trash"
-                                />
-                            </md-button>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-operation', edge.style.model, 'default')">Add Operation</md-button>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
-            </md-list>
-        </div>
-    </div>
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="edge.labels"
+              v-for="(label, index) in edge.labels"
+              :key="`${edge.name}-labels-${index}`">
+            <v-col>
+              <v-text-field label="Name" :value="label.text" @input="name => onAttributeNameChange(edge, name)"/>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-text-field label="Description" v-model="edge.style.model.description"/>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget"
+                          :label="'sourceDeletionDeletesTarget'"
+                          @change="onSourceDeletionDeletesTargetChange(edge)"/>
+              <v-checkbox v-model="edge.style.model.targetDeletionDeletesSource"
+                          :label="'targetDeletionDeletesSource'"
+                          @change="onTargetDeletionDeletesSourceChange(edge)"/>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+    <v-expansion-panel>
+      <v-expansion-panel-header>Attributes</v-expansion-panel-header>
+
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="edge.style.model.attributes"
+              v-for="(attribute, index) in edge.style.model.attributes"
+              :key="`${edge.style.model.name}-properties-attributes-${index}`">
+            <v-col>
+              <v-text-field
+                  label="Name"
+                  v-model="attribute.name">
+                <v-btn slot="append-outer" icon @click="onDeleteAttribute(edge.style.model, attribute.name)">
+                  <v-icon color="red">mdi-trash-can-outline</v-icon>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-btn color="primary" @click="onAddAttribute(edge.style.model)">Add Attribute</v-btn>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+    <v-expansion-panel>
+      <v-expansion-panel-header>Operations</v-expansion-panel-header>
+
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="edge.style.model.operations"
+              v-for="(operation, index) in edge.style.model.operations"
+              :key="`${edge.style.model.name}-properties-operations-${index}`">
+            <v-col>
+              <v-text-field
+                  label="Name"
+                  v-model="operation.name">
+                <v-btn slot="append-outer" icon @click="onDeleteOperation(edge.style.model, operation.name)">
+                  <v-icon color="red">mdi-trash-can-outline</v-icon>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-btn color="primary" @click="onAddOperation(edge.style.model)">Add Operation</v-btn>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+  </v-expansion-panels>
 </template>
 
 <script>
-    export default {
-        name: 'EdgeProperties',
-        data: function () {
-            return {}
-        },
-        watch: {
-            edge: function (newVal, oldVal) { // watch it
-                if(newVal.name !== oldVal.name){
-                    console.log("name changed");
-                }
-                console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-            }
-        },
-        props: {
-            edge: {
-                validator: prop => typeof prop === 'object' || prop === null,
-                required: true
-            }
-        }
+export default {
+  name: 'EdgeProperties',
+  data: function () {
+    return {}
+  },
+  watch: {
+    edge: function (newVal, oldVal) { // watch it
+      if (newVal.name !== oldVal.name) {
+        console.log("name changed");
+      }
+      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
     }
+  },
+  props: {
+    edge: {
+      validator: prop => typeof prop === 'object' || prop === null,
+      required: true
+    }
+  },
+  methods: {
+    onAttributeNameChange(edge, name) {
+      this.$emit('on-edge-name-change', edge, name)
+    },
+    onSourceDeletionDeletesTargetChange(edge) {
+      this.$emit('on-edge-style-change', edge);
+    },
+    onTargetDeletionDeletesSourceChange(edge) {
+      this.$emit('on-edge-style-change', edge);
+    },
+    onDeleteAttribute(model, name) {
+      this.$emit('delete-attribute', model, name);
+    },
+    onAddAttribute(model) {
+      this.$emit('add-attribute', model, 'default');
+    },
+    onDeleteOperation(model, name) {
+      this.$emit('delete-operation', model, name);
+    },
+    onAddOperation(model) {
+      this.$emit('add-operation', model, 'default');
+    }
+  }
+}
 </script>
 
 <style scoped>
-    .full-control {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap-reverse;
-    }
 
-    .list {
-        width: 100%;
-    }
-
-    .full-control > .md-list {
-        width: 100%;
-        max-width: 100%;
-        height: 400px;
-        display: inline-block;
-        overflow: auto;
-        border: 1px solid;
-        vertical-align: top;
-    }
-
-    .control {
-        min-width: 250px;
-        display: flex;
-        flex-direction: column;
-        padding: 16px;
-    }
 </style>
