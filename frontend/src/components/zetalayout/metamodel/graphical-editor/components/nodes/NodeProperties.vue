@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels class="ma-1 full-control">
+  <v-expansion-panels class="ma-1 full-control" multiple>
 
     <v-expansion-panel>
       <v-expansion-panel-header>Meta-Information</v-expansion-panel-header>
