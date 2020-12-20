@@ -138,6 +138,8 @@ export default {
                         horizontalTextAlignment: "center"
                       })
                     })
+
+                    node.tag = new UMLClassModel()
                   }
                 }
               })
