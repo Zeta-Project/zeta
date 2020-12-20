@@ -99,11 +99,9 @@ export default {
 
               shapeNodes.geoElements.forEach(function (shapeNode) {
                 if (typeof shapeNode.size !== 'undefined') {
-                  const node = graph.createNode()
+                  const node = graph.createNode({tag: new UMLClassModel()})
 
-                  const type = shapeNode.type
-
-                  switch (type) {
+                  switch (shapeNode.type) {
                     case "rectangle":
                       graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
                       graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
@@ -119,7 +117,7 @@ export default {
                       graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.ELLIPSE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
                       break;
                     default:
-                      console.log("Not implemented yet: " + type);
+                      console.log("Not implemented yet: " + shapeNode.type);
                   }
 
                   if(typeof shapeNode.childGeoElements[0] !== 'undefined') {
@@ -138,8 +136,6 @@ export default {
                         horizontalTextAlignment: "center"
                       })
                     })
-
-                    node.tag = new UMLClassModel()
                   }
                 }
               })
