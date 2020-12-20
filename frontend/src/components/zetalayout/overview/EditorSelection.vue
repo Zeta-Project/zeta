@@ -158,23 +158,6 @@
       </v-dialog>
     </v-card-text>
 
-    <!--
-          <div class="list-group">
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/style'">
-              Style
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/shape'">
-              Shape
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/codeEditor/editor/' + gdslProject.id + '/diagram'">
-              Diagram
-            </router-link>
-            <router-link class="list-group-item" :to="'/zeta/metamodel/editor/' + gdslProject.id">
-              Concept Editor
-            </router-link>
-          </div>
-    -->
-
     <v-divider class="ma-0"></v-divider>
 
     <v-card-actions>
