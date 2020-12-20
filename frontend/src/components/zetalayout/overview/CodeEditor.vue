@@ -66,10 +66,10 @@ import 'brace';
 import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
-import {styleLanguage, diagramLanguage, shapeLanguage} from './utils/ace-grammar';
-import {SourceCodeInspector} from "./utils/source-code-inspector";
-import {CodeOutline} from "./utils/code-outline";
-import {OnlineSocket} from "./utils/online-socket";
+import {styleLanguage, diagramLanguage, shapeLanguage} from './code-editor/ace-grammar';
+import {SourceCodeInspector} from "./code-editor/source-code-inspector";
+import {CodeOutline} from "./code-editor/code-outline";
+import {OnlineSocket} from "./code-editor/online-socket";
 import axios from 'axios'
 
 
