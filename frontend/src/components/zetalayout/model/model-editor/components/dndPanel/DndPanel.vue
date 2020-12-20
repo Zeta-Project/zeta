@@ -12,7 +12,7 @@ import {
   DefaultLabelStyle,
   DragDropEffects,
   DragDropItem,
-  DragSource,
+  DragSource, Font,
   GraphComponent,
   IEdge,
   ILabel,
@@ -26,28 +26,27 @@ import {
   NodeDropInputMode,
   Point,
   PortDropInputMode,
-  Rect, ShapeNodeShape, ShapeNodeStyle, SimpleLabel,
-  VoidNodeStyle, Font, FontStyle,
+  Rect,
+  ShapeNodeShape,
+  ShapeNodeStyle,
+  SimpleNode,
   SvgExport,
-  SimpleNode, Size
+  VoidNodeStyle
 } from "yfiles";
-    import {addClass, removeClass} from "../../utils/Bindings";
-    import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
-    import Vue from "vue";
-    import Node from "../nodes/Node.vue";
-    import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
+import {addClass, removeClass} from "../../utils/Bindings";
+import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
 
-    export default {
-        name: 'DndPanel',
-        mounted() {
-            this.panelItems = this.getPanelItems(this.graphComponent, this.shape, this.diagram, this.styleModel)
-            const nodes = document.querySelectorAll('#drag-and-drop-panel')
-            this.div = nodes[nodes.length - 1]
-            // Append svg images as draggable nodes to the drag-and-drop-panel
-            this.appendVisuals(this.panelItems)
-        },
-        data: function () {
-            return {
+export default {
+  name: 'DndPanel',
+  mounted() {
+    this.panelItems = this.getPanelItems(this.shape, this.diagram, this.styleModel)
+    const nodes = document.querySelectorAll('#drag-and-drop-panel')
+    this.div = nodes[nodes.length - 1]
+    // Append svg images as draggable nodes to the drag-and-drop-panel
+    this.appendVisuals(this.panelItems, this.shape, this.diagram, this.styleModel)
+  },
+  data: function () {
+    return {
                 panelItems: [],
                 maxItemWidth: 150,
                 div: ''
@@ -86,119 +85,101 @@ import {
           }
         },
         methods: {
-            /**
-             * Return panel items
-             **/
-            getPanelItems(graphComponent, shape, diagram, styleModel) {
-                /*let methods = {}
-                methods.addAttributeToNode = (node, attribute) => this.$emit('add-attribute-to-node', node, attribute);
-                methods.addOperationToNode = (node, attribute) => this.$emit('add-operation-to-node', node, attribute);
-                methods.deleteAttributeFromNode = (node, attribute) => this.$emit('delete-attribute-from-node', node, attribute);
-                methods.deleteOperationFromNode = (node, attribute) => this.$emit('delete-operation-from-node', node, attribute);
-                methods.changeInputMode = () => this.$emit('change-input-mode');*/
-                //const NodeConstructor = Vue.extend(Node);
+          /**
+           * Return panel items
+           **/
+          getPanelItems(shapeModel, diagramModel, styleModel) {
+            const graphComponent = new GraphComponent()
+            const graph = graphComponent.graph
 
-                // Create node and push them into the itemContainer
+            diagramModel.diagrams[0].palettes.forEach(diagramKey => {
+              const shapeNodes = shapeModel.nodes.filter(x => {
+                return x.name === diagramKey.nodes[0]
+              })[0]
 
-                /*const node = new SimpleNode();
-                node.layout = new Rect(0, 0, 150, 250);
-                // Set the style of the node in the dnd panel
-                node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);*/
+              shapeNodes.geoElements.forEach(function (shapeNode) {
+                if (typeof shapeNode.size !== 'undefined') {
+                  const node = graph.createNode()
 
-                const nodeList = [] // {element: node, tooltip: 'Node'}
+                  const type = shapeNode.type
 
-                console.log(graphComponent)
-                console.log(diagram)
-                console.log(shape)
-                console.log(styleModel)
+                  switch (type) {
+                    case "rectangle":
+                      graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
+                      graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
 
-                diagram.diagrams[0].palettes.forEach(diagramKey => {
-                  const shapeNodes = shape.nodes.filter(x => {
-                    return x.name === diagramKey.nodes[0]
-                  })[0]
+                      break;
+                    case "roundedRectangle":
+                      graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
+                      graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.ROUND_RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
 
+                      break;
+                    case "ellipse":
+                      graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
+                      graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.ELLIPSE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
+                      break;
+                    default:
+                      console.log("Not implemented yet: " + type);
+                  }
 
-                  shapeNodes.geoElements.forEach(function(shapeNode) {
-                    console.log(shapeNode);
-
-                    const type = shapeNode.type
-
+                  if(typeof shapeNode.childGeoElements[0] !== 'undefined') {
                     const fontStyle = new Font({
                       fontFamily: shapeNode.style.fontFamily,
                       fontSize:shapeNode.style.font.size
                     })
 
-                    const node = new SimpleNode();
-                    let simpleLabel = new SimpleLabel()
-                    simpleLabel.owner = node
-                    simpleLabel.layoutParameter = InteriorLabelModel.CENTER
-                    simpleLabel.style = new DefaultLabelStyle({
-                      font: fontStyle,
-                      verticalTextAlignment: "center",
-                      horizontalTextAlignment: "center"
+                    graph.addLabel({
+                      owner: node,
+                      text: shapeNode.childGeoElements[0].identifier,
+                      layoutParameter: InteriorLabelModel.CENTER,
+                      style: new DefaultLabelStyle({
+                        font: fontStyle,
+                        verticalTextAlignment: "center",
+                        horizontalTextAlignment: "center"
+                      })
                     })
-
-                    if(typeof shapeNode.childGeoElements[0] !== 'undefined') {
-                      simpleLabel.text = shapeNode.childGeoElements[0].identifier
-                    }
-
-                    switch (type) {
-                      case "rectangle":
-
-                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
-                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
-                        node.labels = new ListEnumerable([simpleLabel])
-
-                        nodeList.push({element: node, tooltip: diagramKey.name})
-                        break;
-                      case "roundedRectangle":
-                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
-                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ROUND_RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
-                        node.labels = new ListEnumerable([simpleLabel])
-
-                        nodeList.push({element: node, tooltip: diagramKey.name})
-                        break;
-                      case "ellipse":
-                        node.layout = new Rect(0, 0, shapeNode.size.width, shapeNode.size.height);
-                        node.style = new ShapeNodeStyle({shape: ShapeNodeShape.ELLIPSE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex})
-                        node.labels = new ListEnumerable([simpleLabel])
-
-                        nodeList.push({element: node, tooltip: diagramKey.name})
-                        break;
-                      default:
-                        console.log("Not implemented yet: " + type);
-                    }
-                  })
-                })
-
-                return nodeList
-            },
-
-            /**
-             * Adds the items provided by the given factory to this palette.
-             * This method delegates the creation of the visualization of each node
-             * to createNodeVisual.
-             */
-            appendVisuals(itemFactory) {
-                if (!itemFactory) {
-                    return
+                  }
                 }
+              })
+            })
 
-                // Create the nodes that specify the visualizations for the panel.
-                const items = itemFactory;
+            return this.createNodeList(graph)
+          },
+          createNodeList(graph) {
+            const nodeList = []
 
-                // Convert the nodes into plain visualizations
-                const graphComponent = new GraphComponent()
+            graph.nodes.forEach(node => {
+              nodeList.push({element: node, tooltip: "TEST"}) // diagramKey.name
+            });
 
-                items.forEach(item => {
-                    const modelItem = INode.isInstance(item) || IEdge.isInstance(item) ? item : item.element
-                    const visual = INode.isInstance(modelItem)
-                        ? this.createNodeVisual(item, graphComponent)
-                        : this.createEdgeVisual(item, graphComponent)
-                    this.addPointerDownListener(modelItem, visual, this.beginDragCallback)
-                    this.div.appendChild(visual)
-                });
-            },
+            return nodeList
+          },
+
+          /**
+           * Adds the items provided by the given factory to this palette.
+           * This method delegates the creation of the visualization of each node
+           * to createNodeVisual.
+           */
+          appendVisuals(itemFactory, shapeModel, diagramModel, styleModel) {
+            if (!itemFactory) {
+              return
+            }
+
+            // Create the nodes that specify the visualizations for the panel.
+            const items = itemFactory;
+
+            // Convert the nodes into plain visualizations
+            const graphComponent = new GraphComponent()
+
+            items.forEach(item => {
+              const modelItem = INode.isInstance(item) || IEdge.isInstance(item) ? item : item.element
+              const visual = INode.isInstance(modelItem)
+                  ? this.createNodeVisual(item, graphComponent, shapeModel, diagramModel, styleModel)
+                  : this.createEdgeVisual(item, graphComponent)
+              this.addPointerDownListener(modelItem, visual, this.beginDragCallback)
+              this.div.appendChild(visual)
+            });
+          },
 
             beginDragCallback(element, data) {
                 const dragPreview = element.cloneNode(true)
@@ -238,43 +219,43 @@ import {
 
                 // let the GraphComponent handle the preview rendering if possible
                 if (dragSource) {
-                    dragSource.addQueryContinueDragListener((src, args) => {
-                        if (args.dropTarget === null) {
-                            removeClass(dragPreview, 'hidden')
-                        } else {
-                            addClass(dragPreview, 'hidden')
-                        }
-                    })
+                  dragSource.addQueryContinueDragListener((src, args) => {
+                    if (args.dropTarget === null) {
+                      removeClass(dragPreview, 'hidden')
+                    } else {
+                      addClass(dragPreview, 'hidden')
+                    }
+                  })
                 }
             },
 
-            /**
-             * Creates an element that contains the visualization of the given node.
-             * This method is used by populatePanel to create the visualization
-             * for each node provided by the factory.
-             * @return {HTMLDivElement}
-             */
-            createNodeVisual(original, graphComponent) {
-                const graph = graphComponent.graph
-                graph.clear()
-                const originalNode = INode.isInstance(original) ? original : original.element
+          /**
+           * Creates an element that contains the visualization of the given node.
+           * This method is used by populatePanel to create the visualization
+           * for each node provided by the factory.
+           * @return {HTMLDivElement}
+           */
+          createNodeVisual(original, graphComponent, shapeModel, diagramModel, styleModel) {
+            const graph = graphComponent.graph
+            graph.clear()
+            const originalNode = INode.isInstance(original) ? original : original.element
 
-                // Create nodes that can be appended to the graph by the builder
-                const node = graph.createNode({
-                    style: originalNode.style,
-                    tag: new UMLClassModel()
-                })
-                originalNode.labels.forEach(label => {
-                    graph.addLabel(
-                        node,
-                        label.text,
-                        label.layoutParameter,
-                        label.style,
-                        label.preferredSize,
-                        label.tag
-                    )
-                })
-                originalNode.ports.forEach(port => {
+            // Create nodes that can be appended to the graph by the builder
+            const node = graph.createNode({
+              style: originalNode.style,
+              tag: new UMLClassModel()
+            })
+            originalNode.labels.forEach(label => {
+              graph.addLabel(
+                  node,
+                  label.text,
+                  label.layoutParameter,
+                  label.style,
+                  label.preferredSize,
+                  label.tag
+              )
+            })
+            originalNode.ports.forEach(port => {
                     graph.addPort(node, port.locationParameter, port.style, port.tag)
                 })
                 this.updateViewport(graphComponent)
