@@ -533,7 +533,7 @@ export default {
 .toolbar {
   position: absolute;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  top: 100px;
+  top: 115px;
   left: 0;
   right: 0;
   height: 40px;
@@ -547,7 +547,7 @@ export default {
 
 .graph-component-container {
   position: absolute;
-  top: 100px;
+  top: 116px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -555,7 +555,7 @@ export default {
 
 .demo-sidebar-collapsed {
   position: absolute;
-  top: 101px;
+  top: 120px;
   bottom: 0;
   width: 100px;
   box-sizing: border-box;
@@ -568,7 +568,7 @@ export default {
 
 .demo-sidebar-extended {
   position: absolute;
-  top: 101px;
+  top: 120px;
   bottom: 0;
   width: 320px;
   box-sizing: border-box;
@@ -581,7 +581,7 @@ export default {
 
 .property-panel {
   position: absolute;
-  top: 101px;
+  top: 120px;
   bottom: 0;
   width: 320px;
   box-sizing: border-box;
