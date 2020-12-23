@@ -86,7 +86,7 @@
                   <v-card-title>
                     <span>{{ step2 }}</span>
                     <v-spacer></v-spacer>
-                    <span class="editor-button">
+                    <span>
                       <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
                         Saving succeed
                       </v-chip>
@@ -110,7 +110,7 @@
                   <v-card-title>
                     <span>{{ step3 }}</span>
                     <v-spacer></v-spacer>
-                    <span class="editor-button">
+                    <span>
                       <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
                         Saving succeed
                       </v-chip>
@@ -134,7 +134,7 @@
                   <v-card-title>
                     <span>{{ step4 }}</span>
                     <v-spacer></v-spacer>
-                    <span class="editor-button">
+                    <span>
                       <v-chip class="js-save-successful" style="display: none" color="green" text-color="white">
                         Saving succeed
                       </v-chip>
@@ -258,6 +258,7 @@ export default {
 
   }
 }
+
 import $ from "jquery";
 import 'brace';
 import 'brace/ext/language_tools';
@@ -364,5 +365,11 @@ li {
 
 a {
   color: #42b983;
+}
+
+.editor {
+  flex-grow: 1;
+  height: 500px; /* fallback for older browsers */
+  height: calc(100vh - 175px);
 }
 </style>

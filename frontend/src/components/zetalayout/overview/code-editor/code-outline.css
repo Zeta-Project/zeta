@@ -1,0 +1,57 @@
+#outline-nodes .outline-heading {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#outline-nodes .outline-node {
+    padding: 0 0 4px 20px;
+    cursor: pointer;
+    font-size: 12px;
+    position: relative;
+    color: #333;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+#outline-nodes .outline-node > .line {
+    font-size: 12px;
+    float: right;
+}
+
+#outline-nodes .outline-node:hover {
+    font-weight: bold;
+}
+
+#outline-nodes .outline-node::before {
+    content: '';
+    background-color: #204d74;
+    width: 14px;
+    height: 14px;
+    font-size: 11px;
+    position: absolute;
+    font-weight: normal;
+    left: 1px;
+    top: 1px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+}
+
+#outline-nodes .outline-node.style::before {
+    content: 'S';
+    background-color: #0ab27e;
+}
+
+#outline-nodes .outline-node.palette::before {
+    content: 'P';
+    background-color: #b217a6;
+}
+
+#outline-nodes .outline-node.node::before {
+    content: 'N';
+    background-color: #1C5D99;
+}
+
+#outline-nodes .outline-node.edge::before {
+    content: 'E';
+    background-color: #81941a;
+}

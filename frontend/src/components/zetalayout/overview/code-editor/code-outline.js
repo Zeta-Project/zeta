@@ -1,4 +1,5 @@
 import $ from "jquery";
+import './code-outline.css'
 
 export class CodeOutline {
 
