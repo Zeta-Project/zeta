@@ -173,69 +173,8 @@ class CodeEditor {
   border-radius: 4px;
 }
 
-#container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  background: #2f3129;
-  padding: 10px;
-}
-
-#sidebar {
-  flex-grow: 0;
-  color: white;
-  min-width: 150px;
-  max-height: 100vh;
-  overflow-y: auto;
-}
-
-#sidebar a {
-  display: block;
-  color: #f4fdd2;
-  text-decoration: none;
-  padding: 2px;
-  margin-right: 5px;
-  cursor: pointer;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-}
-#sidebar a:hover {
-  color: #95ad3e;
-}
-
 .editor {
   flex-grow: 1;
-}
-
-.download-btn {
-  margin: 0 0 10px 0;
-}
-
-.download-btn>.glyhicon {
-  margin: 0 0 0 5px;
-}
-
-.folder-element {
-  color: #74d474;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-}
-
-/* scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-track {
-  background: #dedede;
-}
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
 }
 
 .editor-container {
@@ -264,11 +203,6 @@ class CodeEditor {
   margin: 0 0 0 5px;
 }
 
-.ace-editor {
-  height: 100%;
-  width: 70%;
-}
-
 .lineErrorMarker {
   position: absolute;
   background: #f0ad4e;
@@ -282,88 +216,6 @@ class CodeEditor {
   z-index: 21
 }
 
-.ace-container {
-  border-radius: 5px;
-  border: 1px solid gray;
-}
-
-#selectable .ui-selecting {
-  text-shadow: 2px 2px #000000;
-}
-
-#selectable .ui-selected {
-  color: #F8F8F8;
-  background-color: #0c7cf4;
-}
-
-#selectable {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow: scroll;
-}
-
-#selectable li {
-  background: transparent;
-  font-size: 14px;
-  height: 22px;
-  cursor: pointer;
-  width: 100%;
-  border: none;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: middle;
-  color: black;
-}
-
-.sidebar-container {
-  background-color: #ff0000;
-  height: 100%;
-}
-
-#sidebar {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  height: 500px;
-  max-width: 200px;
-  padding: 0;
-  float: left;
-  border-right: 1px solid lightgray;
-  background-color: #F7F7F7;
-}
-
-.vcenter {
-  display: inline-block;
-  vertical-align: middle;
-  float: none;
-}
-
-.toolbar {
-  height: 49px;
-  width: 100%;
-  float: left;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom: 1px solid lightgray;
-  background-color: #F7F7F7;
-}
-
-.toolbarbtn {
-  margin: 3px;
-}
-
-.toolbar-button:hover {
-  background: linear-gradient(#FCFCFC, #DCDCDC);
-}
-
-.toolbar-button:active {
-  background: linear-gradient(#1AD6FD, #1D62F0);
-}
-
 #source-code-inspection {
   height: 0;
   overflow: hidden;
@@ -372,7 +224,6 @@ class CodeEditor {
   border-radius: 4px;
   vertical-align: middle;
   padding: 8px 15px;
-  /*white-space: pre;*/
   margin-bottom: 20px;
   height: auto;
   border: 1px solid transparent;
