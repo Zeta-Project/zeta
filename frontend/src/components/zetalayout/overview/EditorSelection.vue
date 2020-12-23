@@ -78,7 +78,7 @@
               <v-col md="3">
                 <div id="source-code-inspection"></div>
                 <div id="online-users"></div>
-                <div id="outline-nodes"></div>
+                <div id="outline-nodes-container"></div>
               </v-col>
 
               <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step2">

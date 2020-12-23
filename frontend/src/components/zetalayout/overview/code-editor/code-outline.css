@@ -1,10 +1,24 @@
-#outline-nodes .outline-heading {
-    font-size: 14px;
-    font-weight: bold;
+.outline-nodes {
+    border: 1px solid darkgray;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: whitesmoke;
 }
 
-#outline-nodes .outline-node {
-    padding: 0 0 4px 20px;
+.outline-nodes .outline-heading {
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid darkgray;
+    padding: 5px;
+    text-align: left;
+
+}
+
+.outline-nodes .outline-content {
+    padding: 5px;
+}
+
+.outline-nodes .outline-node {
     cursor: pointer;
     font-size: 12px;
     position: relative;
@@ -12,16 +26,17 @@
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
-#outline-nodes .outline-node > .line {
+.outline-nodes .outline-node > .line {
     font-size: 12px;
     float: right;
 }
 
-#outline-nodes .outline-node:hover {
+.outline-nodes .outline-node:hover {
     font-weight: bold;
+    background-color: lightgray;
 }
 
-#outline-nodes .outline-node::before {
+.outline-nodes .outline-node::before {
     content: '';
     background-color: #204d74;
     width: 14px;
@@ -36,22 +51,22 @@
     text-align: center;
 }
 
-#outline-nodes .outline-node.style::before {
+.outline-nodes .outline-node.style::before {
     content: 'S';
     background-color: #0ab27e;
 }
 
-#outline-nodes .outline-node.palette::before {
+.outline-nodes .outline-node.palette::before {
     content: 'P';
     background-color: #b217a6;
 }
 
-#outline-nodes .outline-node.node::before {
+.outline-nodes .outline-node.node::before {
     content: 'N';
     background-color: #1C5D99;
 }
 
-#outline-nodes .outline-node.edge::before {
+.outline-nodes .outline-node.edge::before {
     content: 'E';
     background-color: #81941a;
 }
