@@ -304,17 +304,7 @@ paper-button::shadow #ripple {
 .validatorDropdown {
   display: inline-block;
 }
-/* drag & drop area */
-.upload-area {
-  height: 180px;
-  border: 1px dashed #ccc;
-  border-radius: 3px;
-  text-align: center;
-  overflow: auto;
-  padding: 20px 0 0 0;
-  color: darkslategray;
-  cursor: pointer;
-}
+
 /* Thumbnail */
 .thumbnail {
   width: 80px;
