@@ -71,7 +71,7 @@
             </v-toolbar-items>
           </v-toolbar>
 
-          <GraphicalEditor v-if="!step1IsHidden"></GraphicalEditor>
+          <GraphEditor v-if="!step1IsHidden" ref="GraphComponent"></GraphEditor>
 
           <v-container fluid class="py-0">
             <v-row v-show="step1IsHidden">
@@ -182,7 +182,7 @@
 </template>
 <script>
 import ValidatorUtils from "./ValidatorUtils";
-import GraphicalEditor from './GraphicalEditor'
+import GraphEditor from '../metamodel/graphical-editor/components/graphEditor/GraphEditor'
 import {EventBus} from '../../../eventbus/eventbus'
 
 export default {
@@ -192,7 +192,7 @@ export default {
     modelInstances: {},
   },
   components: {
-    GraphicalEditor,
+    GraphEditor,
   },
   data() {
     return {

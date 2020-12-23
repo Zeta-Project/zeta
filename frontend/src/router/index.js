@@ -2,7 +2,6 @@ import VueRouter from 'vue-router'
 
 import DiagramsOverview from '@/components/zetalayout/overview/WebpageDiagramsOverview'
 import MetamodelCodeEditor from '@/components/zetalayout/overview/CodeEditor'
-import MetamodelGraphicalEditor from '@/components/zetalayout/overview/GraphicalEditor'
 import ZetaLayout from '@/components/zetalayout/ZetaLayout'
 import AccountLayout from '@/components/accountlayout/AccountLayout'
 import SignIn from '@/components/accountlayout/signin/SignIn'
@@ -52,10 +51,6 @@ const router = new VueRouter({
                     path: 'codeEditor/editor/:id/:dslType',
                     component: MetamodelCodeEditor
                 },
-                {
-                    path: 'metamodel/editor/:id',
-                    component: MetamodelGraphicalEditor
-                }
             ]
         },
         {
