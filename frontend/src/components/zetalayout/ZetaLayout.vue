@@ -125,37 +125,7 @@ export default {
   width: 100%;
   height: 100%;
 }
-.panel-default {
-  border: none;
-  -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-.form-control {
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
-  background-color: #5bc0de;
-  border-color: #46b8da;
-}
-.modal-header.modal-header-primary {
-  color: #fff;
-  background-color: #337ab7;
-  border-radius: 5px 5px 0 0;
-}
-.modal-header.modal-header-info {
-  color: #fff;
-  background-color: #5bc0de;
-  border-radius: 6px 6px 0 0;
-}
-.modal-header.modal-header-info .close:hover,
-.modal-header.modal-header-info .close,
-.modal-header.modal-header-primary .close:hover,
-.modal-header.modal-header-primary .close {
-  color: #fff;
-  opacity: 0.8;
-}
-/* end bootstrap theme corrects */
+
 .bottom-link {
   position: absolute;
   bottom: 15px;
@@ -229,9 +199,7 @@ export default {
   cursor: inherit;
   display: block;
 }
-.btn-uuid {
-  min-width: 21em;
-}
+
 paper-button {
   font-size: 14px;
   width: 150px;
@@ -244,16 +212,7 @@ paper-button:hover {
 paper-button::shadow #ripple {
   color: #2a56c6;
 }
-.delete-list-item {
-  float: right;
-  z-index: 2;
-  display: none;
-  padding: 5px;
-  position: relative;
-}
-.list-item-container:hover > .delete-list-item {
-  display: block;
-}
+
 .validate-list-item {
   float: right;
   z-index: 2;
@@ -264,9 +223,7 @@ paper-button::shadow #ripple {
 .list-item-container:hover > .validate-list-item {
   display: block;
 }
-.overlay-container {
-  position: relative;
-}
+
 .overlay {
   z-index: 10;
   height: 100%;
@@ -294,7 +251,7 @@ paper-button::shadow #ripple {
 .no-margin {
   margin: 0;
 }
-#edit-project .panel-body:hover {
+#edit-project {
   background-color: #337ab7;
   color: #fff;
 }
