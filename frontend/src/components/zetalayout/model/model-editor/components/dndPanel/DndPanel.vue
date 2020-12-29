@@ -33,8 +33,11 @@ import {
   SvgExport,
   VoidNodeStyle
 } from "yfiles";
-import {addClass, removeClass} from "../../utils/Bindings";
+import NodeExample from "../nodes/NodeExample.vue";
+import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+ import {addClass, removeClass} from "../../utils/Bindings";
 import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
+import Vue from "vue";
 
 export default {
   name: 'DndPanel',
@@ -100,11 +103,13 @@ export default {
               shapeNodes.geoElements.forEach(function (shapeNode) {
                 if (typeof shapeNode.size !== 'undefined') {
                   const node = graph.createNode({tag: new UMLClassModel()})
+                  const NodeConstructor = Vue.extend(NodeExample)
 
                   switch (shapeNode.type) {
                     case "rectangle":
+                      //node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
                       graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
-                      graph.setStyle(node, new ShapeNodeStyle({shape: ShapeNodeShape.RECTANGLE, fill: shapeNode.style.background.color.hex, stroke: shapeNode.style.line.color.hex}))
+                      graph.setStyle(node, new VuejsNodeStyle(NodeConstructor))
 
                       break;
                     case "roundedRectangle":
