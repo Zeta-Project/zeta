@@ -38,7 +38,7 @@ import {
   Stroke,
   SvgVisual
 } from 'yfiles'
-import {UMLEdgeModel} from '../UMLEdgeModel'
+import {ModelEdgeModel} from '../ModelEdgeModel'
 
 /**
  * This class is an example for a custom edge style based on {@link EdgeStyleBase}.
@@ -50,7 +50,7 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
    */
   constructor (model, options) {
     super()
-    this.$model = model || new UMLEdgeModel()
+    this.$model = model || new ModelEdgeModel()
     this.$arrows = new Arrow()
     this.$pathThickness = 1
     if (options)
@@ -86,7 +86,7 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
 
   /**
    * Gets the UML data of this style.
-   * @returns {UMLEdgeModel}
+   * @returns {ModelEdgeModel}
    */
   get model () {
     return this.$model
@@ -94,7 +94,7 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
 
   /**
    * Sets the UML data for this style.
-   * @param {UMLEdgeModel} model
+   * @param {ModelEdgeModel} model
    */
   set model (model) {
     this.$model = model

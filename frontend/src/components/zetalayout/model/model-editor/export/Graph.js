@@ -1,4 +1,4 @@
-import VuejsNodeStyle from "../uml/nodes/styles/VuejsNodeStyle";
+import VuejsNodeStyle from "../model/nodes/styles/VuejsNodeStyle";
 
 /*
   Wrapper class around the internal yfiles graph.

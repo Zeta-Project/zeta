@@ -1,5 +1,5 @@
 import 'yfiles/yfiles.css';
-import * as umlModel from '../../uml/nodes/UMLClassModel.js'
+import * as umlModel from '../../model/nodes/ModelClassModel.js'
 
 import {
     Class,
@@ -21,15 +21,15 @@ import '../../styles/stencil.css'
 import '../../styles/style.css'
 import '../../styles/toolbar.css'
 import '../../styles/sidebar.css'
-import * as umlEdgeModel from '../../uml/edges/UMLEdgeModel'
+import * as umlEdgeModel from '../../model/edges/ModelEdgeModel'
 import Exporter from "../../export/Exporter";
 import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
-import {Attribute} from "../../uml/attributes/Attribute";
-import {Parameter} from "../../uml/parameters/Parameter";
-import {Operation} from "../../uml/operations/Operation";
-import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
-import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+import {Attribute} from "../../model/attributes/Attribute";
+import {Parameter} from "../../model/parameters/Parameter";
+import {Operation} from "../../model/operations/Operation";
+import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../model/edges/styles/UMLEdgeStyleFactory";
+import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
 import { EventBus } from "@/eventbus/eventbus";
 
@@ -208,7 +208,7 @@ export function addNodeStyleToNodes(vuejsComponent, nodes) {
     return nodes.map(node => {
         let style = new VuejsNodeStyle(
             vuejsComponent,
-            new umlModel.UMLClassModel({
+            new umlModel.ModelClassModel({
                 className: node.name,
                 description: node.description,
                 abstract: node.abstractness,
@@ -249,7 +249,7 @@ export function getEdgesFromReferences(graph, references, nodes) {
     return references.map(reference => {
         const source = nodes.find(node => node.tag.name === reference.sourceClassName);
         const target = nodes.find(node => node.tag.name === reference.targetClassName);
-        const model = new umlEdgeModel.UMLEdgeModel({
+        const model = new umlEdgeModel.ModelEdgeModel({
             name: reference.name,
             description: reference.description,
             sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,

@@ -7,7 +7,7 @@ import {
 } from 'yfiles'
 import {UMLEdgeStyle} from './UMLEdgeStyle'
 import VuejsEdgeStyle from './VuejsEdgeStyle'
-import {UMLEdgeModel} from '../UMLEdgeModel'
+import {ModelEdgeModel} from '../ModelEdgeModel'
 import Vue from "vue";
 import Edge from "../../../components/edges/Edge.vue";
 
@@ -15,7 +15,7 @@ import Edge from "../../../components/edges/Edge.vue";
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
 export function createAssociationStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: false,
         targetDeletionDeletesSource: false
     });
@@ -24,7 +24,7 @@ export function createAssociationStyle() {
 }
 
 export function createDirectedAssociationStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: false,
         targetDeletionDeletesSource: false
     });
@@ -39,7 +39,7 @@ export function createDirectedAssociationStyle() {
 }
 
 export function createRealizationStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: true,
         targetDeletionDeletesSource: false
     })
@@ -57,7 +57,7 @@ export function createRealizationStyle() {
 }
 
 export function createCompositionStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: true,
         targetDeletionDeletesSource: true
     })
@@ -72,7 +72,7 @@ export function createCompositionStyle() {
 }
 
 export function createGeneralizationStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: false,
         targetDeletionDeletesSource: true
     })
@@ -87,7 +87,7 @@ export function createGeneralizationStyle() {
 }
 
 export function createAggregationStyle() {
-    const model = new UMLEdgeModel({
+    const model = new ModelEdgeModel({
         sourceDeletionDeletesTarget: true,
         targetDeletionDeletesSource: false
     })

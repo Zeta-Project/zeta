@@ -75,7 +75,7 @@
 <script>
 
 import VueInlineTextEditor from "./VueInlineTextEditor.vue";
-import {changeInputMode} from "../../uml/nodes/styles/VuejsNodeStyle"
+import {changeInputMode} from "../../model/nodes/styles/VuejsNodeStyle"
 
     const statusColors = {
         present: '#55B757',

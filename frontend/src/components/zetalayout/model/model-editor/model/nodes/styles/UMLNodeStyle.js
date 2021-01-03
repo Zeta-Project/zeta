@@ -35,7 +35,7 @@ import {
     YObject
 } from 'yfiles'
 
-import { UMLClassModel } from '../UMLClassModel.js'
+import { ModelClassModel } from '../ModelClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
 import {Operation} from "../../operations/Operation";
 
@@ -46,7 +46,7 @@ const VERTICAL_SPACING = 2
 const LEFT_SPACING = 25
 
 /**
- * An UML node style that visualizes an UMLClassModel.
+ * An UML node style that visualizes an ModelClassModel.
  */
 export class UMLNodeStyle extends NodeStyleBase {
     /**
@@ -83,7 +83,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
     /**
      * Gets the UML data of this style.
-     * @returns {UMLClassModel}
+     * @returns {ModelClassModel}
      */
     get model() {
         return this.$model
@@ -91,7 +91,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
     /**
      * Sets the UML data for this style.
-     * @param {UMLClassModel} model
+     * @param {ModelClassModel} model
      */
     set model(model) {
         this.$model = model
@@ -99,20 +99,20 @@ export class UMLNodeStyle extends NodeStyleBase {
 
     /**
      * Creates a new instance of the UML node style.
-     * @param {UMLClassModel?} model The UML data that should be visualization by this style
+     * @param {ModelClassModel?} model The UML data that should be visualization by this style
      * @param {Fill?} fill The background fill of the header sections.
      * @param {Fill?} highlightFill The background fill of the selected entry.
      */
     constructor(model, fill, highlightFill) {
         super()
-        this.$model = model || new UMLClassModel()
+        this.$model = model || new ModelClassModel()
         this.$fill = fill || new SolidColorFill(0x60, 0x7d, 0x8b)
         this.$highlightFill = highlightFill || new SolidColorFill(0xa3, 0xf1, 0xbb)
         this.initializeStyles()
     }
 
     /**
-     * Creates the UML node style visual based on the UMLClassModel.
+     * Creates the UML node style visual based on the ModelClassModel.
      * @param {IRenderContext} ctx The render context.
      * @param {INode} node The node to which this style instance is assigned.
      * @returns {Visual}
@@ -695,8 +695,8 @@ export class UMLNodeStyle extends NodeStyleBase {
      * Adds an undo unit to the graphs undo engine which may undo/redo the UML data change.
      * @param {GraphEditorInputMode} geim The responsible input mode.
      * @param {INode} node The node whose data is changed.
-     * @param {UMLClassModel} newData The new data.
-     * @param {UMLClassModel} oldData The previous data.
+     * @param {ModelClassModel} newData The new data.
+     * @param {ModelClassModel} oldData The previous data.
      * @private
      */
     handleUndo(geim, node, newData, oldData) {

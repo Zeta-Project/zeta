@@ -4,7 +4,7 @@ import {UMLNodeStyle} from "../../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
 import {Operation} from "../../vue-cli/src/uml/operations/Operation";
 import {Parameter} from "../../vue-cli/src/uml/parameters/Parameter";
 import {Attribute} from "../../vue-cli/src/uml/attributes/Attribute";
-import {UMLEdgeModel} from "../../vue-cli/src/uml/edges/UMLEdgeModel";
+import {UMLEdgeModel} from "../../vue-cli/src/uml/edges/ModelEdgeModel";
 import {UMLEdgeStyle} from "../../vue-cli/src/uml/edges/styles/UMLEdgeStyle";
 
 export class PropertyPanel {

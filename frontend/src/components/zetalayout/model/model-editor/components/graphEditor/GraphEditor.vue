@@ -87,13 +87,13 @@
         getEdgesFromReferences,
         getNodesFromClasses, getStyleForEdge, saveGraph
     } from "./GraphEditorUtils";
-    import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
-    import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
+    import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
+    import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
     import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
-    import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
+    import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
     import {Grid} from "../../layout/grid/Grid";
-    import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+    import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
     import axios from "axios"
     import {EventBus} from "../../../../../../eventbus/eventbus";
 
@@ -229,7 +229,7 @@
                     textFill: '#fff',
                     font: new Font('Robot, sans-serif', 14)
                 });
-                this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
+                this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.ModelEdgeModel());
                 this.$graphComponent.graph.undoEngineEnabled = true
             },
 
@@ -337,7 +337,7 @@
             getInputMode(graphComponent) {
                 const mode = getDefaultGraphEditorInputMode();
                 // Add buttons that appear above a selected node for the creation of a new edge
-                const umlContextButtonsInputMode = new UMLContextButtonsInputMode();
+                const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
                 umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
                 mode.add(umlContextButtonsInputMode);
                 // execute a layout after certain gestures

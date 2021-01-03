@@ -27,7 +27,7 @@
  **
  ***************************************************************************/
 import {Arrow, ArrowType, EdgeStyleBase, Fill, INode, IRenderContext, Rect, Size, Stroke, SvgVisual} from 'yfiles'
-import {UMLEdgeModel} from "../UMLEdgeModel";
+import {ModelEdgeModel} from "../ModelEdgeModel";
 
 
 const defaultStyle = {

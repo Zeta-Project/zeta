@@ -1,5 +1,5 @@
 
-export class UMLEdgeModel {
+export class ModelEdgeModel {
 
     get selectedIndex() {
         return this.$selectedIndex
@@ -26,18 +26,4 @@ export class UMLEdgeModel {
         this.labels = (data && data.labels) || []
 
     }
-/* maybe some kind of clone is needed for edge handling
-    clone() {
-        const clone = new UMLClassModel()
-        clone.stereotype = this.stereotype
-        clone.constraint = this.constraint
-        clone.className = this.className
-        clone.attributes = Array.from(this.attributes)
-        clone.operations = Array.from(this.operations)
-        clone.attributesOpen = this.attributesOpen
-        clone.operationsOpen = this.operationsOpen
-        clone.selectedIndex = this.selectedIndex
-        return clone
-    }
-    */
 }

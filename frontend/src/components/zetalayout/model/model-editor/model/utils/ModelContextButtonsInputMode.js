@@ -25,7 +25,7 @@ import ButtonVisualCreator from './ButtonVisualCreator.js'
  * An {@link IInputMode} which will provide buttons for edge creation for the graph component's current item.
  * When one of the buttons is dragged, a new edge with the specified style is created.
  */
-export default class UMLContextButtonsInputMode extends InputModeBase {
+export default class ModelContextButtonsInputMode extends InputModeBase {
   constructor() {
     super()
     this.buttonNodes = new DefaultSelectionModel()
@@ -104,12 +104,12 @@ export default class UMLContextButtonsInputMode extends InputModeBase {
             const createEdgeInputMode = parentInputMode.createEdgeInputMode
 
             // initialize dummy edge
-            const umlEdgeType = styleButton
+            const modelEdgeType = styleButton
             const dummyEdgeGraph = createEdgeInputMode.dummyEdgeGraph
             const dummyEdge = createEdgeInputMode.dummyEdge
-            dummyEdgeGraph.setStyle(dummyEdge, umlEdgeType)
+            dummyEdgeGraph.setStyle(dummyEdge, modelEdgeType)
             dummyEdgeGraph.addLabel(dummyEdge, "")
-            dummyEdgeGraph.edgeDefaults.style = umlEdgeType
+            dummyEdgeGraph.edgeDefaults.style = modelEdgeType
 
             // start edge creation and hide buttons until the edge is finished
             this.buttonNodes.clear()

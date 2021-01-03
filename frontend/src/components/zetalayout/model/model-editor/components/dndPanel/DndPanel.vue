@@ -34,9 +34,9 @@ import {
   VoidNodeStyle
 } from "yfiles";
 import NodeExample from "../nodes/NodeExample.vue";
-import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
  import {addClass, removeClass} from "../../utils/Bindings";
-import {UMLClassModel} from "../../uml/nodes/UMLClassModel";
+import {ModelClassModel} from "../../model/nodes/ModelClassModel";
 import Vue from "vue";
 
 export default {
@@ -102,7 +102,7 @@ export default {
 
               shapeNodes.geoElements.forEach(function (shapeNode) {
                 if (typeof shapeNode.size !== 'undefined') {
-                  const node = graph.createNode({tag: new UMLClassModel()})
+                  const node = graph.createNode({tag: new ModelClassModel()})
                   const NodeConstructor = Vue.extend(NodeExample)
 
                   switch (shapeNode.type) {
@@ -246,7 +246,7 @@ export default {
             // Create nodes that can be appended to the graph by the builder
             const node = graph.createNode({
               style: originalNode.style,
-              tag: new UMLClassModel()
+              tag: new ModelClassModel()
             })
             originalNode.labels.forEach(label => {
               graph.addLabel(
