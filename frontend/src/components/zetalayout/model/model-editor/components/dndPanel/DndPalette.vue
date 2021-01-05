@@ -7,13 +7,31 @@
 
 <script>
 import {
-  DefaultLabelStyle, DragDropEffects, DragDropItem, DragSource,
+  DefaultLabelStyle,
+  DragDropEffects,
+  DragDropItem,
+  DragSource,
   Font,
-  GraphComponent, IEdge, ILabel, IListEnumerable, INode, Insets,
-  InteriorLabelModel, IPort, IStripe, LabelDropInputMode, ListEnumerable, NodeDropInputMode, Point, PortDropInputMode,
+  GraphComponent,
+  IEdge,
+  ILabel,
+  IListEnumerable,
+  INode,
+  Insets,
+  InteriorLabelModel,
+  IPort,
+  IStripe,
+  LabelDropInputMode,
+  ListEnumerable,
+  NodeDropInputMode,
+  Point,
+  PortDropInputMode,
   Rect,
   ShapeNodeShape,
-  ShapeNodeStyle, SimpleNode, SvgExport, VoidNodeStyle
+  ShapeNodeStyle,
+  SimpleNode,
+  SvgExport,
+  VoidNodeStyle
 } from "yfiles";
 import {ModelClassModel} from "@/components/zetalayout/model/model-editor/model/nodes/ModelClassModel";
 import NodeExample from "@/components/zetalayout/model/model-editor/components/nodes/NodeExample";
