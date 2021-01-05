@@ -57,8 +57,6 @@ export default {
   methods: {
     getPanelItems(nodes) {
 
-      console.log(nodes)
-
       const graphComponent = new GraphComponent()
       const graph = graphComponent.graph
 
