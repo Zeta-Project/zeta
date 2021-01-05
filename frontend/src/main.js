@@ -37,9 +37,7 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
-// import 'bootstrap/less/bootstrap.less'
 import 'jquery/src/jquery.js'
-// import 'bootstrap'
 
 import axios from 'axios'
 
