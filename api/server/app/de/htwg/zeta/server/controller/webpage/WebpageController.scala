@@ -34,21 +34,6 @@ class WebpageController @Inject()(
     implicit val ec: ExecutionContext
 ) extends InjectedController {
 
-
-  def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Redirect(routes.ScalaRoutes.getOverviewNoArgs())
-  }
-
-  /**
-   * Return a CSRF Token for further POST requests
-   * @param request
-   * @param messages
-   * @return
-   */
-  def csrf(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok)
-  }
-
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[ProjectShortInfo]] = {
     val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap { ids =>

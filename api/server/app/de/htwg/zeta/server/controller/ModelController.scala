@@ -14,6 +14,11 @@ import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
+import de.htwg.zeta.common.format.entity.UserFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.InjectedController
 import play.api.mvc.Result
@@ -21,6 +26,9 @@ import play.api.mvc.Result
 class ModelController @Inject()(
     system: ActorSystem,
     silhouette: Silhouette[ZetaEnv],
+    graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
+    gdslProjectFormat: GdslProjectFormat,
+    userFormat: UserFormat,
     modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     implicit val ec: ExecutionContext
@@ -28,10 +36,19 @@ class ModelController @Inject()(
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      model <- modelEntityRepo.read(modelId)
+      model <-  modelEntityRepo.read(modelId)
       metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(model.graphicalDslId)
     } yield {
-      Ok(views.html.model.ModelGraphicalEditor(model, metaModelEntity, request.identity.user))
+      val gDsLInstance = graphicalDslInstanceFormat.writes(model)
+      val gDslProject = gdslProjectFormat.writes(metaModelEntity)
+      val user = userFormat.writes(request.identity.user)
+      Ok{
+        Json.obj(
+          "gDsLInstance" -> gDsLInstance,
+          "gDslProject" -> gDslProject,
+          "user" -> user
+        )
+      }
     }
   }
 
