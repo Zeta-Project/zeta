@@ -21,13 +21,6 @@ import DndPalette from "@/components/zetalayout/model/model-editor/components/dn
 export default {
   name: 'DndPanel',
   components: {DndPalette},
-  data: function () {
-    return {
-      panelItems: [],
-      maxItemWidth: 150,
-      div: ''
-    }
-  },
   props: {
     graphComponent: {
       type: Object,
