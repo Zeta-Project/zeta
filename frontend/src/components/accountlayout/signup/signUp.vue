@@ -1,49 +1,65 @@
 <template>
-  <fieldset class="col-md-6 col-md-offset-3">
-    <div>
-      <form @submit.prevent="register">
-        <legend>Sign up for a new account</legend>
-        <div class="form-group">
-          <input required v-model="firstName" type="text" placeholder="First name" class="form-control input-lg"/>
-        </div>
-        <div class="form-group">
-          <input required v-model="lastName" type="text" placeholder="Last name"
-                 class="form-control input-lg"/>
-        </div>
-        <div class="form-group">
-          <input required v-model="email" type="email" placeholder="Email"
-                 class="form-control input-lg"/>
-        </div>
-
-        <section>
-          <div class="form-group">
-            <input required v-model="password" type="password" placeholder="Password"
-                   class="form-control input-lg" data-pwd="true"/>
-            <meter max="4" id="password-strength-meter"></meter>
-            <p id="password-strength-text"></p>
-          </div>
-        </section>
-
-        <div class="form-group">
-          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
-        </div>
-
-        <div class="sign-in-now">
-          <p>
-            Already a member?
-            <router-link to="/account/signIn">Sign in now</router-link>
-          </p>
-
-        </div>
-
-      </form>
-    </div>
-  </fieldset>
+  <v-container class="col-md-4 col-md-offset-3">
+    <v-form
+        ref="form"
+        lazy-validation
+    >
+      <p class="font-weight-bold">
+        Sign up for a new account
+      </p>
+      <v-text-field
+          v-model="firstName"
+          :rules="nameRules"
+          label="First name"
+          required
+      ></v-text-field>
+      <v-text-field
+          v-model="lastName"
+          :rules="nameRules"
+          label="Last name"
+          required
+      ></v-text-field>
+      <v-text-field
+          v-model="email"
+          :rules="emailRules"
+          label="Email"
+          required
+      ></v-text-field>
+      <v-text-field
+          v-model="password"
+          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          :type="showPassword ? 'text' : 'password'"
+          @click:append="showPassword = !showPassword"
+          :rules="passwordRules"
+          label="Password"
+          required
+      ></v-text-field>
+      <v-progress-linear
+          :color="score.color"
+          :value="score.value"
+      ></v-progress-linear>
+      <br></br>
+      <v-btn
+          class="mr-4"
+          @click="validate"
+          block
+          color="primary"
+      >
+        Sign Up
+      </v-btn>
+    </v-form>
+  <br></br>
+    <p>
+      Already a member?
+      <router-link to="/account/signIn">Sign in now</router-link>
+    </p>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import {EventBus} from "@/eventbus/eventbus";
+import zxcvbn from "zxcvbn";
 
 export default {
   name: 'SignUp',
@@ -54,6 +70,18 @@ export default {
       lastName: "",
       email: "",
       password: "",
+      nameRules: [
+        v => !!v || 'Name is required'
+      ],
+      emailRules: [
+        v => !!v || 'Email is required',
+        v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required',
+        v => zxcvbn(v).score >= 3 || 'Please choose a stronger password. Try a mix of letters, numbers, and symbols.',
+      ],
+      showPassword: false,
     }
   },
   methods: {
@@ -77,79 +105,44 @@ export default {
           (response) => EventBus.$emit("successMessage", info),
           (error) => EventBus.$emit('errorMessage', error)
       )
+    },
+    validate () {
+      if(this.$refs.form.validate())
+        this.register()
+    },
+  },
+  computed: {
+    score() {
+      const result = zxcvbn(this.password);
+
+      switch (result.score) {
+        case 4:
+          return {
+            color: "light-blue",
+            value: 100
+          };
+        case 3:
+          return {
+            color: "light-green",
+            value: 75
+          };
+        case 2:
+          return {
+            color: "yellow",
+            value: 50
+          };
+        case 1:
+          return {
+            color: "orange",
+            value: 25
+          };
+        default:
+          return {
+            color: "red",
+            value: 0
+          };
+      }
     }
   }
 }
-
 </script>
-
-<style>
-meter {
-  /* Reset the default appearance */
-  -moz-appearance: none;
-  appearance: none;
-
-  margin: 1em auto 1em;
-  width: 100%;
-  height: .5em;
-
-  /* Applicable only to Firefox */
-  background: none;
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-meter::-webkit-meter-bar {
-  background: none;
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-meter[value="0"]::-webkit-meter-optimum-value,
-meter[value="1"]::-webkit-meter-optimum-value {
-  background: red;
-}
-
-meter[value="2"]::-webkit-meter-optimum-value {
-  background: orange;
-}
-
-meter[value="3"]::-webkit-meter-optimum-value {
-  background: yellow;
-}
-
-meter[value="4"]::-webkit-meter-optimum-value {
-  background: green;
-}
-
-meter::-webkit-meter-even-less-good-value {
-  background: red;
-}
-
-meter::-webkit-meter-suboptimum-value {
-  background: orange;
-}
-
-meter::-webkit-meter-optimum-value {
-  background: green;
-}
-
-meter[value="1"]::-moz-meter-bar,
-meter[value="1"]::-moz-meter-bar {
-  background: red;
-}
-
-meter[value="2"]::-moz-meter-bar {
-  background: orange;
-}
-
-meter[value="3"]::-moz-meter-bar {
-  background: yellow;
-}
-
-meter[value="4"]::-moz-meter-bar {
-  background: green;
-}
-
-meter::-webkit-meter-optimum-value {
-  transition: width .4s ease-out;
-}
-</style>

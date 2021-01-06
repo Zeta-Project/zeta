@@ -1,24 +1,35 @@
 <template>
-  <fieldset class="col-md-6 col-md-offset-3">
+  <v-container class="col-md-4 col-md-offset-3">
     <div>
-      <form @submit.prevent="forgot">
-        <legend>Forgot password</legend>
-        <p class="info">
+      <v-form
+          ref="form"
+          @submit.prevent="validate"
+          lazy-validation
+      >
+        <p class="font-weight-bold">
+          Forgot password
+        </p>
+        <p>
           Please enter your email address and we will send you an email
           with further instructions to reset your password.
         </p>
-        <div class="form-group">
-          <input required v-model="email" type="email" placeholder="Email"
-                 class="form-control input-lg"/>
-        </div>
-
-        <div class="form-group">
-          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
-        </div>
-
-      </form>
+        <v-text-field
+            v-model="email"
+            :rules="emailRules"
+            label="Email"
+            required
+        ></v-text-field>
+        <v-btn
+            type="submit"
+            @submit="validate"
+            block
+            color="primary"
+        >
+          Sign Up
+        </v-btn>
+      </v-form>
     </div>
-  </fieldset>
+  </v-container>
 </template>
 
 <script>
@@ -28,12 +39,20 @@ export default {
   },
   data() {
     return {
-      email: ""
+      email: "",
+      emailRules: [
+        v => !!v || 'Email is required',
+        v => !v || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+      ],
     }
   },
   methods: {
     forgot: function () {
       console.log(this.email)
+    },
+    validate () {
+      if(this.$refs.form.validate())
+        this.forgot()
     }
   }
 }

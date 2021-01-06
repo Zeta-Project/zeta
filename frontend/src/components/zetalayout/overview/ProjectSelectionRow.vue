@@ -1,75 +1,57 @@
 <template>
-  <div class="list-group-item list-item-container" v-bind:class="{active: isSelected}">
-    <div v-on:click="deleteProject()" class="delete-list-item delete-project glyphicon glyphicon-trash"
-         data-toggle="tooltip" title="Delete project"/>
-    <div v-on:click="exportProject()" class="delete-list-item export-project glyphicon glyphicon-export"
-         data-toggle="tooltip" title="Export project"/>
-    <div v-on:click="selectedProjectId = id" class="delete-list-item duplicate-project glyphicon glyphicon-duplicate"
-         data-toggle="modal" :data-target="'#duplicateModal-' + id" title="Duplicate project"/>
-    <div v-on:click="selectedProjectId = id" class="delete-list-item invite-to-project glyphicon glyphicon-send"
-         data-toggle="modal" :data-target="'#inviteModal-' + id" title="Invite other users"/>
-    <router-link  style="text-decoration: none; color: initial" :to="'/zeta/overview/' + id">
-      <div v-on:click="initStepper()"> {{ name }}</div>
-    </router-link>
+  <v-list-item :to="'/zeta/overview/' + id" @click="initStepper()">
+    <v-list-item-content>
+      <div class="body-1">{{ name }}</div>
+    </v-list-item-content>
 
-    <!-- invite modal -->
-    <div class="modal" :id="'inviteModal-' + id" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel"
-         aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header modal-header-info">
-            <span class="modal-title" id="inviteModalLabel">Invite to project</span>
-            <button id="close-invite-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <input v-model="inviteProjectName" type="text" class="form-control"
-                   placeholder="E-Mail Address" autocomplete="off">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button v-on:click="invite" id="start-invite-btn" type="button" class="btn btn-info"
-                    :disabled="inviteProjectName.trim().length === 0">Invite
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- end invite modal -->
+    <v-list-item-action>
+      <v-btn icon @click="toggleInvitationDialog" title="Invite other users">
+        <v-icon>mdi-account-group</v-icon>
+      </v-btn>
+    </v-list-item-action>
 
-    <!-- duplicate project modal -->
-    <div class="modal" :id="'duplicateModal-' + id" tabindex="-1" role="dialog" aria-labelledby="duplicateModalLabel"
-         aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header modal-header-info">
-            <span class="modal-title" id="duplicateModalLabel">Duplicate project</span>
-            <button id="close-duplicate-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              <input v-model="duplicateProjectName" type="text" class="form-control"
-                     placeholder="New Project Name" autocomplete="off">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button v-on:click="duplicate" id="start-duplicate-btn" type="button" class="btn btn-info"
-                    :disabled="duplicateProjectName.trim().length === 0">Duplicate
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <v-list-item-action>
+      <v-btn icon @click="toggleDuplicationDialog" title="Duplicate project">
+        <v-icon>mdi-content-duplicate</v-icon>
+      </v-btn>
+    </v-list-item-action>
+
+    <v-list-item-action>
+      <v-btn icon @click="exportProject" title="Export project">
+        <v-icon>mdi-export</v-icon>
+      </v-btn>
+    </v-list-item-action>
+
+    <v-list-item-action class="ml-0">
+      <v-btn icon @click="deleteProject" title="Delete project">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+    </v-list-item-action>
+
+    <!-- Invitation dialog -->
+    <InviteToProjectDialog
+        :show-dialog="showInvitationDialog"
+        @cancel="toggleInvitationDialog"
+        @invite="invite"
+    />
+
+    <!-- Duplication dialog -->
+    <DuplicateProjectDialog
+        :show-dialog="showDuplicationDialog"
+        @cancel="toggleDuplicationDialog"
+        @duplicate="duplicate"
+    />
+
+  </v-list-item>
 </template>
 <script>
-import ProjectUtils from "./ProjectUtils";
-import {EventBus} from '../../../eventbus/eventbus'
+import {EventBus} from '@/eventbus/eventbus'
+import InviteToProjectDialog from './dialogs/InviteToProjectDialog';
+import DuplicateProjectDialog from './dialogs/DuplicateProjectDialog';
 
 export default {
   name: "ProjectSelectionRow",
+  components: {InviteToProjectDialog, DuplicateProjectDialog},
   props: {
     id: String,
     name: String,
@@ -77,32 +59,40 @@ export default {
   },
   data() {
     return {
-      duplicateProjectName: "",
-      inviteProjectName: "",
+      showInvitationDialog: false,
+      showDuplicationDialog: false
     }
   },
   methods: {
-    initStepper(){
-      EventBus.$emit("initSteps",1)
+    toggleInvitationDialog() {
+      this.showInvitationDialog = !this.showInvitationDialog;
+    },
+    toggleDuplicationDialog(){
+      this.showDuplicationDialog = !this.showDuplicationDialog;
+    },
+    initStepper() {
+      EventBus.$emit('initSteps', 1);
     },
     deleteProject() {
-      ProjectUtils.deleteProject(this.id)
+      this.$emit('delete-project', this.id)
     },
     exportProject() {
-      ProjectUtils.exportProject(this.id)
+      this.$emit('export-project', this.id)
     },
-    duplicate() {
-      ProjectUtils.duplicateProject(this.id, this.duplicateProjectName)
+    duplicate(projectName) {
+      this.$emit('duplicate-project', this.id, projectName)
+      this.toggleDuplicationDialog();
     },
-    invite() {
-      ProjectUtils.inviteToProject(this.id, this.inviteProjectName)
-    },
+    invite(email) {
+      this.$emit('invite-to-project', this.id, email)
+      this.toggleInvitationDialog();
+    }
   }
 }
 
 </script>
 <style scoped>
-.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus  {
-  z-index: auto;
+a {
+  text-decoration: none !important;
 }
 </style>

@@ -1,0 +1,52 @@
+#source-code-inspection {
+    height: 0;
+    overflow: hidden;
+}
+
+#source-code-inspection > div {
+    border-radius: 4px;
+    vertical-align: middle;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    height: auto;
+    border: 1px solid transparent;
+    color: #fff;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+#source-code-inspection > div.error {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+#source-code-inspection > div.success {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+#source-code-inspection > div.warning {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+}
+
+#source-code-inspection > div > .lineNumber {
+    display: block;
+    font-size: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    float: right;
+    line-height: 20px;
+}
+
+.lineErrorMarker {
+    position: absolute;
+    background: #f0ad4e;
+    z-index: 20
+}
+
+.charErrorMarker {
+    position: absolute;
+    background-color: #d9534f;
+    border-color: #d43f3a;;
+    z-index: 21
+}

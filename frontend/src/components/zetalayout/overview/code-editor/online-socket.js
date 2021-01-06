@@ -1,4 +1,5 @@
 import $ from "jquery";
+import './online-socket.css'
 
 export class OnlineSocket {
 
