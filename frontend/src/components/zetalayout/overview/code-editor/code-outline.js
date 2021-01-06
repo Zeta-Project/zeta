@@ -1,4 +1,5 @@
 import $ from "jquery";
+import './code-outline.css'
 
 export class CodeOutline {
 
@@ -34,7 +35,7 @@ export class CodeOutline {
     }
 
     generateOutlineForDsl(keyWords) {
-        const outlineNodes = $('#outline-nodes');
+        const outlineNodes = $('#outline-nodes-container');
         outlineNodes.empty();
         for (let i = 0; i < keyWords.length; i++) {
             const keyWord = keyWords[i],
@@ -45,9 +46,9 @@ export class CodeOutline {
     }
 
     static createOutlineLinks(elements, editor, type) {
-        let el = $("<div>").addClass("panel panel-default");
+        let el = $("<div>").addClass("outline-nodes");
         let heading = CodeOutline.createHeadline(type);
-        let body = $("<div>").addClass("panel-body");
+        let body = $("<div>").addClass("outline-content");
         el.append(heading);
         el.append(body);
         let nodes = CodeOutline.createLinks(elements, editor);
@@ -58,8 +59,7 @@ export class CodeOutline {
 
     static createHeadline(type) {
         return $("<div>").text(CodeOutline.capitalizeFirstLetter(type + "s"))
-            .addClass("outline-heading")
-            .addClass("panel-heading");
+            .addClass("outline-heading");
     }
 
     static capitalizeFirstLetter(string) {

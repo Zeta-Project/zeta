@@ -1,7 +1,7 @@
 <template>
     <div v-show="isExpanded">
-        <h1 class="demo-sidebar-header">{{title}}</h1>
-        <div class="demo-sidebar-content">
+        <h2 class="text-h5 pa-2">{{title}}</h2>
+        <div class="sidebar-content">
             <div id="drag-and-drop-panel"/>
         </div>
     </div>
@@ -364,43 +364,33 @@
 </script>
 
 <style scoped>
-    .demo-sidebar-header {
-        color: #666666;
-        font-size: 1.8em;
-        height: 60px;
-        line-height: 60px;
-        margin: 0;
-        box-sizing: border-box;
-        padding-left: 10px;
-    }
-
-    .demo-sidebar-content {
+    .sidebar-content {
         overflow-y: auto;
         height: calc(100% - 70px);
         padding: 0 25px;
     }
 
-    .demo-sidebar-content h1,
-    .demo-sidebar-content h2 {
+    .sidebar-content h1,
+    .sidebar-content h2 {
         color: #666666;
     }
 
-    .demo-sidebar-content a,
-    .demo-sidebar-content a:visited {
+    .sidebar-content a,
+    .sidebar-content a:visited {
         text-decoration: none;
         color: #1871bd;
     }
 
-    .demo-sidebar-content a:hover {
+    .sidebar-content a:hover {
         text-decoration: none;
         color: #18468c;
     }
 
-    .demo-sidebar-content ul {
+    .sidebar-content ul {
         padding-left: 1.3em;
     }
 
-    .demo-sidebar-content li {
+    .sidebar-content li {
         margin: 0.5em 0;
     }
 </style>

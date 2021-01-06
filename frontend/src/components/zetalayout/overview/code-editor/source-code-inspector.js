@@ -1,5 +1,6 @@
 import $ from "jquery";
 import axios from 'axios'
+import './source-code-inspector.css'
 
 export class SourceCodeInspector {
 

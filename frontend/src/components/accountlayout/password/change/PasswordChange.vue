@@ -1,46 +1,61 @@
 <template>
-  <fieldset class="col-md-6 col-md-offset-3">
-    <div>
-      <form @submit.prevent="change">
-        <legend>Change password</legend>
-        <p class="info">
-          Strong passwords include numbers, letters and punctuation marks.
-        </p>
-
-        <div class="form-group">
-          <input required v-model="oldPassword" type="password" placeholder="Old password"
-                 class="form-control input-lg"/>
-        </div>
-
-        <section>
-          <div class="form-group">
-            <input required v-model="newPassword" type="password" placeholder="New password"
-                   class="form-control input-lg" data-pwd="true"/>
-            <meter max="4" id="password-strength-meter"></meter>
-            <p id="password-strength-text"></p>
-          </div>
-        </section>
-
-        <div class="form-group">
-          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Change password</button>
-        </div>
-
-        <div class="sign-in-now">
-          <p>
-            Already a member?
-            <router-link to="/account/signIn">Sign in now</router-link>
-          </p>
-        </div>
-
-      </form>
-    </div>
-  </fieldset>
+  <v-container class="col-md-4 col-md-offset-3">
+    <v-form
+        ref="form"
+        @submit.prevent="validate"
+        lazy-validation
+    >
+      <p class="font-weight-bold">
+        Change password
+      </p>
+      <p>
+        Strong passwords include numbers, letters and punctuation marks.
+      </p>
+      <v-text-field
+          v-model="oldPassword"
+          :append-icon="showOldPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          :type="showOldPassword ? 'text' : 'password'"
+          @click:append="showOldPassword = !showOldPassword"
+          :rules="oldPasswordRules"
+          label="Old password"
+          required
+      ></v-text-field>
+      <v-text-field
+          v-model="newPassword"
+          :append-icon="showNewPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          :type="showNewPassword ? 'text' : 'password'"
+          @click:append="showNewPassword = !showNewPassword"
+          :rules="newPasswordRules"
+          label="New password"
+          required
+      ></v-text-field>
+      <v-progress-linear
+          :color="score.color"
+          :value="score.value"
+      ></v-progress-linear>
+      <br></br>
+      <v-btn
+          type="submit"
+          @submit="validate"
+          block
+          color="primary"
+      >
+        Change password
+      </v-btn>
+      <br></br>
+      <p>
+        Already a member?
+        <router-link to="/account/signIn">Sign in now</router-link>
+      </p>
+      </v-form>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import {AUTH_LOGOUT} from "@/store/actions/auth";
 import {EventBus} from "@/eventbus/eventbus";
+import zxcvbn from "zxcvbn";
 
 export default {
   name: 'PasswordChange',
@@ -50,6 +65,15 @@ export default {
     return {
       oldPassword: "",
       newPassword: "",
+      newPasswordRules: [
+      v => !!v || 'Password is required',
+      v => zxcvbn(v).score >= 3 || 'Please choose a stronger password. Try a mix of letters, numbers, and symbols.',
+      ],
+      oldPasswordRules: [
+        v => !!v || 'Password is required',
+      ],
+      showNewPassword: false,
+      showOldPassword: false,
     }
   },
   methods: {
@@ -68,8 +92,44 @@ export default {
           },
           (error) => EventBus.$emit('errorMessage', error)
       )
+    },
+    validate () {
+      if(this.$refs.form.validate())
+        this.change()
+    },
+  },
+  computed: {
+    score() {
+      const result = zxcvbn(this.newPassword);
+
+      switch (result.score) {
+        case 4:
+          return {
+            color: "light-blue",
+            value: 100
+          };
+        case 3:
+          return {
+            color: "light-green",
+            value: 75
+          };
+        case 2:
+          return {
+            color: "yellow",
+            value: 50
+          };
+        case 1:
+          return {
+            color: "orange",
+            value: 25
+          };
+        default:
+          return {
+            color: "red",
+            value: 0
+          };
+      }
     }
   }
 }
-
 </script>

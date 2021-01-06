@@ -1,44 +1,54 @@
 <template>
-  <div >
-    <div id="model-instance-container" class="panel panel-default">
-      <div class="panel-heading">
-        <strong>Model Instances</strong>
+  <v-card>
+    <v-card-title>
+      <span class="headline">Model Instances</span>
+    </v-card-title>
+
+    <v-divider class="ma-0"></v-divider>
+
+    <v-card-text>
+      <div v-if="!modelInstances.length" class="body-1">
+        There are no model instances.
       </div>
 
-      <div class="panel-body" v-if="!modelInstances.length">
-        <span class="text-muted">There are no model instances.</span>
-      </div>
+      <div v-else>
+        <v-list-item v-for="model in modelInstances" v-bind:key="model.id" :to="'/zeta/metamodel/editor/' + model.id">
+          <v-list-item-content>
+            <v-list-item-title v-text="model.name"/>
+          </v-list-item-content>
 
-      <div class="list-group" v-else>
-        <div v-for="model in modelInstances" v-bind:key="model.id" class="list-group-item list-item-container">
-          <div v-on:click="deleteModelInstance(model.id)"
-               class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip"
-               title="Delete model instance"></div>
-          <div v-on:click="validateModelInstance(model.id)"
-               class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up"
-               data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-          <router-link style="text-decoration: none; color: initial" :to="'/zeta/metamodel/editor/' + model.id">
-            <div>{{ model.name }}</div>
-          </router-link>
-        </div>
-      </div>
+          <v-list-item-action>
+            <v-btn icon @click.prevent.stop="deleteModelInstance(model.id)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item-action>
 
-      <div class="panel-footer">
-        <form>
-          <div class="input-group">
-            <input v-on:keyup.enter="createModelInstance" v-model="inputModelName" type="text" class="form-control"
-                   id="inputModelName" placeholder="New model name" autocomplete="off">
-            <span class="input-group-btn">
-                  <button v-on:click="createModelInstance" type=button id="btnCreateModelInstance"
-                          class="btn btn-default" data-toggle="tooltip" title="Create model instace">
-                    <span class="glyphicon glyphicon-plus" aria-hidden=true></span>
-                  </button>
-                </span>
-          </div>
-        </form>
+          <v-list-item-action>
+            <v-btn icon @click.prevent.stop="validateModelInstance(model.id)">
+              <v-icon>mdi-thumb-up</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </v-list-item>
       </div>
-    </div>
-  </div>
+    </v-card-text>
+
+    <v-divider class="ma-0"></v-divider>
+
+    <v-card-actions>
+      <v-text-field
+          id="inputModelName"
+          v-model="inputModelName"
+          :append-icon="'mdi-plus-box'"
+          outlined
+          clearable
+          hide-details
+          label="New model name"
+          type="text"
+          @click:append="createModelInstance"
+          v-on:keyup.enter="createModelInstance"
+      ></v-text-field>
+    </v-card-actions>
+  </v-card>
 </template>
 <script>
 import ModelInstanceUtils from "./ModelInstanceUtils";
@@ -58,6 +68,7 @@ export default {
   methods: {
     createModelInstance() {
       ModelInstanceUtils.createInstance(this.inputModelName, this.$route.params.id)
+      this.inputModelName = "";
     },
     deleteModelInstance(modelId) {
       ModelInstanceUtils.deleteInstance(modelId)
@@ -71,6 +82,6 @@ export default {
 <style scoped>
 
 a {
-  color: #42b983;
+  text-decoration: none !important;
 }
 </style>

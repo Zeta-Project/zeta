@@ -1,46 +1,49 @@
 <template>
   <div class="zeta">
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-overview">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <router-link class="navbar-brand" to="/">
-            <img src="../../assets/zeta_logo.png" class="navbar-logo">
+    <v-app-bar app>
+      <v-toolbar-title>
+        <router-link to="/">
+          <img class="v-navbar-logo" src="../../assets/zeta_logo.png" contain/>
+        </router-link>
+      </v-toolbar-title>
+      <v-breadcrumbs v-if="gdslProject && $vuetify.breakpoint.smAndUp">
+        <v-icon>mdi-chevron-right</v-icon>
+        <v-breadcrumbs-item>
+          <router-link tag="span" class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">
+            {{ gdslProject.name }}
           </router-link>
-        </div>
-
-        <div class="collapse navbar-collapse" id="navbar-collapse-overview">
-          <ul class="nav navbar-nav">
-            <li v-if="gdslProject"><!--<a class="navbar-breadcrumb" :href="'/zeta/overview/' + p.id">{{ p.name }}</a>-->
-              <router-link class="navbar-breadcrumb" :to="'/zeta/overview/' + gdslProject.id">
-                {{gdslProject.name}}
-              </router-link>
-            </li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            <li v-if="user" class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                <span>{{ user.firstName }} {{user.lastName}}</span>
-                <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu navbar-right" role="menu">
-                <li><router-link to="/account/password/change">Change Password</router-link></li>
-                <li><a href="" @click="logout">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <router-view />
-
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
+      <v-spacer/>
+      <v-toolbar-items class="hidden-xs-only">
+        <v-menu offset-y v-if="user">
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on">
+              {{ user.firstName }} {{ user.lastName }}
+              <v-icon>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-for="(item, index) in userMenu" :key="index" @click="item.method">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+      <span class="hidden-sm-and-up">
+        <v-app-bar-nav-icon @click="sidebar = !sidebar"/>
+      </span>
+    </v-app-bar>
+    <v-navigation-drawer v-model="sidebar" app>
+      <v-list>
+        <v-list-item v-for="(item, index) in userMenu" :key="index" @click="item.method">
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-content style="height: 100%">
+      <router-view/>
+    </v-content>
   </div>
 </template>
 
@@ -48,10 +51,10 @@
 import {AUTH_LOGOUT} from "@/store/actions/auth";
 import axios from 'axios'
 import {EventBus} from "@/eventbus/eventbus";
+
 export default {
   name: 'ZetaLayout',
-  components: {
-  },
+  components: {},
   data() {
     return {
       user: {
@@ -69,11 +72,19 @@ export default {
         shape: "",
         style: "",
         validator: ""
-      }
+      },
+      userMenu: [
+        {title: "Change Password", method: this.changePassword},
+        {title: "Logout", method: this.logout}
+      ],
+      sidebar: false
     }
   },
   methods: {
-    logout: function() {
+    changePassword: function () {
+      this.$router.push('/account/password/change')
+    },
+    logout: function () {
       this.$store.dispatch(AUTH_LOGOUT).then(() => {
         this.$router.push('/account/signIn')
       })
@@ -90,7 +101,7 @@ export default {
 
     axios.get("http://localhost:9000/overview", {withCredentials: true}).then(
         (response) => {
-          if(response.data.csrf) this.logout()
+          if (response.data.csrf) this.logout()
 
           this.user = response.data.user;
         },
@@ -104,89 +115,15 @@ export default {
 </script>
 
 <style>
+.v-navbar-logo {
+  max-width: 40px;
+  max-height: 40px;
+}
 
 .zeta {
   background-color: white;
   width: 100%;
   height: 100%;
-}
-
-.navbar-default {
-  background-color: #f5f5f5;
-  border-color: #f5f5f5;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-}
-
-.navbar-default .dropdown-menu {
-  border: 1px solid transparent;
-  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-}
-
-.panel-default {
-  border: none;
-  -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-}
-
-.form-control {
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-
-.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
-  background-color: #5bc0de;
-  border-color: #46b8da;
-}
-
-.navbar-default {
-  z-index: 999;
-}
-
-.navbar-default .navbar-nav > li > a {
-  color: #444;
-  font-weight: bold;
-}
-
-.navbar-default .navbar-nav > li:hover > a {
-  color: #e30a5e;
-}
-
-.navbar-breadcrumb::before {
-  content: "\E258";
-  font-family: 'Glyphicons Halflings';
-  position: absolute;
-  left: -5px;
-  font-size: 0.9em;
-}
-
-.modal-header.modal-header-primary {
-  color: #fff;
-  background-color: #337ab7;
-  border-radius: 5px 5px 0 0;
-}
-.modal-header.modal-header-info {
-  color: #fff;
-  background-color: #5bc0de;
-  border-radius: 6px 6px 0 0;
-}
-.modal-header.modal-header-info .close:hover,
-.modal-header.modal-header-info .close,
-.modal-header.modal-header-primary .close:hover,
-.modal-header.modal-header-primary .close {
-  color: #fff;
-  opacity: 0.8;
-}
-
-/* end bootstrap theme corrects */
-
-.navbar-logo {
-  max-height: 40px;
-  margin-top: -11px;
 }
 
 .bottom-link {
@@ -196,7 +133,6 @@ export default {
 .bottom-link.right {
   right: 15px;
 }
-
 .tile {
   width: 12em;
   height: 10em;
@@ -204,21 +140,18 @@ export default {
   margin-right: 1em;
   position: relative;
 }
-
 .tileBorder {
   width: 100%;
   height: 100%;
   position: absolute;
   border: 0.1em solid #ededed;
 }
-
 .backgroundImage {
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: 0;
 }
-
 .transparentBackground {
   width: 100%;
   height: 20%;
@@ -227,11 +160,9 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
-
 .tileBorder:hover .transparentBackground {
   background-color: rgba(0, 100, 255, 0.7);
 }
-
 .linkText {
   width: 100%;
   height: 100%;
@@ -243,19 +174,16 @@ export default {
   text-overflow: ellipsis;
   z-index: 2;
 }
-
 .ecoreLink {
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: 3;
 }
-
 .btn-file {
   position: relative;
   overflow: hidden;
 }
-
 .btn-file input[type=file] {
   position: absolute;
   top: 0;
@@ -272,35 +200,17 @@ export default {
   display: block;
 }
 
-.btn-uuid {
-  min-width: 21em;
-}
-
 paper-button {
   font-size: 14px;
   width: 150px;
   background: darkgray;
   color: black;
 }
-
 paper-button:hover {
   background: lightblue;
 }
-
 paper-button::shadow #ripple {
   color: #2a56c6;
-}
-
-.delete-list-item {
-  float: right;
-  z-index: 2;
-  display: none;
-  padding: 5px;
-  position: relative;
-}
-
-.list-item-container:hover > .delete-list-item {
-  display: block;
 }
 
 .validate-list-item {
@@ -310,13 +220,8 @@ paper-button::shadow #ripple {
   padding: 5px;
   position: relative;
 }
-
 .list-item-container:hover > .validate-list-item {
   display: block;
-}
-
-.overlay-container {
-  position: relative;
 }
 
 .overlay {
@@ -329,7 +234,6 @@ paper-button::shadow #ripple {
   border-radius: 4px;
   position: absolute;
 }
-
 .overlay:before {
   font-family: 'Glyphicons Halflings';
   content: "\E033";
@@ -344,44 +248,22 @@ paper-button::shadow #ripple {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 .no-margin {
   margin: 0;
 }
-
-#edit-project .panel-body:hover {
+#edit-project {
   background-color: #337ab7;
   color: #fff;
 }
-
 .alert {
   margin-top: 10px;
 }
-
 .validatorDropdown {
   display: inline-block;
 }
 
-/* drag & drop area */
-.upload-area {
-  height: 180px;
-  border: 1px dashed #ccc;
-  border-radius: 3px;
-  text-align: center;
-  overflow: auto;
-  font-size: 35px;
-  padding: 20px 0 0 0;
-  color: darkslategray;
-  cursor: pointer;
-}
-
-/* hide 'upload project' button */
-#file{
-  display: none;
-}
-
 /* Thumbnail */
-.thumbnail{
+.thumbnail {
   width: 80px;
   height: 80px;
   padding: 2px;
@@ -389,8 +271,7 @@ paper-button::shadow #ripple {
   border-radius: 3px;
   float: left;
 }
-
-.size{
-  font-size:12px;
+.size {
+  font-size: 12px;
 }
 </style>
