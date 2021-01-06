@@ -1,117 +1,134 @@
 <template>
-    <div class="full-control" v-if="node">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <div class="list">
-            <md-list :md-expand-single="true">
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Meta-Information</span>
-                    <md-list slot="md-expand">
-                        <md-list-item class="md-inset">
-                            <md-field>
-                                <label>Name</label>
-                                <md-input v-model="node.name"/>
-                            </md-field>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-field>
-                                <label>Description</label>
-                                <md-input v-model="node.description"/>
-                            </md-field>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <input type="checkbox" id="checkbox" v-model="node.abstractness">
-                            <label for="checkbox" class="abstractLable">Is Abstract?</label>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
+  <v-expansion-panels class="ma-1 full-control" multiple>
 
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Attributes</span>
-                    <md-list slot="md-expand">
-                        <md-list-item
-                                v-if="node.attributes"
-                                v-for="(attribute, index) in node.attributes"
-                                :key="`${node.name}-properties-attributes-${index}`"
-                                class="md-inset"
-                        >
-                            <md-field>
-                                <label>Name</label>
-                                <md-input v-model="attribute.name"/>
-                            </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', node, attribute.name)">
-                                <md-icon class="fa fa-trash" />
-                            </md-button>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', node, 'default')">Add Attribute</md-button>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Meta-Information</v-expansion-panel-header>
 
-                <md-list-item md-expand>
-                    <span class="md-list-item-text">Operations</span>
-                    <md-list slot="md-expand">
-                        <md-list-item
-                                v-if="node.methods"
-                                v-for="(method, index) in node.methods"
-                                :key="`${node.name}-properties-operations-${index}`"
-                                class="md-inset"
-                        >
-                            <md-field>
-                                <label>Name</label>
-                                <md-input v-model="method.name"/>
-                            </md-field>
-                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', node, method.name)">
-                                <md-icon
-                                        class="fa fa-trash"
-                                />
-                            </md-button>
-                        </md-list-item>
-                        <md-list-item class="md-inset">
-                            <md-button class="md-raised md-primary" @click="$emit('add-operation', node, 'default')">Add Operation</md-button>
-                        </md-list-item>
-                    </md-list>
-                </md-list-item>
-            </md-list>
-        </div>
-    </div>
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row>
+            <v-col>
+              <v-text-field label="Name" v-model="node.name"/>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-text-field label="Description" v-model="node.description"/>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-checkbox v-model="node.abstractness" :label="'Is Abstract?'"/>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+    <v-expansion-panel>
+      <v-expansion-panel-header>Attributes</v-expansion-panel-header>
+
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="node.attributes"
+              v-for="(attribute, index) in node.attributes"
+              :key="`${node.name}-properties-attributes-${index}`">
+            <v-col>
+              <v-text-field
+                  label="Name"
+                  v-model="attribute.name">
+                <v-btn slot="append-outer" icon @click="onDeleteAttribute(node, attribute.name)">
+                  <v-icon color="red">mdi-trash-can-outline</v-icon>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-btn color="primary" @click="onAddAttribute(node)">Add Attribute</v-btn>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+    <v-expansion-panel>
+      <v-expansion-panel-header>Operations</v-expansion-panel-header>
+
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="node.methods"
+              v-for="(method, index) in node.methods"
+              :key="`${node.name}-properties-operations-${index}`">
+            <v-col>
+              <v-text-field
+                  label="Name"
+                  v-model="method.name">
+                <v-btn slot="append-outer" icon @click="onDeleteOperation(node, method.name)">
+                  <v-icon color="red">mdi-trash-can-outline</v-icon>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col>
+              <v-btn color="primary" @click="onAddOperation(node)">Add Operation</v-btn>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
+  </v-expansion-panels>
 </template>
 
 <script>
-    export default {
-        name: 'NodeProperties',
-        data: function () {
-            return {}
-        },
-        watch: {
-            node: function (newVal, oldVal) { // watch it
-                //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-            }
-        },
-        props: {
-            node: {
-                validator: prop => typeof prop === 'object' || prop === null,
-                required: true
-            }
-        }
+export default {
+  name: 'NodeProperties',
+  data: function () {
+    return {}
+  },
+  watch: {
+    node: function (newVal, oldVal) { // watch it
+      //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
     }
+  },
+  props: {
+    node: {
+      validator: prop => typeof prop === 'object' || prop === null,
+      required: true
+    }
+  },
+  methods: {
+    onAddAttribute(node) {
+      this.$emit('add-attribute', node, 'default')
+    },
+    onDeleteAttribute(node, name) {
+      this.$emit('delete-attribute', node, name)
+    },
+    onAddOperation(node) {
+      this.$emit('add-operation', node, 'default')
+    },
+    onDeleteOperation(node, name) {
+      this.$emit('delete-operation', node, name)
+    }
+  }
+}
 </script>
 
 <style scoped>
-    .abstractLable {
-        width: 600px;
-    }
-
-    .full-control {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap-reverse;
-    }
-
-    .list {
-        width: 100%;
-    }
-
     .full-control > .md-list {
         width: 100%;
         max-width: 100%;

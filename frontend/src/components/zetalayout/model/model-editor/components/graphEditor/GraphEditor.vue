@@ -11,7 +11,7 @@
                 @toggle-grid="toggleGrid"
         />
         <aside
-                class="demo-description"
+                class="demo-description dnd-panel"
                 :class="isDndExpanded ? 'expandedDnd demo-sidebar-extended' : 'demo-sidebar-collapsed collapsedDnd'"
                 @mouseover="!isDndExpanded && toggleDnd()"
                 @mouseleave="isDndExpanded && toggleDnd()"
@@ -47,16 +47,16 @@
                     @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"
                     @delete-operation-from-node="(node, operationName) => deleteOperationFromNode(node, operationName)"
 
-                    @add-attribute-to-edge="(edge, attributeName) => addAttributeToEdge(edge, attributeName)"
-                    @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
-                    @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
-                    @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
-                    @on-edge-name-change="(edge, name) => updateEdgeLabel(edge, name)"
-                    @on-edge-style-change="edge => updateEdgeStyle(edge)"
-            />
-        </aside>
-        <div class="graph-component-container" ref="GraphComponentElement"></div>
-    </div>
+          @add-attribute-to-edge="(edge, attributeName) => addAttributeToEdge(edge, attributeName)"
+          @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
+          @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
+          @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
+          @on-edge-name-change="(edge, name) => updateEdgeLabel(edge, name)"
+          @on-edge-style-change="edge => updateEdgeStyle(edge)"
+      />
+    </aside>
+    <div class="graph-component-container" ref="GraphComponentElement"></div>
+  </div>
 </template>
 
 <script>
@@ -573,7 +573,7 @@
     .toolbar {
         position: absolute;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        top: 60px;
+        top: -50px;
         left: 0;
         right: 0;
         height: 40px;
@@ -587,7 +587,7 @@
 
     .graph-component-container {
         position: absolute;
-        top: 100px;
+        top: 30px;
         left: 0;
         right: 0;
         bottom: 0;
@@ -619,9 +619,21 @@
         overflow-y: auto;
     }
 
+    .dnd-panel {
+      position: absolute;
+      top: 10px;
+      bottom: 0;
+      box-sizing: border-box;
+      background: #f7f7f7;
+      z-index: 15;
+      line-height: 150%;
+      right: 0;
+      overflow-y: auto;
+    }
+
     .property-panel {
         position: absolute;
-        top: 101px;
+        top: 10px;
         bottom: 0;
         width: 320px;
         box-sizing: border-box;

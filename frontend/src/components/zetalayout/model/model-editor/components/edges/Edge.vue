@@ -1,7 +1,8 @@
 <template>
-    <g v-if="tag" class="vue-edge-style-edge uml-edge">       
-        <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"/>
-        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+  <g v-if="tag" class="vue-edge-style-edge uml-edge">
+    <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"/>
+    <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg"
+         :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`"/>
 
         <!--
 
@@ -51,44 +52,42 @@
                     p.setAttribute('stroke', this.cache.color)
                 }
 
-                // add the arrows to the container
-                // super.addArrows(context, container, edge, cache.path, cache.arrows, cache.arrows)
-                //console.log(p.getAttribute('d'))
-                return p.getAttribute('d')
-            },
-            arrowRotation: function() {
-                var pathSVGArray = this.path.split(" ");
-                var lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x=>+x);
-                var penultimatePoint = pathSVGArray[pathSVGArray.length - 3].split(",").map(x=>+x);
-                var rotation = 0
-                if (lastPoint[1]<penultimatePoint[1]){
-                    //arrow up
-                    rotation = 270
-                }
-                else if(lastPoint[0]<penultimatePoint[0]){
-                    //arrow right
-                    rotation = 180
-                }
-                else if(lastPoint[1]>penultimatePoint[1]){
-                     //arrow down
-                     rotation = 90
-                }
-                //console.log(penultimatePoint)
-                //console.log(lastPoint)
-                //console.log(0 == rotation.localeCompare('down'))
-                return rotation //should return the actual transfromation
-            },
+      // add the arrows to the container
+      // super.addArrows(context, container, edge, cache.path, cache.arrows, cache.arrows)
+      //console.log(p.getAttribute('d'))
+      return p.getAttribute('d')
+    },
+    arrowRotation: function () {
+      const pathSVGArray = this.path.split(" ");
+      const lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x => +x);
+      const penultimatePoint = pathSVGArray[pathSVGArray.length - 3].split(",").map(x => +x);
+      let rotation = 0;
+      if (lastPoint[1] < penultimatePoint[1]) {
+        //arrow up
+        rotation = 270
+      } else if (lastPoint[0] < penultimatePoint[0]) {
+        //arrow right
+        rotation = 180
+      } else if (lastPoint[1] > penultimatePoint[1]) {
+        //arrow down
+        rotation = 90
+      }
+      //console.log(penultimatePoint)
+      //console.log(lastPoint)
+      //console.log(0 == rotation.localeCompare('down'))
+      return rotation //should return the actual transfromation
+    },
 
-            arrowPosition: function(){
-                const p = this.cache.path.createSvgPath()
-                var pathSVG =  p.getAttribute('d');
-                var pathSVGArray = pathSVG.split(" ");
-                var lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x=>+x);
-                
-                return lastPoint
-            }
-        }
+    arrowPosition: function () {
+      const p = this.cache.path.createSvgPath()
+      const pathSVG = p.getAttribute('d');
+      const pathSVGArray = pathSVG.split(" ");
+      const lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x => +x);
+
+      return lastPoint
     }
+  }
+}
 </script>
 
 <style scoped>
