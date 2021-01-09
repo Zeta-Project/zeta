@@ -82,7 +82,6 @@ export default {
           let type
           switch (shapeNode.type) {
             case "rectangle":
-              console.log(shapeNode.type)
               type = ShapeNodeShape.RECTANGLE;
               break;
             case "roundedRectangle":
