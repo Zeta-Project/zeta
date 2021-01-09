@@ -75,30 +75,15 @@ export default {
       const graph = graphComponent.graph
 
       let geoElements = nodes[0].geoElements;
-      geoElements.forEach(function (shapeNode) {
+      for (var i = 0; i < geoElements.length; i++) {
+        let shapeNode = geoElements[i]
         if (typeof shapeNode.size !== 'undefined') {
           //const NodeConstructor = Vue.extend(NodeExample)
-
-          let type
-          switch (shapeNode.type) {
-            case "rectangle":
-              type = ShapeNodeShape.RECTANGLE;
-              break;
-            case "roundedRectangle":
-              type = ShapeNodeShape.ROUND_RECTANGLE;
-              break;
-            case "ellipse":
-              type = ShapeNodeShape.ELLIPSE;
-              break;
-            default:
-              type = undefined
-              break;
-          }
 
           const node = graph.createNode({
             layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
             style: new ShapeNodeStyle({
-              shape: type,
+              shape: this.selectedShape(shapeNode),
               fill: shapeNode.style.background.color.hex,
               stroke: shapeNode.style.line.color.hex
             }),
@@ -123,10 +108,24 @@ export default {
             })
           }
         }
-      })
+      }
       return this.createNodeList(graph)
     },
+    selectedShape(shapeNode){
+      switch (shapeNode.type) {
+        case "rectangle":
+          return ShapeNodeShape.RECTANGLE;
 
+        case "roundedRectangle":
+          return ShapeNodeShape.ROUND_RECTANGLE;
+
+        case "ellipse":
+          return ShapeNodeShape.ELLIPSE;
+
+        default:
+          return undefined
+      }
+    },
     createNodeList(graph) {
       const nodeList = []
 
