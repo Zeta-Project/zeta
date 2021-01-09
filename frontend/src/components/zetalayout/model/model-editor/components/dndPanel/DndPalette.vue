@@ -34,10 +34,7 @@ import {
   VoidNodeStyle
 } from "yfiles";
 import {ModelClassModel} from "@/components/zetalayout/model/model-editor/model/nodes/ModelClassModel";
-import NodeExample from "@/components/zetalayout/model/model-editor/components/nodes/NodeExample";
-import VuejsNodeStyle from "@/components/zetalayout/model/model-editor/model/nodes/styles/VuejsNodeStyle";
 import {addClass, removeClass} from "@/components/zetalayout/model/model-editor/utils/Bindings";
-import Vue from "vue";
 
 export default {
   name: "DndPalette",
@@ -74,43 +71,40 @@ export default {
   },
   methods: {
     getPanelItems(nodes) {
-
       const graphComponent = new GraphComponent()
       const graph = graphComponent.graph
 
       let geoElements = nodes[0].geoElements;
       geoElements.forEach(function (shapeNode) {
         if (typeof shapeNode.size !== 'undefined') {
-          const node = graph.createNode({tag: new ModelClassModel()})
-          const NodeConstructor = Vue.extend(NodeExample)
+          //const NodeConstructor = Vue.extend(NodeExample)
 
+          let type
           switch (shapeNode.type) {
             case "rectangle":
-              //node.style = new VuejsNodeStyle(NodeConstructor, methods, graphComponent.inputMode);
-              graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
-              graph.setStyle(node, new VuejsNodeStyle(NodeConstructor))
-
+              console.log(shapeNode.type)
+              type = ShapeNodeShape.RECTANGLE;
               break;
             case "roundedRectangle":
-              graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
-              graph.setStyle(node, new ShapeNodeStyle({
-                shape: ShapeNodeShape.ROUND_RECTANGLE,
-                fill: shapeNode.style.background.color.hex,
-                stroke: shapeNode.style.line.color.hex
-              }))
-
+              type = ShapeNodeShape.ROUND_RECTANGLE;
               break;
             case "ellipse":
-              graph.setNodeLayout(node, new Rect(0, 0, shapeNode.size.width, shapeNode.size.height))
-              graph.setStyle(node, new ShapeNodeStyle({
-                shape: ShapeNodeShape.ELLIPSE,
-                fill: shapeNode.style.background.color.hex,
-                stroke: shapeNode.style.line.color.hex
-              }))
+              type = ShapeNodeShape.ELLIPSE;
               break;
             default:
-              console.log("Not implemented yet: " + shapeNode.type);
+              type = undefined
+              break;
           }
+
+          const node = graph.createNode({
+            layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
+            style: new ShapeNodeStyle({
+              shape: type,
+              fill: shapeNode.style.background.color.hex,
+              stroke: shapeNode.style.line.color.hex
+            }),
+            tag: new ModelClassModel()
+          })
 
           if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
             const fontStyle = new Font({
