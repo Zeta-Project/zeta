@@ -2,14 +2,25 @@
   <div v-show="isExpanded">
     <h1 class="demo-sidebar-header">{{ title }}</h1>
     <div class="demo-sidebar-content">
+      <v-expansion-panels>
+        <v-expansion-panel
+            v-for="diagram in diagram.diagrams"
+            :key="diagram.name"
+        >
+          <v-expansion-panel-header>
+            {{ diagram.name }}
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <DndPalette v-for="palette in getPalettes(diagram)"
+                        :key="palette.name"
+                        :title="palette.name"
+                        :nodes="palette.nodes"
+                        :graph-component="graphComponent"
+                        :passive-supported="passiveSupported"/>
 
-      <DndPalette v-for="palette in palettes"
-                  :key="palette.name"
-                  :title="palette.name"
-                  :nodes="palette.nodes"
-                  :graph-component="graphComponent"
-                  :passive-supported="passiveSupported"
-      />
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </div>
   </div>
 </template>
@@ -53,13 +64,14 @@ export default {
       }
     }
   },
-  computed: {
-    palettes: function () {
-      return this.diagram.diagrams[0].palettes.map(palette => {
+  methods: {
+    getPalettes: function (diagram) {
+      return diagram.palettes.map(palette => {
 
         let pnodes = palette.nodes.map(pnode => this.shape.nodes.filter(x => {
           return x.name === pnode
         })[0]);
+
 
         return {name: palette.name, nodes: pnodes}
       })
@@ -69,43 +81,13 @@ export default {
 </script>
 
 <style scoped>
-    .demo-sidebar-header {
-        color: #666666;
-        font-size: 1.8em;
-        height: 60px;
-        line-height: 60px;
-        margin: 0;
-        box-sizing: border-box;
-        padding-left: 10px;
-    }
-
-    .demo-sidebar-content {
-        overflow-y: auto;
-        height: calc(100% - 70px);
-        padding: 0 25px;
-    }
-
-    .demo-sidebar-content h1,
-    .demo-sidebar-content h2 {
-        color: #666666;
-    }
-
-    .demo-sidebar-content a,
-    .demo-sidebar-content a:visited {
-        text-decoration: none;
-        color: #1871bd;
-    }
-
-    .demo-sidebar-content a:hover {
-        text-decoration: none;
-        color: #18468c;
-    }
-
-    .demo-sidebar-content ul {
-        padding-left: 1.3em;
-    }
-
-    .demo-sidebar-content li {
-        margin: 0.5em 0;
-    }
+.demo-sidebar-header {
+  color: #666666;
+  font-size: 1.8em;
+  height: 60px;
+  line-height: 60px;
+  margin: 0;
+  box-sizing: border-box;
+  padding-left: 10px;
+}
 </style>

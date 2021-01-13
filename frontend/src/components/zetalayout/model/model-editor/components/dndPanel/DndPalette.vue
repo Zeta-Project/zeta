@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>{{ title }}</h2>
+    <v-subheader>{{ title }}</v-subheader>
     <div :id="'drag-and-drop-panel-' + title"/>
   </div>
 </template>
