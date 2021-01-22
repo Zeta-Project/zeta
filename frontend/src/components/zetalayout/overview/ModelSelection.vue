@@ -12,7 +12,7 @@
       </div>
 
       <div v-else>
-        <v-list-item v-for="model in modelInstances" v-bind:key="model.id" :to="'/zeta/metamodel/editor/' + model.id">
+        <v-list-item v-for="model in modelInstances" v-bind:key="model.id" :to="'/zeta/model/editor/' + model.id">
           <v-list-item-content>
             <v-list-item-title v-text="model.name"/>
           </v-list-item-content>

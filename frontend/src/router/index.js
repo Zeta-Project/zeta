@@ -7,6 +7,7 @@ import SignIn from '@/components/accountlayout/signin/SignIn'
 import SignUp from '@/components/accountlayout/signup/signUp'
 import PasswordForgot from "@/components/accountlayout/password/forgot/PasswordForgot";
 import PasswordChange from "@/components/accountlayout/password/change/PasswordChange";
+import ModelEditor from "@/components/zetalayout/model/model-editor/GraphicalEditor"
 
 
 const isAuthenticated = function() {
@@ -45,6 +46,10 @@ const router = new VueRouter({
                 {
                     path: 'overview/:id?',
                     component: DiagramsOverview
+                },
+                {
+                    path: 'model/editor/:id',
+                    component: ModelEditor
                 }
             ]
         },
