@@ -814,6 +814,14 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
 
       parsed.errorDsl shouldBe "style"
     }
+    "for an example with duplicated styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style + style, shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
 
     "for an example with missing shapes" in {
       val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, "", diagram)
@@ -822,6 +830,14 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
       val parsed = result.toEither.left.get
 
       parsed.errorDsl shouldBe "diagram"
+    }
+    "for an example with duplicated shapes" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape + shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "shape"
     }
   }
 
