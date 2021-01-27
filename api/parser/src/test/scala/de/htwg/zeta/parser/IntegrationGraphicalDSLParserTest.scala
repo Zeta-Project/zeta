@@ -35,6 +35,22 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
 
   private val parser = new GraphicalDSLParser()
 
+  private val invalidStyle =
+    """
+     style Y {
+                line-color = black
+                line-style = dotted
+                line-width = 1
+                background-color = white
+                font-size = 20
+                font-name = Arial
+                font-bold = true
+                font-color = black
+                font-italic = true
+                transparency = 0.9
+              }
+     """
+
   private val style =
     """style Y {
            description = "Style for a connection between an interface and its implementing class"
@@ -782,6 +798,23 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
 
       parsed.errorDsl shouldBe "shape"
     }
+    "for an example with false styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, "classes", shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
+    "for an example with invalid styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, invalidStyle, shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
+
     "for an example with missing shapes" in {
       val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, "", diagram)
 

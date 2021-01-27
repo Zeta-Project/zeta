@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser.common
 
+import de.htwg.zeta.parser.common.CommentParser.TextResult
 import de.htwg.zeta.parser.style.StyleParser
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.freespec.AnyFreeSpec
@@ -132,6 +133,16 @@ class CommentParserTest extends AnyFreeSpec with Matchers {
 
       val result = parser.parseComments(input)
       result.isLeft shouldBe true
+    }
+    "count correct lines and characters " in {
+      val input =
+        """This is some
+         |/* multiline
+         |comment which isn't closed."""
+          .stripMargin
+      val textResult = TextResult(input)
+      textResult.size() shouldBe (3,27)
+      textResult.chars() shouldBe 53
     }
   }
 
