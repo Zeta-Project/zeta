@@ -1,42 +1,48 @@
-version: '2.1'
+version: "2.1"
 services:
-   mongodb:
-     image: mongo:3.4.13
-     volumes:
-       - ./mongodb:/data/db
-     ports:
-       - 27017:27017
+  mongodb:
+    image: mongo:3.4.13
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - 27017:27017
 
-   frontend:
-     image: frontend:latest
-     build:
+  frontend:
+    image: frontend:latest
+    build:
       context: ./frontend
-      args: 
+      args:
         YFILES_ACCESS: "${TOKEN}"
-     ports:
+    ports:
       - "8080:8080"
-     volumes:
+    volumes:
       - ./frontend:/src
 
-   api:
-     image: api:latest
-     build: ./api/.
-     # Enabled for Windows Users
-     mem_limit: 4g
-     volumes:
-       - ./api:/app
-       - ./sbt/server:/root
-     environment:
-       - APPLICATION_SECRET=superSecret
-       - ZETA_MONGODB_SERVER=mongodb
-       - ZETA_DEPLOYMENT=production
-     stdin_open: true
-     ports:
-       - 9000:9000
-     depends_on:
-       - "mongodb"
-     command: ["-Dlogger.play=ERROR","-Dlogger.application=ERROR","-Dzeta.webapp.host=frontend", "project server", "run"]
-
+  api:
+    image: api:latest
+    build: ./api/.
+    # Enabled for Windows Users
+    mem_limit: 4g
+    volumes:
+      - ./api:/app
+      - ./sbt/server:/root
+    environment:
+      - APPLICATION_SECRET=superSecret
+      - ZETA_MONGODB_SERVER=mongodb
+      - ZETA_DEPLOYMENT=production
+    stdin_open: true
+    ports:
+      - 9000:9000
+    depends_on:
+      - "mongodb"
+    command:
+      [
+        "-Dlogger.play=ERROR",
+        "-Dlogger.application=ERROR",
+        "-Dzeta.webapp.host=frontend",
+        "project server",
+        "run",
+      ]
 # --> temporarily deactivated: generation will not currently take place in the dockers <--
 #
 #  generatorControl:

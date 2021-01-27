@@ -7,6 +7,7 @@ resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-
 resolvers += Resolver.bintrayIvyRepo("rtimush", "sbt-plugin-snapshots")
 
 
+
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.5")
 
 //addSbtPlugin("com.lightbend.akka.grpc" % "sbt-akka-grpc" % "1.0.2")
