@@ -28,7 +28,7 @@ jobs:
           repository: Zeta-Project/yFiles-dev-key
           token: ${{secrets.TOKEN}}
           path: yFiles-dev-key
-      
+
       - name: Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2-beta
         with:
@@ -41,7 +41,6 @@ jobs:
           yarn build
           yarn test
 
-
   job_api:
     name: Test api backend
     runs-on: ubuntu-latest
@@ -52,10 +51,10 @@ jobs:
       - name: uses openjdk
         uses: olafurpg/setup-scala@v10
         with:
-           java-version: openjdk@1.11
+          java-version: openjdk@1.11
       - name: compile
         run: cd api && sbt "compile" "scalastyle"
       - name: coverage
         run: cd api && sbt coverage "test" "coverageReport"
       - name: coverage report
-        run: cd api && bash <(curl -s https://codecov.io/bash)
+        run: cd api && bash <(curl -s https://codecov.io/bash) -X gcov
