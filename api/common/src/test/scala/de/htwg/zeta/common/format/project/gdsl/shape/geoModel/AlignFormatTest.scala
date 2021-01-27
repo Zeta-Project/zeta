@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class AlignFormatTest extends FreeSpec with Matchers {
+class AlignFormatTest extends AnyFreeSpec with Matchers {
 
   "A AlignFormat should" - {
     "write a top left object" in {

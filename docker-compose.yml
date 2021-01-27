@@ -1,38 +1,48 @@
-version: '2.1'
+version: "2.1"
 services:
-   mongodb:
-     image: mongo:3.4.13
-     volumes:
-       - ./mongodb:/data/db
-     ports:
-       - 127.0.0.1:27017:27017
+  mongodb:
+    image: mongo:3.4.13
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - 27017:27017
 
-   webapp:
-     image: node:10.6.0 # Alpine cannot be used, because git executable is needed
-     volumes:
-       - ./webapp:/src
-     command: "bash -c 'yarn install && yarn run dev'"
-     working_dir: /src
+  frontend:
+    image: frontend:latest
+    build:
+      context: ./frontend
+      args:
+        YFILES_ACCESS: "${TOKEN}"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/src
 
-   api:
-     image: zeta-sbt:1.0.6
-     build: ./api
-     mem_limit: 4g
-     volumes:
-       - ./api:/app
-       - ./sbt/server:/root
-     environment:
-       - APPLICATION_SECRET=superSecret
-       - ZETA_MONGODB_SERVER=mongodb
-       - ZETA_DEPLOYMENT=production
-     stdin_open: true
-     ports:
-       - 80:9000
-     links:
-       - mongodb
-       - webapp
-     command: ["-Dlogger.play=ERROR","-Dlogger.application=ERROR","-Dzeta.webapp.host=webapp", "project server", "run"]
-
+  api:
+    image: api:latest
+    build: ./api/.
+    # Enabled for Windows Users
+    mem_limit: 4g
+    volumes:
+      - ./api:/app
+      - ./sbt/server:/root
+    environment:
+      - APPLICATION_SECRET=superSecret
+      - ZETA_MONGODB_SERVER=mongodb
+      - ZETA_DEPLOYMENT=production
+    stdin_open: true
+    ports:
+      - 9000:9000
+    depends_on:
+      - "mongodb"
+    command:
+      [
+        "-Dlogger.play=ERROR",
+        "-Dlogger.application=ERROR",
+        "-Dzeta.webapp.host=frontend",
+        "project server",
+        "run",
+      ]
 # --> temporarily deactivated: generation will not currently take place in the dockers <--
 #
 #  generatorControl:

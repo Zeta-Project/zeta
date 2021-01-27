@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.project.gdsl.shape
 
 import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class ResizingFormatTest extends FreeSpec with Matchers {
+class ResizingFormatTest extends AnyFreeSpec with Matchers {
 
   "A ResizingFormat should" - {
     "write an object" in {

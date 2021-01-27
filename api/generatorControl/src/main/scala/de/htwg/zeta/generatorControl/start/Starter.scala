@@ -6,6 +6,8 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
+import scala.util.Failure
+import scala.util.Success
 
 import akka.actor.ActorIdentity
 import akka.actor.ActorPath
@@ -25,18 +27,12 @@ protected trait Starter extends Logging {
   def start(): Unit
 
   protected def setSharedJournal(system: ActorSystem, path: ActorPath): Unit = {
-    implicit val timeout = Timeout(Duration(15, TimeUnit.SECONDS))
+    implicit val timeout: Timeout = Timeout(Duration(15, TimeUnit.SECONDS))
     val f = system.actorSelection(path) ? Identify(None)
-    f.onSuccess {
-      case ActorIdentity(_, Some(ref)) =>
-
-        SharedLeveldbJournal.setStore(ref, system)
-      case _ =>
-        system.log.error("Shared journal not started at {}", path)
-        system.terminate()
-    }
-    f.onFailure {
-      case _ =>
+    f.onComplete {
+      case Success(ActorIdentity(_, Some(ref))) =>
+          SharedLeveldbJournal.setStore(ref, system)
+      case Failure(t) =>
         system.log.error("Lookup of shared journal at {} timed out", path)
         system.terminate()
     }

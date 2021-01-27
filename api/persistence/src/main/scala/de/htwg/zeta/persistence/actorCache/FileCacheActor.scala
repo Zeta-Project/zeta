@@ -47,7 +47,7 @@ private[actorCache] class FileCacheActor(underlying: FileRepository, cacheDurati
 
   private val used: mutable.Set[(UUID, String)] = mutable.Set.empty
 
-  private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
+  private val cleanUpJob: Cancellable = context.system.scheduler.scheduleAtFixedRate(cacheDuration, cacheDuration, self, CleanUp)
 
   override def receive: Receive = {
     case Create(file: File) => create(file)

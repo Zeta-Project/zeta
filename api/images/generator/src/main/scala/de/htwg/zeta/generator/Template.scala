@@ -9,6 +9,7 @@ import scala.concurrent.Promise
 import scala.reflect.ClassTag
 import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
+import scala.util.{Failure,Success}
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -69,7 +70,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
-  implicit val mat = ActorMaterializer()
+  //implicit val mat = ActorMaterializer()
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
@@ -82,7 +83,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 
-  if (cmd.options.supplied) {
+  if (cmd.options.isSupplied) {
     val raw = cmd.options.getOrElse("")
     parseCallOptions(raw).map { opt =>
       runGeneratorWithOptions(opt).map { result =>
@@ -94,7 +95,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
           System.exit(1)
       }
     }
-  } else if (cmd.model.supplied) {
+  } else if (cmd.model.isSupplied) {
     val modelId = cmd.model.toOption.fold(UUID.randomUUID)(UUID.fromString)
     val generatorId = cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)
     runGeneratorForSingleModel(generatorId, modelId).map { result =>
@@ -105,7 +106,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
         logger.error(e.getMessage, e)
         System.exit(1)
     }
-  } else if (cmd.filter.supplied) {
+  } else if (cmd.filter.isSupplied) {
     val filterId = cmd.filter.toOption.fold(UUID.randomUUID)(UUID.fromString)
     val generatorId = cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)
     runGeneratorWithFilter(generatorId, filterId).map { result =>
@@ -116,7 +117,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
         logger.error(e.getMessage, e)
         System.exit(1)
     }
-  } else if (cmd.create.supplied) {
+  } else if (cmd.create.isSupplied) {
     val options = cmd.create.getOrElse("")
     val imageId = cmd.image.toOption.fold(UUID.randomUUID)(UUID.fromString)
     parseGeneratorCreateOptions(options, imageId).map { result =>
@@ -161,23 +162,21 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     logger.info("Run the generator")
 
     val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
-    val futures = filter.instanceIds.foldLeft(start) {
+    val futures: Future[Transformer] = filter.instanceIds.foldLeft(start) {
       case (future, modelId) => future.flatMap { generator =>
         modelEntityPersistence.read(modelId).flatMap { entity =>
           generator.transform(entity)
         }
       }
     }
-
-    futures.onSuccess {
-      case generator: Transformer => generator.exit().map { result =>
-        p.success(result)
-      }.recover {
-        case e: Exception => p.failure(e)
-      }
-    }
-    futures.onFailure {
-      case e: Throwable => p.failure(e)
+    futures.onComplete {
+      case util.Success(generator) =>
+         generator.exit().map { result =>
+          p.success(result)
+        }.recover {
+           case e: Exception => p.failure(e)
+         }
+      case Failure(e) => p.failure(e)
     }
 
     p.future

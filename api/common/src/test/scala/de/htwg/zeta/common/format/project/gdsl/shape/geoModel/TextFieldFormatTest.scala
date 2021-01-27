@@ -5,13 +5,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class TextFieldFormatTest extends FreeSpec with Matchers {
+class TextFieldFormatTest extends AnyFreeSpec with Matchers {
 
   "A TextFieldFormat should" - {
     "write an object" in {

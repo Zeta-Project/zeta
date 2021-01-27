@@ -1,4 +1,5 @@
 @import de.htwg.zeta.common.models.entity.User
+@import de.htwg.zeta.server.routing.routes
 @(title: String, user: Option[User] = None)(request: RequestHeader, messages: Messages)(content: Html)
 
 <!DOCTYPE html>
@@ -7,15 +8,10 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" type="image/png" href="@routes.ScalaRoutes.getStaticFiles("images/favicon.png")">
         <title>@title</title>
         <link href="//fonts.googleapis.com/css?family=Roboto|Montserrat:400,700|Open+Sans:400,300,600" rel="stylesheet">
-        <link rel="stylesheet" href="@routes.ScalaRoutes.getStaticFiles("silhouette.bundle.css")">
     </head>
     <body>
-        <header role="navigation">
-            @views.html.webpage.WebpageNavBar(user, None)
-        </header>
         <main class="container">
             <div class="starter-template row">
                 @request.flash.get("error").map { msg =>
@@ -39,6 +35,5 @@
                 @content
             </div>
         </main>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("silhouette.bundle.js")"></script>
     </body>
 </html>

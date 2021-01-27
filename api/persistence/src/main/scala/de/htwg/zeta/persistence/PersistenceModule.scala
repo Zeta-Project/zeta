@@ -25,7 +25,6 @@ import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
-import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.persistence.mongo.MongoAccessAuthorisationRepository
 import de.htwg.zeta.persistence.mongo.MongoBondedTaskRepository
@@ -44,7 +43,6 @@ import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoSettingsRepository
 import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
 import de.htwg.zeta.persistence.mongo.MongoUserRepository
-import de.htwg.zeta.persistence.transient.TransientTokenCache
 import grizzled.slf4j.Logging
 import javax.inject.Singleton
 import net.codingwell.scalaguice.ScalaModule
@@ -59,8 +57,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   /**
     * Configures the module.
     */
-  def configure(): Unit = {
-    bind[TokenCache].to[TransientTokenCache]
+  override def configure(): Unit = {
     bind[AccessRestrictedFilePersistence]
     bind[AccessRestrictedGdslProjectRepository]
     bind[AccessRestrictedLogRepository]

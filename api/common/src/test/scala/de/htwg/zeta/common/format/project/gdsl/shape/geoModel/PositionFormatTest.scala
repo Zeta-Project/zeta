@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class PositionFormatTest extends FreeSpec with Matchers {
+class PositionFormatTest extends AnyFreeSpec with Matchers {
 
   "A PositionFormat should" - {
     "write an object" in {

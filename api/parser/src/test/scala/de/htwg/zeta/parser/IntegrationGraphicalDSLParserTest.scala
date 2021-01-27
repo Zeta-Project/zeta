@@ -27,13 +27,29 @@ import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Solid
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 //noinspection ScalaStyle
-class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
+class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
 
   private val parser = new GraphicalDSLParser()
+
+  private val invalidStyle =
+    """
+     style Y {
+                line-color = black
+                line-style = dotted
+                line-width = 1
+                background-color = white
+                font-size = 20
+                font-name = Arial
+                font-bold = true
+                font-color = black
+                font-italic = true
+                transparency = 0.9
+              }
+     """
 
   private val style =
     """style Y {
@@ -96,6 +112,12 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
              inClassNode
            }
          }"""
+  private val invalidDiagram =
+    """diagram klassendiagramm1 {
+           palette Class {
+             classNode
+           }
+         """
 
   private val shape =
     """node classNode for Klasse {
@@ -314,7 +336,14 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  }
              }
          }"""
-
+  private val invalidShapes= """
+      node classNode for Klasse {
+        edges {
+          inheritance
+          BaseClassRealization
+          component
+          aggregation
+        }"""
   private val yStyle = new Style(
     name = "Y",
     description = "Style for a connection between an interface and its implementing class",
@@ -782,8 +811,57 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
       parsed.errorDsl shouldBe "shape"
     }
+    "for an example with false styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, "classes", shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
+    "for an example with invalid styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, invalidStyle, shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
+    "for an example with duplicated styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style + style, shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "style"
+    }
+
     "for an example with missing shapes" in {
       val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, "", diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "diagram"
+    }
+    "for an example with duplicated shapes" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape + shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "shape"
+    }
+    "for an example with invalid shapes" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, invalidShapes, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "shape"
+    }
+    "for an example with invalid diagram" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape, invalidDiagram)
 
       result.isSuccess shouldBe false
       val parsed = result.toEither.left.get

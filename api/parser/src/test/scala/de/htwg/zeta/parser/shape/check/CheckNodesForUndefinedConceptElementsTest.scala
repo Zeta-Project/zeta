@@ -6,19 +6,18 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class CheckNodesForUndefinedConceptElementsTest extends FreeSpec with Matchers with Inside {
+class CheckNodesForUndefinedConceptElementsTest extends AnyFreeSpec with Matchers with Inside {
 
   "the check should" - {
     "succeed" - {

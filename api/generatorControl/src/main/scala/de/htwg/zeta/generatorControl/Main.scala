@@ -1,7 +1,5 @@
 package de.htwg.zeta.generatorControl
 
-import scala.language.implicitConversions
-
 import de.htwg.zeta.generatorControl.start.DummyStarter
 import de.htwg.zeta.generatorControl.start.Commands
 import de.htwg.zeta.generatorControl.start.MasterStarter

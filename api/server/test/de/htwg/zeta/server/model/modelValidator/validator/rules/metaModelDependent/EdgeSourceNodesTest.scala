@@ -7,10 +7,10 @@ import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class EdgeSourceNodesTest extends FlatSpec with Matchers {
+class EdgeSourceNodesTest extends AnyFlatSpec with Matchers {
 
   val mReference = MReference(
     "edgeType",

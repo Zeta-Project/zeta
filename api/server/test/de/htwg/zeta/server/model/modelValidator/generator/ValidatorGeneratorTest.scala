@@ -2,10 +2,10 @@ package de.htwg.zeta.server.model.modelValidator.generator
 
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ValidatorGeneratorTest extends FlatSpec with Matchers {
+class ValidatorGeneratorTest extends AnyFlatSpec with Matchers {
 
   val generator = new ValidatorGenerator(GdslProject.empty(""))
   val generationResult: ValidatorGeneratorResult = generator.generateValidator()

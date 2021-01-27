@@ -2,6 +2,7 @@ package de.htwg.zeta.common.models.project.concept.elements
 
 import scala.collection.immutable.Seq
 
+
 /**
  * The MAttribute implementation
  *

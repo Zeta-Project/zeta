@@ -21,12 +21,12 @@ import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
+class ShapeParseTreeTransformerTest extends AnyFreeSpec with Matchers with Inside {
 
   private object StyleFactory {
     def apply(name: String): Style = Style(

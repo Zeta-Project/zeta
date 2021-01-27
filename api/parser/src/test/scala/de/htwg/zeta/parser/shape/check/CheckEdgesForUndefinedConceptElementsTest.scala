@@ -7,11 +7,11 @@ import de.htwg.zeta.parser.ConceptCreatorHelper
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class CheckEdgesForUndefinedConceptElementsTest extends FreeSpec with Matchers with Inside {
+class CheckEdgesForUndefinedConceptElementsTest extends AnyFreeSpec with Matchers with Inside {
 
   private val emptyString = ""
 

@@ -3,6 +3,8 @@ package de.htwg.zeta.server.silhouette
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
+import controllers.Assets.Forbidden
+import de.htwg.zeta.server.routing.routes
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
 import play.api.mvc.Results
@@ -21,6 +23,6 @@ class CustomUnsecuredErrorHandler extends UnsecuredErrorHandler {
    * @return The result to send to the client.
    */
   override def onNotAuthorized(implicit request: RequestHeader): Future[Result] = {
-    Future.successful(Results.Redirect(controllers.routes.ScalaRoutes.getIndex()))
+    Future.successful(Forbidden)
   }
 }

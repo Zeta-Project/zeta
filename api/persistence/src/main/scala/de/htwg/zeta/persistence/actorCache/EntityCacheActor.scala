@@ -46,7 +46,7 @@ private[actorCache] class EntityCacheActor[E <: Entity](underlying: EntityReposi
 
   private val used: mutable.Set[UUID] = mutable.Set.empty
 
-  private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
+  private val cleanUpJob: Cancellable = context.system.scheduler.scheduleAtFixedRate(cacheDuration, cacheDuration, self, CleanUp)
 
   private type F = E => E
 

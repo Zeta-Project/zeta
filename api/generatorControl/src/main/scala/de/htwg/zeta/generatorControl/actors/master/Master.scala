@@ -55,8 +55,8 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration) ext
   // workState is event sourced
   private var workState = WorkState.empty()
 
-  private val workerTimeoutTask = context.system.scheduler.schedule(workerTimeout / 2, workerTimeout / 2, self, WorkerTimeoutTick)
-  private val completedWorkTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, CompletedWorkTick)
+  private val workerTimeoutTask = context.system.scheduler.scheduleAtFixedRate(workerTimeout / 2, workerTimeout / 2, self, WorkerTimeoutTick)
+  private val completedWorkTask = context.system.scheduler.scheduleAtFixedRate(Duration(10, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, CompletedWorkTick)
 
   override def postStop() = {
     workerTimeoutTask.cancel()

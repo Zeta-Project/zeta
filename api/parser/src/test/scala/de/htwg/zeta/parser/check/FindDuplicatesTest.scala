@@ -1,12 +1,12 @@
 package de.htwg.zeta.parser.check
 
 import de.htwg.zeta.parser.check.Check.Id
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class FindDuplicatesTest extends FreeSpec with Matchers with Inside {
+class FindDuplicatesTest extends AnyFreeSpec with Matchers with Inside {
 
   val elementToId: Element => Id = element => element.name
   val findDuplicates = new FindDuplicates[Element](elementToId)

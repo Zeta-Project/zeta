@@ -38,7 +38,7 @@ class ReferenceCollector[T](private val list: List[T], private val toId: T => Id
    * @return One single found element.
    */
   //noinspection ScalaStyle
-  def !(id: Id): T = ?(id).get
+  def !(id: Id): T = ?(id).fold(throw new NoSuchElementException(s"${id} not found"))(f => f)
 
   /**
    * Get a list of all identifiers of these referenced elements. Contains duplicate identifiers too.

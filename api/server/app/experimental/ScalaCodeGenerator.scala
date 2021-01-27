@@ -104,7 +104,7 @@ object ScalaCodeGenerator {
 
   private def generateMethod(method: Method): String = {
     s"""|  def ${method.name}(${generateParameters(method.parameters)}): ${method.returnType.asString} = {
-        |${method.code.lines.map("    " + _).mkString("\n")}
+        |${method.code.linesIterator.map("    " + _).mkString("\n")}
         |  }
         |""".stripMargin
   }

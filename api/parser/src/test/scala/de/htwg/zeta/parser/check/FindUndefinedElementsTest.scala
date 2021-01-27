@@ -1,12 +1,12 @@
 package de.htwg.zeta.parser.check
 
 import de.htwg.zeta.parser.check.Check.Id
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class FindUndefinedElementsTest extends FreeSpec with Matchers with Inside {
+class FindUndefinedElementsTest extends AnyFreeSpec with Matchers with Inside {
 
   val elementToId: Element => Id = element => element.name
   val getParentIds: Element => List[Id] = element => element.parents.toList

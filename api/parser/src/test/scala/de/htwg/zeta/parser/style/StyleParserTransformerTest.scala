@@ -1,21 +1,22 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint
-
+import scalafx.scene.paint
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class StyleParserTransformerTest extends FreeSpec with Matchers {
+class StyleParserTransformerTest extends AnyFreeSpec with Matchers {
 
   "A style transformer will" - {
     "transform without errors" - {
       "when building a valid style" in {
         val styleToTestSuccess = List(
-          StyleParseTree("Y", "\"Style for a connection between an interface and its implementing class\"", List(), List(
+          StyleParseTree("Y",
+            StyleDescription("\"Style for a connection between an interface and its implementing class\""),
+            List(), List(
             Transparency(1.0),
             BackgroundColor(paint.Color.valueOf("white")),
             LineColor(paint.Color.valueOf("black")),
@@ -56,7 +57,9 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
 
       "when building a valid style with different colors" in {
         val styleToTestColors = List(
-          StyleParseTree("Y", "Style for a connection between an interface and its implementing class", List(), List(
+          StyleParseTree("Y",
+            StyleDescription("Style for a connection between an interface and its implementing class"),
+            List(), List(
             BackgroundColor(paint.Color.valueOf("orange")),
             LineColor(paint.Color.valueOf("gray")),
             FontColor(paint.Color.valueOf("green"))
@@ -78,9 +81,9 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
     "find errors when" - {
       "transforming styles which are duplicated" in {
         val styleToTestDuplicates = List(
-          StyleParseTree("style1", "test", List("style3"), List()),
-          StyleParseTree("style1", "test", List("style3"), List()),
-          StyleParseTree("style3", "test", List(), List())
+          StyleParseTree("style1", StyleDescription("test"), List("style3"), List()),
+          StyleParseTree("style1", StyleDescription("test"), List("style3"), List()),
+          StyleParseTree("style3", StyleDescription("test"), List(), List())
         )
 
         val result = StyleParseTreeTransformer.transform(styleToTestDuplicates)
@@ -92,9 +95,9 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
 
       "transforming styles with undefined parents" in {
         val styleToTestUndefinedParents = List(
-          StyleParseTree("style1", "test", List("style2"), List()),
-          StyleParseTree("style2", "test", List("style4"), List()),
-          StyleParseTree("style3", "test", List("style4"), List())
+          StyleParseTree("style1", StyleDescription("test"), List("style2"), List()),
+          StyleParseTree("style2", StyleDescription("test"), List("style4"), List()),
+          StyleParseTree("style3", StyleDescription("test"), List("style4"), List())
         )
 
         val result = StyleParseTreeTransformer.transform(styleToTestUndefinedParents)
@@ -106,9 +109,9 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
 
       "transforming styles with cycling dependencies" in {
         val styleToTestGraphCycle = List(
-          StyleParseTree("style1", "test", List("style2"), List()),
-          StyleParseTree("style2", "test", List("style3"), List()),
-          StyleParseTree("style3", "test", List("style1"), List())
+          StyleParseTree("style1", StyleDescription("test"), List("style2"), List()),
+          StyleParseTree("style2", StyleDescription("test"), List("style3"), List()),
+          StyleParseTree("style3", StyleDescription("test"), List("style1"), List())
         )
 
         val result = StyleParseTreeTransformer.transform(styleToTestGraphCycle)
@@ -121,11 +124,11 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
     "inherit style values" - {
       "when s single style is extended" in {
         val styles = List(
-          StyleParseTree("A", "A", List(), List(
+          StyleParseTree("A", StyleDescription("A"), List(), List(
             BackgroundColor(paint.Color.valueOf("green")),
             FontSize(20)
           )),
-          StyleParseTree("B", "B", List("A"), List())
+          StyleParseTree("B", StyleDescription("B"), List("A"), List())
         )
         val result = StyleParseTreeTransformer.transform(styles)
         result.isSuccess shouldBe true
@@ -142,14 +145,14 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
       }
       "when s single style is extended multiple steps and partially overwritten by child" in {
         val styles = List(
-          StyleParseTree("A", "A", List(), List(
+          StyleParseTree("A", StyleDescription("A"), List(), List(
             BackgroundColor(paint.Color.valueOf("green")),
             FontSize(20)
           )),
-          StyleParseTree("B", "B", List("A"), List(
+          StyleParseTree("B", StyleDescription("B"), List("A"), List(
             BackgroundColor(paint.Color.valueOf("red"))
           )),
-          StyleParseTree("C", "C", List("B"), List())
+          StyleParseTree("C", StyleDescription("C"), List("B"), List())
         )
         val result = StyleParseTreeTransformer.transform(styles)
         result.isSuccess shouldBe true
@@ -171,13 +174,13 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
       }
       "when multiple styles are extended" in {
         val styles = List(
-          StyleParseTree("A", "A", List(), List(
+          StyleParseTree("A", StyleDescription("A"), List(), List(
             FontSize(20)
           )),
-          StyleParseTree("B", "B", List(), List(
+          StyleParseTree("B", StyleDescription("B"), List(), List(
             BackgroundColor(paint.Color.valueOf("red"))
           )),
-          StyleParseTree("C", "C", List("A", "B"), List())
+          StyleParseTree("C", StyleDescription("C"), List("A", "B"), List())
         )
         val result = StyleParseTreeTransformer.transform(styles)
         result.isSuccess shouldBe true
@@ -197,15 +200,15 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
       }
       "when multiple styles are extended and overwrites their values (order aware)" in {
         val styles = List(
-          StyleParseTree("A", "A", List(), List(
+          StyleParseTree("A", StyleDescription("A"), List(), List(
             BackgroundColor(paint.Color.valueOf("green"))
           )),
-          StyleParseTree("B", "B", List(), List(
+          StyleParseTree("B", StyleDescription("B"), List(), List(
             BackgroundColor(paint.Color.valueOf("red")),
             FontSize(31)
           )),
-          StyleParseTree("C", "C", List("A", "B"), List()),
-          StyleParseTree("D", "D", List("B", "A"), List())
+          StyleParseTree("C", StyleDescription("C"), List("A", "B"), List()),
+          StyleParseTree("D", StyleDescription("D"), List("B", "A"), List())
         )
         val result = StyleParseTreeTransformer.transform(styles)
         result.isSuccess shouldBe true

@@ -6,10 +6,10 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
+class EdgesAttributesNamesNotEmptyTest extends AnyFlatSpec with Matchers {
 
   val rule = new EdgesAttributesNamesNotEmpty
   private val emptyString = ""

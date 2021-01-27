@@ -3,11 +3,11 @@ package de.htwg.zeta.persistence.behavior
 import java.util.UUID
 
 import de.htwg.zeta.persistence.general.LoginInfoRepository
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 /** PersistenceBehavior. */

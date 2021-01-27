@@ -12,7 +12,6 @@ import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.GdslProjectRepository
-import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import javax.inject.Inject
 import javax.inject.Singleton

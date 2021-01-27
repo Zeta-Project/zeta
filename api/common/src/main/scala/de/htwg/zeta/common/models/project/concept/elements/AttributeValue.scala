@@ -2,7 +2,6 @@ package de.htwg.zeta.common.models.project.concept.elements
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.project.concept.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 

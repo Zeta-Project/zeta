@@ -50,7 +50,7 @@ private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoReposit
 
   private val used: mutable.Set[ZetaLoginInfo] = mutable.Set.empty
 
-  private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
+  private val cleanUpJob: Cancellable = context.system.scheduler.scheduleAtFixedRate(cacheDuration, cacheDuration, self, CleanUp)
 
   override def receive: Receive = {
     case Add(loginInfo, authInfo) => add(loginInfo, authInfo)

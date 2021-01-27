@@ -23,7 +23,6 @@ case class User(
 
   /** The full name of the user. */
   val fullName = s"$firstName $lastName"
-
 }
 
 object User {

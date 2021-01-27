@@ -22,5 +22,10 @@ tmp
 /sbt/
 docker-compose\.override\.yml
 /webapp/yarn.lock
+/webapp/yarn-error.log
+/webapp/node_modules
+yFiles-for-html/
+yFiles-dev-key
 
 webapp/coverage/
+.env

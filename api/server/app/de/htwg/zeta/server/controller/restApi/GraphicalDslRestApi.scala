@@ -1,14 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
-
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
-import controllers.routes
 import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.common.format.project.ClassFormat
 import de.htwg.zeta.common.format.project.ConceptFormat
@@ -20,6 +19,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepo
 import de.htwg.zeta.persistence.general.{AccessAuthorisationRepository, GraphicalDslInstanceRepository, UserRepository}
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
@@ -27,22 +27,23 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 /**
   * REST-ful API for GraphicalDsl definitions
   */
 class GraphicalDslRestApi @Inject()(
-                                     graphicalDslRepo: AccessRestrictedGdslProjectRepository,
-                                     instanceRepo: GraphicalDslInstanceRepository,
-                                     userRepo: UserRepository,
-                                     accessAuthorisationRepo: AccessAuthorisationRepository,
-                                     conceptFormat: ConceptFormat,
-                                     graphicalDslFormat: GdslProjectFormat,
-                                     classFormat: ClassFormat,
-                                     referenceFormat: ReferenceFormat
-                                   ) extends Controller with Logging {
+  graphicalDslRepo: AccessRestrictedGdslProjectRepository,
+  instanceRepo: GraphicalDslInstanceRepository,
+  userRepo: UserRepository,
+  accessAuthorisationRepo: AccessAuthorisationRepository,
+  conceptFormat: ConceptFormat,
+  graphicalDslFormat: GdslProjectFormat,
+  classFormat: ClassFormat,
+  referenceFormat: ReferenceFormat,
+  implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   val sGdslProject = "GdslProject"
 

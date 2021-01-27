@@ -1,13 +1,7 @@
-FROM openjdk:8u171
+FROM openjdk:11-jdk
 
-ENV SCALA_VERSION 2.12.6
-ENV SBT_VERSION 1.1.6
-
-# Scala expects this file
-RUN touch /usr/lib/jvm/java-8-openjdk-amd64/release
-
-# Install Java FX
-RUN apt-get update && apt-get install -y --no-install-recommends openjfx && rm -rf /var/lib/apt/lists/*
+ENV SCALA_VERSION 2.12.12
+ENV SBT_VERSION 1.3.13
 
 # Install Scala
 ## Piping curl directly in tar

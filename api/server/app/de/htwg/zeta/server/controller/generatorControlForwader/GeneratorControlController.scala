@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.controller.generatorControlForwader
 
 import java.util.UUID
-
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -25,7 +25,7 @@ import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 
@@ -42,8 +42,9 @@ class GeneratorControlController @Inject()(
     mat: Materializer,
     backendRemoteClient: GeneratorControlRemoteClient,
     silhouette: Silhouette[ZetaEnv],
-    modelEntityRepo: GraphicalDslInstanceRepository
-) extends Controller with Logging {
+    modelEntityRepo: GraphicalDslInstanceRepository,
+    implicit val ec: ExecutionContext
+) extends InjectedController with Logging {
 
   private val developerMsg: MessageFlowTransformer[DeveloperRequest, DeveloperResponse] =
     MessageFlowTransformer.jsonMessageFlowTransformer[DeveloperRequest, DeveloperResponse]

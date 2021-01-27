@@ -1,8 +1,10 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint.Color
+import scala.util.parsing.input.Positional
 
-sealed abstract class StyleAttribute(val attributeName: String)
+import scalafx.scene.paint.Color
+
+sealed abstract class StyleAttribute(val attributeName: String) extends Positional
 
 object StyleAttribute {
 
@@ -37,6 +39,8 @@ case class LineStyle(style: String)                 extends StyleAttribute(Style
 case class LineWidth(width: Int)                    extends StyleAttribute(StyleAttribute.lineWidth)
 case class Transparency(transparency: Double)       extends StyleAttribute(StyleAttribute.transparency)
 
+case class StyleDescription(description: String) extends Positional
+
 object GradientOrientation {
   val vertical = "vertical"
   val horizontal = "horizontal"
@@ -44,7 +48,14 @@ object GradientOrientation {
 
 case class StyleParseTree(
   name: String,
-  description: String,
+  description: StyleDescription,
   parentStyles: List[String],
   attributes: List[StyleAttribute]
-  )
+  ) extends Positional
+
+case class StyleAttributes(description: StyleDescription,attributes: List[StyleAttribute]) extends Positional
+/**
+ * Contains multiple style parser trees.
+ * @param styleParserTree
+ */
+case class MainStyleParserTree(styleParserTree: List[StyleParseTree]) extends Positional

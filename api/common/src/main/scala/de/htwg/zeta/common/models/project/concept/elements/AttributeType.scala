@@ -8,7 +8,6 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumVa
 sealed trait AttributeType {
 
   val asString: String
-
 }
 
 object AttributeType {

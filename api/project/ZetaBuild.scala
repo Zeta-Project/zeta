@@ -6,6 +6,7 @@ import sbt.file
 import sbt.project
 import sbt.stringToOrganization
 import sbt.taskKey
+import sbt.addCompilerPlugin
 import wartremover.WartRemover.autoImport.Wart
 import wartremover.WartRemover.autoImport.Warts
 import wartremover.WartRemover.autoImport.wartremoverWarnings
@@ -20,9 +21,11 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "5.0.3"
-  val playVersion = "2.6.10"
-  val akkaVersion = "2.5.8"
+  val silhouetteVersion = "6.1.1"
+  val playVersion = "2.7.5"
+  val akkaVersion = "2.6.10"
+  val javaFxVersion = "11"
+  val scalaFxVersion = "11-R16"
 
   val scalaVersionNumber = "2.12.12"
   val scalaVersion = Keys.scalaVersion := scalaVersionNumber
@@ -32,8 +35,7 @@ object ZetaBuild {
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
     "-unchecked", // Enable additional warnings where generated code depends on assumptions.
     // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
-    // FIXME This is a confirmed Scala bug in 2.12 Xlint will produce Position.point on NoPosition Error
-    // "-Xlint", // Enable recommended additional warnings.
+    "-Xlint", // Enable recommended additional warnings.
     "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
     "-Ywarn-dead-code", // Warn when dead code is identified.
     "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
@@ -41,33 +43,47 @@ object ZetaBuild {
     "-Ywarn-numeric-widen" // Warn when numerics are widened.
   )
 
+  val autoCompilerPlugins = true
+
   val linterSettings = Seq(
-    //    scalastyleFailOnError := true,
-    //    ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-    //    compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe diff List(
       Wart.NonUnitStatements,
       Wart.Any,
       Wart.Product,
     )
   )
+  lazy val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux")   => "linux"
+    case n if n.startsWith("Mac")     => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
 
+  lazy val javaFXModules = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+
+  val javaFxDep = javaFXModules.map( m =>
+    "org.openjfx" % s"javafx-$m" % javaFxVersion classifier osName
+  )
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
-    "net.codingwell" %% "scala-guice" % "4.1.1",
+    "net.codingwell" %% "scala-guice" % "4.2.11",
     // test
-    "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.2" % "test",
     // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.3.4"
-  )
+    "org.clapper" %% "grizzled-slf4j" % "1.3.4",
+    // javafx
+    "org.scalafx" %% "scalafx" % scalaFxVersion,
+    "org.scala-lang" % "scala-library" % ZetaBuild.scalaVersionNumber
+  ) ++ javaFxDep
+
+
 
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(
     scalaOptions,
     scalaVersion,
     standardLibraries
   )
-
 
   /**
    * change project to current file
@@ -78,4 +94,6 @@ object ZetaBuild {
    * change project to current file and add defaultSettings
    */
   def defaultProject(project: Project): Project = inCurrent(project).settings(defaultSettings: _*)
+
+
 }

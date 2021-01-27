@@ -2,21 +2,22 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.routes
-import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.ForgotPasswordForm
+import de.htwg.zeta.server.model.TokenCache
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.BaseController
+import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
 import play.api.mvc.Result
 
@@ -26,23 +27,15 @@ import play.api.mvc.Result
  * @param mailerClient The mailer client.
  */
 class ForgotPasswordController @Inject()(
+    val controllerComponents: ControllerComponents,
     mailerClient: MailerClient,
-    tokenCache: TokenCache,
     loginInfoRepo: SilhouetteLoginInfoDao,
-    userRepo: UserRepository
-) extends Controller {
+    userRepo: UserRepository,
+    tokenCache: TokenCache,
+    implicit val ec: ExecutionContext
+) extends BaseController {
 
-  /** Views the `Forgot Password` page.
-   *
-   * @param request  The request
-   * @param messages The messages
-   * @return The result to display.
-   */
-  def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    Future.successful(Ok(views.html.silhouette.forgotPassword(ForgotPasswordForm.form, request, messages)))
-  }
-
-
+  // TODO: New Workflow. See: https://github.com/Zeta-Project/zeta/issues/456
   /** Sends an email with password reset instructions.
    *
    * It sends an email to the given address if it exists in the database. Otherwise we do not show the user
@@ -54,15 +47,16 @@ class ForgotPasswordController @Inject()(
    */
   def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
     ForgotPasswordForm.form.bindFromRequest()(request).fold(
-      form => Future.successful(BadRequest(views.html.silhouette.forgotPassword(form, request, messages))),
+      form => Future.successful(NotAcceptable),
       email => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
-        val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
+        val result = Ok
         val userId = loginInfoRepo.read(loginInfo)
         val user = userId.flatMap(userId => userRepo.read(userId))
         user.flatMap(user => {
           tokenCache.create(user.id).map { token =>
-            val url = routes.ScalaRoutes.getPasswordReset(token).absoluteURL()(request)
+            // TODO: Replace URL
+            val url = routes.ScalaRoutes.postPasswordForgot().absoluteURL()(request)
             mailerClient.send(Email(
               subject = messages("email.reset.password.subject"),
               from = messages("email.from"),
@@ -73,7 +67,7 @@ class ForgotPasswordController @Inject()(
             result
           }
         }).recover {
-          case _ => result
+          case _ => NotAcceptable
         }
       }
     )

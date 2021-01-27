@@ -3,13 +3,13 @@ package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class PolylineFormatTest extends FreeSpec with Matchers {
+class PolylineFormatTest extends AnyFreeSpec with Matchers {
 
   "A PolylineFormat should" - {
     "write an object" in {

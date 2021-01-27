@@ -1,8 +1,14 @@
 package de.htwg.zeta.server.silhouette
 
-import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
+import java.util.concurrent.TimeUnit
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.ExecutionContext
+
+import akka.util.Timeout
 import com.google.inject.Provides
 import com.google.inject.name.Named
 import com.mohiva.play.silhouette.api.Environment
@@ -38,18 +44,21 @@ import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import com.typesafe.config.Config
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
+import de.htwg.zeta.server.actor.TokenCacheActor
+import de.htwg.zeta.server.model.TokenCache
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.ceedubs.ficus.readers.ValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.WSClient
+import play.api.mvc.Cookie.SameSite
 import play.api.mvc.CookieHeaderEncoding
-
+import scala.concurrent.ExecutionContext.Implicits.global
 /**
  * The Guice module which wires all Silhouette dependencies.
  */
@@ -58,17 +67,21 @@ class SilhouetteModule extends ScalaModule {
   /**
    * Configures the module.
    */
-  def configure(): Unit = {
+  override def configure(): Unit = {
     bind[Silhouette[ZetaEnv]].to[SilhouetteProvider[ZetaEnv]]
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[CacheLayer].to[PlayCacheLayer]
+    bind[TokenCache].to[TokenCacheActor]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
   }
+
+  @Provides
+  def getTimeoutTimer(): Timeout = Duration(1, TimeUnit.MINUTES)
 
   /**
    * Provides the HTTP layer implementation.
@@ -93,7 +106,8 @@ class SilhouetteModule extends ScalaModule {
   ): IdentityService[ZetaIdentity] = {
     new IdentityService[ZetaIdentity] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[ZetaIdentity]] = {
-        val futureIdentityOpt = for { // future
+        val futureIdentityOpt = for {
+          // future
           userId <- loginInfoPersistence.read(loginInfo)
           user <- userPersistence.read(userId)
         } yield {
@@ -172,7 +186,7 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideAuthInfoRepository(
-    passwordInfoPersistence: PasswordInfoRepository
+      passwordInfoPersistence: PasswordInfoRepository
   ): AuthInfoRepository = {
     new DelegableAuthInfoRepository(new SilhouettePasswordInfoDao(passwordInfoPersistence))
   }
@@ -204,7 +218,19 @@ class SilhouetteModule extends ScalaModule {
       implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
       implicit val finiteDurationReader: ValueReader[FiniteDuration] = Ficus.finiteDurationReader
 
-      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
+      implicit val sameSiteReader: ValueReader[SameSite] = new ValueReader[SameSite] {
+        override def read(config: Config, path: String): SameSite = {
+          val s = stringValueReader.read(config, path)
+          SameSite.parse(s) match {
+            case None => throw new IllegalArgumentException("Cannot parse SameSite")
+            case Some(ss) => ss
+          }
+        }
+      }
+
+      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] =
+        Ficus.optionValueReader[A](valueReader)
+
 
       configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     }

@@ -3,12 +3,12 @@ package de.htwg.zeta.parser.shape
 import de.htwg.zeta.parser.shape.parser.GeoModelParser
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees._
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class GeoModelParserTest extends FreeSpec with Matchers with Inside {
+class GeoModelParserTest extends AnyFreeSpec with Matchers with Inside {
 
   private def parseGeoModel(input: String) = {
     GeoModelParser.parse(GeoModelParser.geoModel, input)

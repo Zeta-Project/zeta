@@ -10,7 +10,9 @@ import de.htwg.zeta.common.format.entity.FilterFormat
 import de.htwg.zeta.common.format.entity.GeneratorFormat
 import de.htwg.zeta.common.format.entity.GeneratorImageFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
+import de.htwg.zeta.common.format.entity.UserFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.GDSLInstanceProjectFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.format.project.AttributeFormat
@@ -23,6 +25,9 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
+import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
+import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import net.codingwell.scalaguice.ScalaModule
 
 class JsonFormatModule extends ScalaModule {
@@ -43,6 +48,7 @@ class JsonFormatModule extends ScalaModule {
     bind[AttributeTypeFormat].toInstance(new AttributeTypeFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble, sUnit = "Unit"))
     bind[AttributeValueFormat].toInstance(new AttributeValueFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble))
     bind[EnumFormat].toInstance(new EnumFormat)
+    bind[UserFormat].toInstance(new UserFormat)
   }
 
   @Provides
@@ -105,6 +111,18 @@ class JsonFormatModule extends ScalaModule {
 
   @Provides
   @Singleton
+  def provideGDSLInstanceProjectFormat(
+      gDSLInstanceFormat: GraphicalDslInstanceFormat,
+      conceptFormat: ConceptFormat,
+      shapeFormat: ShapeFormat,
+      diagramFormat: DiagramsFormat,
+      styleFormat: StylesFormat
+  ): GDSLInstanceProjectFormat = {
+    new GDSLInstanceProjectFormat(gDSLInstanceFormat, conceptFormat,shapeFormat,diagramFormat,styleFormat)
+  }
+
+  @Provides
+  @Singleton
   def provideNodeFormat(
       attributeFormat: AttributeFormat,
       attributeValueFormat: AttributeValueFormat,
@@ -139,5 +157,4 @@ class JsonFormatModule extends ScalaModule {
   ): MethodFormat = {
     new MethodFormat(attributeTypeFormat)
   }
-
 }

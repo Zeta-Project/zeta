@@ -3,27 +3,16 @@ package de.htwg.zeta.common.format.project.gdsl.diagram
 import de.htwg.zeta.common.models.project.gdsl.diagram.Palette
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
-import de.htwg.zeta.common.models.project.gdsl.shape.Placing
-import de.htwg.zeta.common.models.project.gdsl.shape.PlacingPosition
 import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
-import de.htwg.zeta.common.models.project.gdsl.style.Background
-import de.htwg.zeta.common.models.project.gdsl.style.Color
-import de.htwg.zeta.common.models.project.gdsl.style.Dotted
-import de.htwg.zeta.common.models.project.gdsl.style.Font
-import de.htwg.zeta.common.models.project.gdsl.style.Line
-import de.htwg.zeta.common.models.project.gdsl.style.LineStyle
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class PaletteFormatTest extends FreeSpec with Matchers {
+class PaletteFormatTest extends AnyFreeSpec with Matchers {
 
   "A PaletteFormat should" - {
     "write an object" in {

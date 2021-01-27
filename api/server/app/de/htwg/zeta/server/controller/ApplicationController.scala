@@ -8,10 +8,9 @@ import com.mohiva.play.silhouette.api.LogoutEvent
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
-import controllers.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Result
 
 /**
@@ -20,17 +19,8 @@ import play.api.mvc.Result
  * @param silhouette The Silhouette stack.
  */
 class ApplicationController @Inject()(
-    silhouette: Silhouette[ZetaEnv])
-  extends Controller {
-
-  /** Handles the index action.
-   *
-   * @param request The request
-   * @return The result to display.
-   */
-  def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.webpage.WebpageIndex(Some(request.identity.user)))
-  }
+    silhouette: Silhouette[ZetaEnv]
+) extends InjectedController {
 
   /** Get the user id of the logged in user
    *
@@ -47,7 +37,7 @@ class ApplicationController @Inject()(
    * @return The result to display.
    */
   def signOut(request: SecuredRequest[ZetaEnv, AnyContent]): Future[AuthenticatorResult] = {
-    val result = Redirect(routes.ScalaRoutes.getIndex())
+    val result = Ok
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, result)(request)
   }

@@ -3,7 +3,6 @@ package de.htwg.zeta.common.format.project.gdsl.style
 import scala.util.parsing.combinator.JavaTokenParsers
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
-import de.htwg.zeta.common.models.project.gdsl.style.Color
 import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult

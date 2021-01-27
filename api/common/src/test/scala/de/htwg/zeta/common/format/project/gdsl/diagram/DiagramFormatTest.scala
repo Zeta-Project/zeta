@@ -7,13 +7,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Node
 import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class DiagramFormatTest extends FreeSpec with Matchers {
+class DiagramFormatTest extends AnyFreeSpec with Matchers {
 
   "A DiagramFormat should" - {
     "write an object" in {
