@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/Zeta-Project/zeta.svg?branch=dev)](https://travis-ci.org/Zeta-Project/zeta)
-[![Codecoverage codecov.io](https://codecov.io/gh/Zeta-Project/zeta/branch/dev/graph/badge.svg)](https://codecov.io/gh/Zeta-Project/zeta)
+![Build Container](https://github.com/Zeta-Project/zeta/workflows/Build%20Container/badge.svg) ![Test Services](https://github.com/Zeta-Project/zeta/workflows/Test%20Services/badge.svg) ![Codecoverage codecov.io](https://codecov.io/gh/Zeta-Project/zeta/branch/dev/graph/badge.svg)
 # Zeta
 <img src="https://avatars3.githubusercontent.com/u/29041085?s=150&v=4" alt="Snowplow logo" title="Snowplow" align="right" />
 
