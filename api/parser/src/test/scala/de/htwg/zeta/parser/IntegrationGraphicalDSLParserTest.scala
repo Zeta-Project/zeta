@@ -112,6 +112,12 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
              inClassNode
            }
          }"""
+  private val invalidDiagram =
+    """diagram klassendiagramm1 {
+           palette Class {
+             classNode
+           }
+         """
 
   private val shape =
     """node classNode for Klasse {
@@ -330,7 +336,14 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
                  }
              }
          }"""
-
+  private val invalidShapes= """
+      node classNode for Klasse {
+        edges {
+          inheritance
+          BaseClassRealization
+          component
+          aggregation
+        }"""
   private val yStyle = new Style(
     name = "Y",
     description = "Style for a connection between an interface and its implementing class",
@@ -838,6 +851,22 @@ class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
       val parsed = result.toEither.left.get
 
       parsed.errorDsl shouldBe "shape"
+    }
+    "for an example with invalid shapes" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, invalidShapes, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "shape"
+    }
+    "for an example with invalid diagram" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape, invalidDiagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "diagram"
     }
   }
 
