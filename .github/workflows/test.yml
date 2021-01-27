@@ -1,5 +1,5 @@
 name: Test Services
-on: [push]
+on: [push, pull_request]
 
 jobs:
   job_frontend:
@@ -56,5 +56,5 @@ jobs:
         run: cd api && sbt "compile" "scalastyle"
       - name: coverage
         run: cd api && sbt coverage "test" "coverageReport"
-      - name: coverage report
-        run: cd api && bash <(curl -s https://codecov.io/bash) -X gcov
+      # - name: coverage report
+      #   run: cd api && bash <(curl -s https://codecov.io/bash) -X gcov
