@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-overlay v-if="modelInstances.length" :absolute="true" :opacity="0.85">
+      <v-overlay v-if="hasModelInstanceForProject(modelInstances)" :absolute="true" :opacity="0.85">
       <v-icon x-large>mdi-folder-lock</v-icon>
       <div>
         Locked because there are model instances
@@ -220,6 +220,16 @@ export default {
     })
   },
   methods: {
+    hasModelInstanceForProject(modelInstances) {
+    const projectId = this.gdslProject.id;
+    let result = false;
+    modelInstances.forEach(modelInstance => {
+      if(modelInstance.graphicalDslId == projectId) {
+        result = true;
+      }
+    })
+    return result;
+  },
     validatorGenerate() {
       ValidatorUtils.generate(this.$route.params.id)
     },
