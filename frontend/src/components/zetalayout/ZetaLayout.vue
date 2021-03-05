@@ -34,7 +34,7 @@
         <v-app-bar-nav-icon @click="sidebar = !sidebar"/>
       </span>
     </v-app-bar>
-    <v-navigation-drawer v-model="sidebar" app>
+    <v-navigation-drawer v-model="sidebar" app disable-resize-watcher>
       <v-list>
         <v-list-item v-for="(item, index) in userMenu" :key="index" @click="item.method">
           <v-list-item-title>{{ item.title }}</v-list-item-title>
