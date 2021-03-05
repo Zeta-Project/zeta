@@ -7,12 +7,12 @@
     <v-divider class="ma-0"></v-divider>
 
     <v-card-text>
-      <div v-if="!modelInstances.length" class="body-1">
+      <div v-if="!filterModelInstances(modelInstances).length" class="body-1">
         There are no model instances.
       </div>
 
       <div v-else>
-        <v-list-item v-for="model in modelInstances" v-bind:key="model.id" :to="'/zeta/model/editor/' + model.id">
+        <v-list-item v-for="model in filterModelInstances(modelInstances)" v-bind:key="model.id" :to="'/zeta/model/editor/' + model.id">
           <v-list-item-content>
             <v-list-item-title v-text="model.name"/>
           </v-list-item-content>
@@ -66,6 +66,9 @@ export default {
     }
   },
   methods: {
+    filterModelInstances(modelInstances) {
+      return modelInstances.filter(modelInstance => this.gdslProject.id === modelInstance.graphicalDslId);
+    },
     createModelInstance() {
       ModelInstanceUtils.createInstance(this.inputModelName, this.$route.params.id)
       this.inputModelName = "";
