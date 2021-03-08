@@ -14,15 +14,15 @@
     <v-divider class="ma-0"></v-divider>
 
     <v-card-text>
-      <v-stepper v-model="currentStep">
+      <v-stepper>
         <v-stepper-header>
-          <v-stepper-step :complete="currentStep > 1" step="1">Concept<br>Editor</v-stepper-step>
+          <v-stepper-step :complete="!isConceptEmpty" step="1">Concept<br>Editor</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="currentStep > 2" step="2">Shape</v-stepper-step>
+          <v-stepper-step :complete="!isShapeEmpty" step="2">Shape</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="currentStep > 3" step="3">Style</v-stepper-step>
+          <v-stepper-step :complete="!isStyleEmpty" step="3">Style</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="currentStep === 4" step="4">Diagram</v-stepper-step>
+          <v-stepper-step :complete="!isDiagramEmpty" step="4">Diagram</v-stepper-step>
         </v-stepper-header>
       </v-stepper>
 
