@@ -16,6 +16,7 @@ export class CodeOutline {
             context.generateOutlineElements();
         }, 250);
         this.editor.getSession().on('change', updateOutline);
+        this.editor.on('focus', updateOutline);
     }
 
     generateOutlineElements() {

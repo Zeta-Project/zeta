@@ -40,7 +40,7 @@
 
         <v-card>
           <v-toolbar dark color="primary" class="rounded-0">
-            <v-btn icon dark @click="editProjectDialog = false">
+            <v-btn icon dark @click="closeEditorDialog">
               <v-icon>mdi-close</v-icon>
             </v-btn>
             <v-toolbar-title>Edit project</v-toolbar-title>
@@ -49,25 +49,25 @@
             <v-toolbar-items>
               <v-stepper v-model="currentStep" class="elevation-0 rounded-0">
                 <v-stepper-header>
-                  <v-stepper-step @click="currentStep=1" :complete="isConceptStepCompleted" step="1">
+                  <v-stepper-step @click="setCurrentStep(1)" :complete="isConceptStepCompleted" step="1">
                     {{ step1 }}
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="currentStep=2" :complete="isShapeStepCompleted" step="2">
+                  <v-stepper-step @click="setCurrentStep(2)" :complete="isShapeStepCompleted" step="2">
                     {{ step2 }}
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="currentStep=3" :complete="isStyleStepCompleted" step="3">
+                  <v-stepper-step @click="setCurrentStep(3)" :complete="isStyleStepCompleted" step="3">
                     {{ step3 }}
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="currentStep=4" :complete="isDiagramStepCompleted" step="4">
+                  <v-stepper-step @click="setCurrentStep(4)" :complete="isDiagramStepCompleted" step="4">
                     {{ step4 }}
                   </v-stepper-step>
                 </v-stepper-header>
               </v-stepper>
 
-              <v-btn :disabled="!allowContinue" text v-on:click="currentStep++">Continue</v-btn>
+              <v-btn :disabled="!allowContinue" text v-on:click="setCurrentStep(++currentStep)">Continue</v-btn>
             </v-toolbar-items>
           </v-toolbar>
 
@@ -245,10 +245,36 @@ export default {
       this.styleEditor = new EditorSelection(editorElements[1], this.gdslProject.id, this.step3, this.gdslProject.style)
       this.diagramEditor = new EditorSelection(editorElements[2], this.gdslProject.id, this.step4, this.gdslProject.diagram)
 
-      this.currentStep = this.getInitialStep();
+      this.setCurrentStep(this.getInitialStep());
     },
     getEditorElements() {
       return [this.$refs.shapeEditorElement, this.$refs.styleEditorElement, this.$refs.diagramEditorElement]
+    },
+    closeEditorDialog() {
+      this.editProjectDialog = false;
+
+      this.shapeEditor?.destroy();
+      this.shapeEditor = null;
+
+      this.styleEditor?.destroy();
+      this.styleEditor = null;
+
+      this.diagramEditor?.destroy();
+      this.diagramEditor = null;
+    },
+    setCurrentStep(step){
+      this.currentStep = step;
+      switch (step) {
+        case 2:
+          this.shapeEditor.focus();
+          break;
+        case 3:
+          this.styleEditor.focus();
+          break;
+        case 4:
+          this.diagramEditor.focus();
+          break;
+      }
     }
   },
   computed: {
@@ -308,6 +334,7 @@ import {SourceCodeInspector} from "./code-editor/source-code-inspector";
 import {CodeOutline} from "./code-editor/code-outline";
 import {OnlineSocket} from "./code-editor/online-socket";
 import axios from 'axios'
+import * as ace from "brace";
 
 const modesForModel = {
   'diagram': diagramLanguage,
@@ -336,7 +363,7 @@ class EditorSelection {
     const editor = ace.edit(element);
     editor.setTheme("ace/theme/xcode");
     editor.getSession().setMode("ace/mode/scala");
-    editor.$blockScrolling = Number.PositiveInfinity;
+    editor.$blockScrolling = Number.POSITIVE_INFINITY;
     editor.setOptions({
       "enableBasicAutocompletion": true,
       "enableLiveAutocompletion": true
@@ -373,6 +400,14 @@ class EditorSelection {
 
   toggleSaveNotifications(element) {
     this.$element.find(element).stop(true, true).fadeIn(400).delay(3000).fadeOut(400);
+  }
+
+  destroy() {
+    this.editor.destroy()
+  }
+
+  focus(){
+    this.editor.focus();
   }
 }
 
