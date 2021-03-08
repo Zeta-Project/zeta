@@ -83,7 +83,7 @@
 
               <v-col md="3" class="code-editor" ref="shapeEditorElement" :data-meta-model-id="gdslProject.id"
                      :data-dsl-type="step2">
-                <v-card>
+                <v-card :disabled="!isShapeActive">
                   <v-card-title>
                     <span>{{ step2 }}</span>
                     <v-spacer></v-spacer>
@@ -108,7 +108,7 @@
 
               <v-col md="3" class="code-editor" ref="styleEditorElement" :data-meta-model-id="gdslProject.id"
                      :data-dsl-type="step3">
-                <v-card>
+                <v-card :disabled="!isStyleActive">
                   <v-card-title>
                     <span>{{ step3 }}</span>
                     <v-spacer></v-spacer>
@@ -133,7 +133,7 @@
 
               <v-col md="3" class="code-editor" ref="diagramEditorElement" :data-meta-model-id="gdslProject.id"
                      :data-dsl-type="step4">
-                <v-card>
+                <v-card :disabled="!isDiagramActive">
                   <v-card-title>
                     <span>{{ step4 }}</span>
                     <v-spacer></v-spacer>
