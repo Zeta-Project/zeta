@@ -49,20 +49,20 @@
             <v-toolbar-items>
               <v-stepper v-model="currentStep" class="elevation-0 rounded-0">
                 <v-stepper-header>
-                  <v-stepper-step @click="setCurrentStep(1)" :complete="isConceptStepCompleted" step="1">
-                    {{ step1 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(1)" :complete="isConceptStepCompleted" step="1">
+                    <span class="stepper-step-hover-text">{{ step1 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="setCurrentStep(2)" :complete="isShapeStepCompleted" step="2">
-                    {{ step2 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(2)" :complete="isShapeStepCompleted" step="2">
+                    <span class="stepper-step-hover-text">{{ step2 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="setCurrentStep(3)" :complete="isStyleStepCompleted" step="3">
-                    {{ step3 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(3)" :complete="isStyleStepCompleted" step="3">
+                    <span class="stepper-step-hover-text">{{ step3 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="setCurrentStep(4)" :complete="isDiagramStepCompleted" step="4">
-                    {{ step4 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(4)" :complete="isDiagramStepCompleted" step="4">
+                    <span class="stepper-step-hover-text">{{ step4 }}</span>
                   </v-stepper-step>
                 </v-stepper-header>
               </v-stepper>
@@ -432,5 +432,13 @@ a {
   flex-grow: 1;
   height: 500px; /* fallback for older browsers */
   height: calc(100vh - 175px);
+}
+
+.stepper-step-hover:hover {
+  cursor: pointer;
+}
+
+.stepper-step-hover:hover .stepper-step-hover-text {
+  filter: brightness(65%);
 }
 </style>
