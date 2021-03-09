@@ -101,7 +101,7 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <div :onfocusin="true" class="editor"></div>
+                    <div v-show="isShapeActive || !isShapeEmpty" class="editor"></div>
                   </v-card-text>
                 </v-card>
               </v-col>
