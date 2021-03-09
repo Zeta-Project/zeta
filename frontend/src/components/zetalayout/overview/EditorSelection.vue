@@ -263,7 +263,12 @@ export default {
       this.diagramEditor = null;
     },
     setCurrentStep(step){
+      this.shapeEditor.reset();
+      this.styleEditor.reset();
+      this.diagramEditor.reset();
+
       this.currentStep = step;
+
       switch (step) {
         case 2:
           this.shapeEditor.focus();
@@ -408,6 +413,10 @@ class EditorSelection {
 
   focus(){
     this.editor.focus();
+  }
+
+  reset(){
+    this.editor.gotoLine(1);
   }
 }
 
