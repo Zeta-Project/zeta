@@ -556,7 +556,7 @@ export default {
 .demo-sidebar-collapsed {
   position: absolute;
   top: 120px;
-  bottom: 0;
+  bottom: 20px;
   width: 100px;
   box-sizing: border-box;
   background: #f7f7f7;
@@ -569,7 +569,7 @@ export default {
 .demo-sidebar-extended {
   position: absolute;
   top: 120px;
-  bottom: 0;
+  bottom: 20px;
   width: 320px;
   box-sizing: border-box;
   background: #f7f7f7;

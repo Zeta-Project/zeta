@@ -16,7 +16,7 @@
       <button class="icon-yIconPaste" data-command="Paste" title="Paste" :disabled="!isEditEnabled"></button>
       <button class="icon-yIconUndo" data-command="Undo" title="Undo"></button>
       <button class="icon-yIconRedo" data-command="Redo" title="Redo"></button>
-      <input type="checkbox" id="snapping-button" class="toggle-button" :disabled="!isEditEnabled">
+      <input type="checkbox" id="snapping-button" class="demo-toggle-button" :disabled="!isEditEnabled">
       <label for="snapping-button" class="icon-yIconSnapping" title="Snapping"></label>
       <button data-command="Layout" title="Run Layout" class="icon-yIconLayout" :disabled="!isEditEnabled"></button>
       <span class="demo-separator"></span>
