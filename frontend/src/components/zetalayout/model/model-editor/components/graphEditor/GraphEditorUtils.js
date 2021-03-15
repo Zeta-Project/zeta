@@ -19,7 +19,6 @@ import '../../styles/layout.css'
 import '../../styles/paper.css'
 import '../../styles/stencil.css'
 import '../../styles/style.css'
-import '../../styles/toolbar.css'
 import '../../styles/sidebar.css'
 import * as umlEdgeModel from '../../model/edges/ModelEdgeModel'
 import Exporter from "../../export/Exporter";

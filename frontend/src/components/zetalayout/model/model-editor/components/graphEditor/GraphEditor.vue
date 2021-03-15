@@ -571,9 +571,9 @@
     @import '/node_modules/yfiles/yfiles.css';
 
     .toolbar {
-        position: absolute;
+        position: fixed;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        top: -50px;
+        top: 56px;
         left: 0;
         right: 0;
         height: 40px;
@@ -583,6 +583,11 @@
         user-select: none;
         background-color: #f7f7f7;
         z-index: 10;
+    }
+    @media screen and (min-width: 960px){
+      .toolbar {
+        top: 64px;
+      }
     }
 
     .graph-component-container {
@@ -621,11 +626,12 @@
 
     .dnd-panel {
       position: absolute;
-      top: 10px;
-      bottom: 0;
+      top: -25px;
+      bottom: 20px;
+      left: -12px;
       box-sizing: border-box;
       background: #f7f7f7;
-      z-index: 15;
+      z-index: 1;
       line-height: 150%;
       right: 0;
       overflow-y: auto;
@@ -633,14 +639,14 @@
 
     .property-panel {
         position: absolute;
-        top: 10px;
-        bottom: 0;
+        top: -25px;
+        bottom: -25px;
+        right: -12px;
         width: 320px;
         box-sizing: border-box;
         background: #f7f7f7;
-        z-index: 15;
+        z-index: 1;
         line-height: 150%;
-        right: 0;
         overflow-y: auto;
     }
 </style>
