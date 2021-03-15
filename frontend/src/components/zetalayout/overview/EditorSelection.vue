@@ -14,22 +14,24 @@
     <v-divider class="ma-0"></v-divider>
 
     <v-card-text>
-      <v-stepper v-model="stepCounter">
+      <v-stepper>
         <v-stepper-header>
-          <v-stepper-step :complete="stepCounter > 1" step="1">Concept<br>Editor</v-stepper-step>
+          <v-stepper-step :complete="!isConceptEmpty" step="1">Concept<br>Editor</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="stepCounter > 2" step="2">Shape</v-stepper-step>
+          <v-stepper-step :complete="!isShapeEmpty" step="2">Shape</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="stepCounter > 3" step="3">Style</v-stepper-step>
+          <v-stepper-step :complete="!isStyleEmpty" step="3">Style</v-stepper-step>
           <v-divider></v-divider>
-          <v-stepper-step :complete="stepCounter === 4" step="4">Diagram</v-stepper-step>
+          <v-stepper-step :complete="!isDiagramEmpty" step="4">Diagram</v-stepper-step>
         </v-stepper-header>
       </v-stepper>
 
-      <v-dialog v-model="editProjectDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <!-- Set 'eager' on dialog to force rendering of the dialog components even if the dialog is still closed,
+       we need this to be able to get the editor elements to initialize the ACE editors before opening the dialog -->
+      <v-dialog v-model="editProjectDialog" eager fullscreen hide-overlay transition="dialog-bottom-transition">
         <template v-slot:activator="{ on, attrs }">
           <div id="app" data-app>
-            <v-btn v-on:click="showStepElement(stepCounter)" class="mt-4" color="primary" depressed v-bind="attrs"
+            <v-btn v-on:click="onOpenEditorDialog" class="mt-4" color="primary" depressed v-bind="attrs"
                    v-on="on">
               Edit project
             </v-btn>
@@ -38,51 +40,50 @@
 
         <v-card>
           <v-toolbar dark color="primary" class="rounded-0">
-            <v-btn icon dark @click="editProjectDialog = false">
+            <v-btn icon dark @click="closeEditorDialog">
               <v-icon>mdi-close</v-icon>
             </v-btn>
             <v-toolbar-title>Edit project</v-toolbar-title>
             <v-spacer></v-spacer>
 
             <v-toolbar-items>
-              <v-stepper v-model="stepCounter" class="elevation-0 rounded-0">
+              <v-stepper v-model="currentStep" class="elevation-0 rounded-0">
                 <v-stepper-header>
-                  <v-stepper-step @click="showStepElement(stepCounter=1)" :complete="stepCounter > 1" step="1">
-                    {{ step1 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(1)" :complete="isConceptStepCompleted" step="1">
+                    <span class="stepper-step-hover-text">{{ step1 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="showStepElement(stepCounter=2)" :complete="stepCounter > 2" step="2">
-                    {{ step2 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(2)" :complete="isShapeStepCompleted" step="2">
+                    <span class="stepper-step-hover-text">{{ step2 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="showStepElement(stepCounter=3)" :complete="stepCounter > 3" step="3">
-                    {{ step3 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(3)" :complete="isStyleStepCompleted" step="3">
+                    <span class="stepper-step-hover-text">{{ step3 }}</span>
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step @click="showStepElement(stepCounter=4)" :complete="stepCounter === 4" step="4">
-                    {{ step4 }}
+                  <v-stepper-step class="stepper-step-hover" @click="setCurrentStep(4)" :complete="isDiagramStepCompleted" step="4">
+                    <span class="stepper-step-hover-text">{{ step4 }}</span>
                   </v-stepper-step>
                 </v-stepper-header>
               </v-stepper>
 
-              <v-btn :disabled="continueBtnIsHidden" text
-                     v-on:click="initializeEditor(), stepCounter++, showStepElement(stepCounter)">Continue
-              </v-btn>
+              <v-btn :disabled="!allowContinue" text v-on:click="setCurrentStep(++currentStep)">Continue</v-btn>
             </v-toolbar-items>
           </v-toolbar>
 
-          <GraphEditor v-if="!step1IsHidden" ref="GraphComponent"></GraphEditor>
+          <GraphEditor v-if="isConceptActive" ref="GraphComponent"></GraphEditor>
 
           <v-container fluid class="py-0">
-            <v-row v-show="step1IsHidden">
+            <v-row v-show="!isConceptActive">
               <v-col md="3">
                 <div id="source-code-inspection"></div>
                 <div id="online-users"></div>
                 <div id="outline-nodes-container"></div>
               </v-col>
 
-              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step2">
-                <v-card>
+              <v-col md="3" class="code-editor" ref="shapeEditorElement" :data-meta-model-id="gdslProject.id"
+                     :data-dsl-type="step2" @click="setCurrentStep(2)" v-bind:class="{pointer: !isShapeActive}">
+                <v-card :disabled="!isShapeActive">
                   <v-card-title>
                     <span>{{ step2 }}</span>
                     <v-spacer></v-spacer>
@@ -93,20 +94,21 @@
                       <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
                         Saving failed
                       </v-chip>
-                      <v-btn class="js-save" icon color="primary">
+                      <v-btn :disabled="!isShapeActive" class="js-save" icon color="primary">
                         <v-icon>mdi-content-save</v-icon>
                       </v-btn>
                     </span>
                   </v-card-title>
 
                   <v-card-text>
-                    <div :onfocusin="true" class="editor"></div>
+                    <div v-show="isShapeActive || !isShapeEmpty" class="editor"></div>
                   </v-card-text>
                 </v-card>
               </v-col>
 
-              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step3">
-                <v-card>
+              <v-col md="3" class="code-editor" ref="styleEditorElement" :data-meta-model-id="gdslProject.id"
+                     :data-dsl-type="step3" @click="setCurrentStep(3)" v-bind:class="{pointer: !isStyleActive}">
+                <v-card :disabled="!isStyleActive">
                   <v-card-title>
                     <span>{{ step3 }}</span>
                     <v-spacer></v-spacer>
@@ -117,20 +119,21 @@
                       <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
                         Saving failed
                       </v-chip>
-                      <v-btn :disabled="step3IsHidden" class="js-save" icon color="primary">
+                      <v-btn :disabled="!isStyleActive" class="js-save" icon color="primary">
                         <v-icon>mdi-content-save</v-icon>
                       </v-btn>
                     </span>
                   </v-card-title>
 
                   <v-card-text>
-                    <div v-show="!step3IsHidden" class="editor"></div>
+                    <div v-show="isStyleActive || !isStyleEmpty" class="editor"></div>
                   </v-card-text>
                 </v-card>
               </v-col>
 
-              <v-col md="3" class="code-editor" :data-meta-model-id="gdslProject.id" :data-dsl-type="step4">
-                <v-card>
+              <v-col md="3" class="code-editor" ref="diagramEditorElement" :data-meta-model-id="gdslProject.id"
+                     :data-dsl-type="step4" @click="setCurrentStep(4)" v-bind:class="{pointer: !isDiagramActive}">
+                <v-card :disabled="!isDiagramActive">
                   <v-card-title>
                     <span>{{ step4 }}</span>
                     <v-spacer></v-spacer>
@@ -141,14 +144,14 @@
                       <v-chip class="js-save-failed" style="display: none" color="red" text-color="white">
                         Saving failed
                       </v-chip>
-                      <v-btn :disabled="step4IsHidden" class="js-save" icon color="primary">
+                      <v-btn :disabled="!isDiagramActive" class="js-save" icon color="primary">
                         <v-icon>mdi-content-save</v-icon>
                       </v-btn>
                     </span>
                   </v-card-title>
 
                   <v-card-text>
-                    <div v-show="!step4IsHidden" class="editor"></div>
+                    <div v-show="isDiagramActive || !isDiagramEmpty" class="editor"></div>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -189,10 +192,10 @@ export default {
   name: 'EditorSelection',
   props: {
     gdslProject: {},
-    modelInstances: {},
+    modelInstances: {}
   },
   components: {
-    GraphEditor,
+    GraphEditor
   },
   data() {
     return {
@@ -201,22 +204,16 @@ export default {
       step3: "style",
       step4: "diagram",
       editProjectDialog: false,
-      step1IsHidden: false,
-      step2IsHidden: true,
-      step3IsHidden: true,
-      step4IsHidden: true,
       dialogTextEditor: true,
-      continueBtnIsHidden: false,
-      stepCounter: 1,
-      dslType: ""
+      currentStep: 1,
+      shapeEditor: {},
+      styleEditor: {},
+      diagramEditor: {}
     }
   },
   mounted() {
     EventBus.$on("initSteps", (data) => {
-      this.stepCounter = data
-    })
-    EventBus.$on("gdslProjectSelected", gdslProject => {
-      metamodelId = gdslProject.id
+      this.currentStep = data
     })
   },
   methods: {
@@ -236,36 +233,113 @@ export default {
     validatorShow() {
       ValidatorUtils.show(this.$route.params.id)
     },
-    showStepElement(step) {
-      if (step === 1) {
-        if (!this.step1IsHidden) {
-          this.step1IsHidden = false;
-          this.step2IsHidden = true
-        } else {
-          this.step1IsHidden = false;
-          this.step2IsHidden = true;
-          this.step3IsHidden = true;
-          this.step4IsHidden = true;
-          this.continueBtnIsHidden = false;
-          this.dslType = "shape"
-        }
-      }
-      if (step === 2) {
-        this.step1IsHidden = true, new EditorSelection(elements[0], metamodelId, $(elements[0]).data('dsl-type'))
-      }
-      if (step === 3) {
-        this.step3IsHidden = false, new EditorSelection(elements[1], metamodelId, $(elements[1]).data('dsl-type'))
-      }
-      if (step === 4) {
-        this.step4IsHidden = false, new EditorSelection(elements[2], metamodelId, $(elements[2]).data('dsl-type'));
-        this.continueBtnIsHidden = true
-      }
-    },
-    initializeEditor() {
-      elements = []
-      $('.code-editor').each((i, e) => elements.push(e))
-    },
+    getInitialStep() {
+      if (this.isConceptEmpty)
+        return 1;
 
+      if (this.isShapeEmpty)
+        return 2;
+
+      if (this.isStyleEmpty)
+        return 3;
+
+      if (this.isDiagramEmpty)
+        return 4;
+
+      return 4; // Every step is already completed, go to last step
+    },
+    onOpenEditorDialog() {
+      const editorElements = this.getEditorElements();
+
+      this.shapeEditor = new EditorSelection(editorElements[0], this.gdslProject.id, this.step2, this.gdslProject.shape)
+      this.styleEditor = new EditorSelection(editorElements[1], this.gdslProject.id, this.step3, this.gdslProject.style)
+      this.diagramEditor = new EditorSelection(editorElements[2], this.gdslProject.id, this.step4, this.gdslProject.diagram)
+
+      this.setCurrentStep(this.getInitialStep());
+    },
+    getEditorElements() {
+      return [this.$refs.shapeEditorElement, this.$refs.styleEditorElement, this.$refs.diagramEditorElement]
+    },
+    closeEditorDialog() {
+      this.editProjectDialog = false;
+
+      this.shapeEditor?.destroy();
+      this.shapeEditor = null;
+
+      this.styleEditor?.destroy();
+      this.styleEditor = null;
+
+      this.diagramEditor?.destroy();
+      this.diagramEditor = null;
+    },
+    setCurrentStep(step){
+      if(this.currentStep === step) {
+        return;
+      }
+
+      this.shapeEditor.reset();
+      this.styleEditor.reset();
+      this.diagramEditor.reset();
+
+      this.currentStep = step;
+
+      switch (step) {
+        case 2:
+          this.shapeEditor.focus();
+          break;
+        case 3:
+          this.styleEditor.focus();
+          break;
+        case 4:
+          this.diagramEditor.focus();
+          break;
+      }
+    }
+  },
+  computed: {
+    isConceptEmpty: function () {
+      return !((this.gdslProject.concept.enums && this.gdslProject.concept.enums.length) ||
+          (this.gdslProject.concept.classes && this.gdslProject.concept.classes.length) ||
+          (this.gdslProject.concept.references && this.gdslProject.concept.references.length) ||
+          (this.gdslProject.concept.attributes && this.gdslProject.concept.attributes.length) ||
+          (this.gdslProject.concept.methods && this.gdslProject.concept.methods.length))
+    },
+    isShapeEmpty: function () {
+      return !this.gdslProject.shape;
+    },
+    isStyleEmpty: function () {
+      return !this.gdslProject.style;
+    },
+    isDiagramEmpty: function () {
+      return !this.gdslProject.diagram;
+    },
+    isConceptStepCompleted: function () {
+      return !this.isConceptEmpty && this.currentStep !== 1;
+    },
+    isShapeStepCompleted: function () {
+      return !this.isShapeEmpty && this.currentStep !== 2;
+    },
+    isStyleStepCompleted: function () {
+      return !this.isStyleEmpty && this.currentStep !== 3;
+    },
+    isDiagramStepCompleted: function () {
+      return !this.isDiagramEmpty && this.currentStep !== 4;
+    },
+    isConceptActive: function () {
+      return this.currentStep === 1;
+    },
+    isShapeActive: function () {
+      return this.currentStep === 2;
+    },
+    isStyleActive: function () {
+      return this.currentStep === 3;
+    },
+    isDiagramActive: function () {
+      return this.currentStep === 4;
+    },
+    allowContinue: function () {
+      return this.currentStep < 4;
+    }
   }
 }
 
@@ -279,6 +353,7 @@ import {SourceCodeInspector} from "./code-editor/source-code-inspector";
 import {CodeOutline} from "./code-editor/code-outline";
 import {OnlineSocket} from "./code-editor/online-socket";
 import axios from 'axios'
+import * as ace from "brace";
 
 const modesForModel = {
   'diagram': diagramLanguage,
@@ -286,46 +361,33 @@ const modesForModel = {
   'style': styleLanguage
 };
 
-var elements = []
-var metamodelId
-
 class EditorSelection {
-  constructor(element, metaModelId, dslType) {
+  constructor(element, metaModelId, dslType, content) {
     this.$element = $(element);
     this.metaModelId = metaModelId;
     this.dslType = dslType;
     this.editor = this.initAceEditor(element.querySelector('.editor'));
-    this.loadSourceCode();
     this.$element.on('click', '.js-save', () => this.saveSourceCode(this.editor.getValue()));
     this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);
     this.sourceCodeInspector.runInspection();
     this.codeOutline = new CodeOutline(element, metaModelId, dslType, this.editor);
     let area = "codeEditor-" + dslType + "-" + metaModelId;
     this.onlineSocket = new OnlineSocket(area);
+
+    this.setAceEditorContent(content);
+    this.codeOutline.createCodeOutline();
   }
 
   initAceEditor(element) {
     const editor = ace.edit(element);
     editor.setTheme("ace/theme/xcode");
     editor.getSession().setMode("ace/mode/scala");
-    editor.$blockScrolling = Number.PositiveInfinity;
+    editor.$blockScrolling = Number.POSITIVE_INFINITY;
     editor.setOptions({
       "enableBasicAutocompletion": true,
       "enableLiveAutocompletion": true
     });
     return editor;
-  }
-
-  loadSourceCode() {
-    axios.get(
-        'http://localhost:9000/rest/v1/meta-models/' + this.metaModelId,
-        {withCredentials: true}).then(
-        (response) => {
-          this.setAceEditorContent(response.data[this.dslType]);
-          this.codeOutline.createCodeOutline();
-        },
-        (error) => console.log('Error loading MetaModel ' + this.metaModelId + ': ' + error)
-    )
   }
 
   setAceEditorContent(content) {
@@ -358,6 +420,18 @@ class EditorSelection {
   toggleSaveNotifications(element) {
     this.$element.find(element).stop(true, true).fadeIn(400).delay(3000).fadeOut(400);
   }
+
+  destroy() {
+    this.editor.destroy()
+  }
+
+  focus(){
+    this.editor.focus();
+  }
+
+  reset(){
+    this.editor.gotoLine(1);
+  }
 }
 
 </script>
@@ -381,5 +455,17 @@ a {
   flex-grow: 1;
   height: 500px; /* fallback for older browsers */
   height: calc(100vh - 175px);
+}
+
+.stepper-step-hover:hover {
+  cursor: pointer;
+}
+
+.stepper-step-hover:hover .stepper-step-hover-text {
+  filter: brightness(65%);
+}
+
+.pointer {
+  cursor: pointer !important;
 }
 </style>
