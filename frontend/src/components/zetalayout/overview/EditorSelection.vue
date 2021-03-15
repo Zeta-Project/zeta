@@ -82,7 +82,7 @@
               </v-col>
 
               <v-col md="3" class="code-editor" ref="shapeEditorElement" :data-meta-model-id="gdslProject.id"
-                     :data-dsl-type="step2">
+                     :data-dsl-type="step2" @click="setCurrentStep(2)" v-bind:class="{pointer: !isShapeActive}">
                 <v-card :disabled="!isShapeActive">
                   <v-card-title>
                     <span>{{ step2 }}</span>
@@ -107,7 +107,7 @@
               </v-col>
 
               <v-col md="3" class="code-editor" ref="styleEditorElement" :data-meta-model-id="gdslProject.id"
-                     :data-dsl-type="step3">
+                     :data-dsl-type="step3" @click="setCurrentStep(3)" v-bind:class="{pointer: !isStyleActive}">
                 <v-card :disabled="!isStyleActive">
                   <v-card-title>
                     <span>{{ step3 }}</span>
@@ -132,7 +132,7 @@
               </v-col>
 
               <v-col md="3" class="code-editor" ref="diagramEditorElement" :data-meta-model-id="gdslProject.id"
-                     :data-dsl-type="step4">
+                     :data-dsl-type="step4" @click="setCurrentStep(4)" v-bind:class="{pointer: !isDiagramActive}">
                 <v-card :disabled="!isDiagramActive">
                   <v-card-title>
                     <span>{{ step4 }}</span>
@@ -263,6 +263,10 @@ export default {
       this.diagramEditor = null;
     },
     setCurrentStep(step){
+      if(this.currentStep === step) {
+        return;
+      }
+
       this.shapeEditor.reset();
       this.styleEditor.reset();
       this.diagramEditor.reset();
@@ -449,5 +453,9 @@ a {
 
 .stepper-step-hover:hover .stepper-step-hover-text {
   filter: brightness(65%);
+}
+
+.pointer {
+  cursor: pointer !important;
 }
 </style>
