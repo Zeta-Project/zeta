@@ -91,6 +91,9 @@ import {Grid} from "../../layout/grid/Grid";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios"
 import {EventBus} from "../../../../../../eventbus/eventbus";
+import { Attribute } from "../../uml/attributes/Attribute";
+import { Operation } from "../../uml/operations/Operation";
+
 
 License.value = licenseData;
 
@@ -435,7 +438,7 @@ export default {
      * @param name: name of the attribute to add.
      */
     addAttributeToNode(node, name) {
-      node.attributes = node.attributes.concat({name: name});
+      node.attributes = node.attributes.concat(new Attribute({name: name}));
     },
 
     /**
@@ -458,7 +461,10 @@ export default {
      * @param name: name of the operation to add.
      */
     addOperationToNode(node, name) {
-      node.methods = node.methods.concat({name: name});
+      node.methods = node.methods.concat(new Operation({
+        name: name,
+        returnType: "String",
+        }));
     },
 
     /**
@@ -481,7 +487,7 @@ export default {
      * @param name: name of the attribute to add.
      */
     addAttributeToEdge(edge, name) {
-      edge.attributes = edge.attributes.concat({name: name});
+      edge.attributes = edge.attributes.concat(new Attribute({name: name}));
     },
 
     /**
@@ -504,7 +510,11 @@ export default {
      * @param name: name of the operation to add.
      */
     addOperationToEdge(edge, name) {
-      edge.operations = edge.operations.concat({name: name});
+      edge.operations = edge.operations.concat(new Operation({
+        name: name,
+        returnType: "String"
+        })
+      );
     },
 
     /**
