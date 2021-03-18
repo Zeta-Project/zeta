@@ -119,10 +119,10 @@ export function saveGraph(graphComponent, loadedMetaModel, metamodelID) {
             exportedMetaModel.getMessages().forEach(message => {
                 errorMessage += message + '\n';
             });
-            showExportFailure(errorMessage);
+            EventBus.$emit('errorMessage', "Failed to save concept: " + errorMessage );
         }
     } else {
-        showSnackbar("No loaded meta model found");
+        EventBus.$emit('errorMessage', "No loaded meta model found.");
     }
 }
 
