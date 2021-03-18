@@ -50,6 +50,9 @@ export default (function () {
       Checks whether the element is abstract.
      */
     Graph.prototype.isAbstract = function (node) {
+        if(node && node.tag && !node.tag.abstractness ) {
+            return false;
+        }
         return node.tag.abstractness;
     };
 
