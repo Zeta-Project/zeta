@@ -122,6 +122,33 @@ export default {
         case "ellipse":
           return ShapeNodeShape.ELLIPSE;
 
+        case "triangle":
+          return ShapeNodeShape.TRIANGLE;
+
+        case "shearedRectangle":
+          return ShapeNodeShape.SHEARED_RECTANGLE;
+
+        case "trapez":
+          return ShapeNodeShape.TRAPEZ;
+
+        case "star5":
+          return ShapeNodeShape.STAR5;
+
+        case "star6":
+          return ShapeNodeShape.STAR6;
+
+        case "star8":
+          return ShapeNodeShape.STAR8;
+
+        case "diamond":
+          return ShapeNodeShape.DIAMOND;
+
+        case "octagon":
+          return ShapeNodeShape.OCTAGON;
+
+        case "hexagon":
+          return ShapeNodeShape.HEXAGON;
+
         default:
           return undefined
       }

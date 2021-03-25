@@ -17,25 +17,14 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.PolygonParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.PolylineParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RectangleParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RoundedRectangleParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.StatictextParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.VerticalLayoutParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, GeoModelParseTree, HorizontalLayoutParseTree, LineParseTree, PolygonParseTree, PolylineParseTree, RectangleParseTree, RepeatingBoxParseTree, RoundedRectangleParseTree, StatictextParseTree, TextfieldParseTree, TriangleParseTree, VerticalLayoutParseTree}
 
 object GeoModelParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
   def geoModels: Parser[List[GeoModelParseTree]] = rep(geoModel)
 
   def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon |
-    rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle
+    rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle | triangle
 
   private def parseGeoModel(name: String, attributes: List[ParseConf[GeoModelAttribute]]): Parser[(Collector, List[GeoModelParseTree])] = {
     (name ~! leftBrace ~ unordered(attributes: _*) ~ geoModels ~ rightBrace).map {
@@ -47,6 +36,18 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     val attributes = List(optional(style), once(position), once(size))
     parseGeoModel("ellipse", attributes).map {
       case (attrs, geoModels) => EllipseParseTree(
+        attrs.?[Style],
+        attrs.![Position],
+        attrs.![Size],
+        geoModels
+      )
+    }
+  }
+
+  private def triangle: Parser[TriangleParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("triangle", attributes).map {
+      case (attrs, geoModels) => TriangleParseTree(
         attrs.?[Style],
         attrs.![Position],
         attrs.![Size],

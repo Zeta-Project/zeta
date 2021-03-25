@@ -31,6 +31,12 @@ object GeoModelParseTrees {
       size: Size,
       children: List[GeoModelParseTree]) extends GeoModelParseTree
 
+  case class TriangleParseTree(
+                               style: Option[Style],
+                               position: Position,
+                               size: Size,
+                               children: List[GeoModelParseTree]) extends GeoModelParseTree
+
   case class TextfieldParseTree(
       style: Option[Style],
       identifier: Identifier,

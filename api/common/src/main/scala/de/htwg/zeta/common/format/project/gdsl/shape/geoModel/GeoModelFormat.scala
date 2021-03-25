@@ -4,6 +4,7 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Compartement
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Triangle
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
@@ -28,6 +29,7 @@ class GeoModelFormat(
     rectangleFormat: RectangleFormat,
     roundedRectangleFormat: RoundedRectangleFormat,
     ellipseFormat: EllipseFormat,
+    triangleFormat: TriangleFormat,
     staticTextFormat: StaticTextFormat,
     textFieldFormat: TextFieldFormat,
     compartementFormat: CompartementFormat,
@@ -45,6 +47,7 @@ class GeoModelFormat(
       case p: Rectangle => rectangleFormat.writes(p)
       case p: RoundedRectangle => roundedRectangleFormat.writes(p)
       case p: Ellipse => ellipseFormat.writes(p)
+      case p: Triangle => triangleFormat.writes(p)
       case p: StaticText => staticTextFormat.writes(p)
       case p: TextField => textFieldFormat.writes(p)
       case p: Compartement => compartementFormat.writes(p)
@@ -81,6 +84,7 @@ class GeoModelFormat(
       case rectangleFormat.vType => rectangleFormat.reads(json)
       case roundedRectangleFormat.vType => roundedRectangleFormat.reads(json)
       case ellipseFormat.vType => ellipseFormat.reads(json)
+      case triangleFormat.vType => triangleFormat.reads(json)
       case staticTextFormat.vType => staticTextFormat.reads(json)
       case textFieldFormat.vType => textFieldFormat.reads(json)
       case compartementFormat.vType => compartementFormat.reads(json)
@@ -98,6 +102,7 @@ object GeoModelFormat {
     RectangleFormat(geoModelFormatProvider),
     RoundedRectangleFormat(geoModelFormatProvider),
     EllipseFormat(geoModelFormatProvider),
+    TriangleFormat(geoModelFormatProvider),
     StaticTextFormat(geoModelFormatProvider),
     TextFieldFormat(geoModelFormatProvider),
     CompartementFormat(geoModelFormatProvider),

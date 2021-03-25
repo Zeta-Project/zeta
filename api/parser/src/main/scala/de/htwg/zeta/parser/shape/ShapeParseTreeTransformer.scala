@@ -11,6 +11,7 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Triangle
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
@@ -36,6 +37,7 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TriangleParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
@@ -118,6 +120,7 @@ object ShapeParseTreeTransformer {
   private def transformGeoModel(geoModel: GeoModelParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): GeoModel = {
     geoModel match {
       case m: EllipseParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: TriangleParseTree => transformGeoModel(m, parentStyle, styles)
       case m: TextfieldParseTree => transformGeoModel(m, parentStyle, styles)
       case m: StatictextParseTree => transformGeoModel(m, parentStyle, styles)
       case m: RepeatingBoxParseTree => transformGeoModel(m, parentStyle, styles)
@@ -178,6 +181,16 @@ object ShapeParseTreeTransformer {
   private def transformGeoModel(geoModel: EllipseParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Ellipse = {
     val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
     Ellipse(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
+
+  private def transformGeoModel(geoModel: TriangleParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Triangle = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Triangle(
       size = transformGeoModelSize(geoModel.size),
       position = transformGeoModelPosition(geoModel.position),
       childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
