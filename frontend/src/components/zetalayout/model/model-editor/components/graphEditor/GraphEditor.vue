@@ -23,6 +23,7 @@
           :graph-component="graphComponent"
           :shape="shape"
           :diagram="diagram"
+          :concept="concept"
           :styleModel="styleModel"
           :is-expanded="isDndExpanded"
           :passive-supported="true"
@@ -164,7 +165,6 @@ export default {
             axios.get("http://localhost:9000/rest/v1/models/" + uuid + "/definition", {withCredentials: true})
                 .then(
                     response => {
-                      this.concept = response.data
                       // this.plotDefaultGraph(this.concept)
                       this.executeLayout()
                           .then(() => {
@@ -179,6 +179,8 @@ export default {
                 "http://localhost:9000/rest/v1/models/" + uuid, {withCredentials: true}
             ).then(
                 response => {
+                  this.concept = response.data.concept
+
                   const metamodelId = response.data.model.graphicalDslId;
 
                   axios.get(
