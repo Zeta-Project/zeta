@@ -42,7 +42,7 @@
             <v-col>
               <v-text-field
                   :label="attribute.name"
-                  v-model="attribute.name">
+                  v-model="attribute.value">
               </v-text-field>
             </v-col>
           </v-row>

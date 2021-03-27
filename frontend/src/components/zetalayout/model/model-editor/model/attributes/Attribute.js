@@ -12,5 +12,6 @@ export class Attribute {
         this.expression = (data && data.expression) || ""
         this.ordered = (data && data.ordered) || false
         this.transient = (data && data.transient) || false
+        this.value = (data && data.value) || {type: "String", value: ""}
     }
 }
