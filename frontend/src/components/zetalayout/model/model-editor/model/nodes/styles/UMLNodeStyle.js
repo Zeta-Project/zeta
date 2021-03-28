@@ -37,7 +37,7 @@ import {
 
 import { ModelClassModel } from '../ModelClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
-import {Operation} from "../../operations/Operation";
+import {Methods} from "../../methods/Methods";
 
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2
@@ -213,24 +213,24 @@ export class UMLNodeStyle extends NodeStyleBase {
 
         this.stretchLabelModel.insets = new Insets(0, yOffset, 0, 0)
         this.categoryLabel.text = ''
-        const operationsHeaderBackground = UMLNodeStyle.getCreator(
+        const methodsHeaderBackground = UMLNodeStyle.getCreator(
             this.categoryLabel,
             this.backgroundStyle
         ).createVisual(ctx).svgElement
-        operationsHeaderBackground.setAttribute('cursor', 'pointer')
-        g.appendChild(operationsHeaderBackground)
-        this.categoryLabel.text = 'Operations'
+        methodsHeaderBackground.setAttribute('cursor', 'pointer')
+        g.appendChild(methodsHeaderBackground)
+        this.categoryLabel.text = 'methods'
         this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 0, 0)
-        const operationsTextElement = UMLNodeStyle.getCreator(this.categoryLabel).createVisual(ctx)
+        const methodsTextElement = UMLNodeStyle.getCreator(this.categoryLabel).createVisual(ctx)
             .svgElement
-        operationsTextElement.setAttribute('cursor', 'pointer')
-        g.appendChild(operationsTextElement)
+        methodsTextElement.setAttribute('cursor', 'pointer')
+        g.appendChild(methodsTextElement)
         yOffset += this.categoryLabel.preferredSize.height
-        const operationsHeaderOffset = yOffset
+        const methodsHeaderOffset = yOffset
 
         hasLocalSelection = false
-        if (data.operationsOpen) {
-            for (let i = 0; i < data.operations.length; i++, counter++) {
+        if (data.methodsOpen) {
+            for (let i = 0; i < data.methods.length; i++, counter++) {
                 if (counter === selectedIndex) {
                     hasGlobalSelection = true
                     hasLocalSelection = true
@@ -239,8 +239,8 @@ export class UMLNodeStyle extends NodeStyleBase {
                     this.stretchLabelModel.insets = new Insets(1, yOffset, 1, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
                 }
-                if (data.operations[i] !== null && typeof data.operations[i] !== 'undefined') {
-                    this.elementLabel.text = data.operations[i].name
+                if (data.methods[i] !== null && typeof data.methods[i] !== 'undefined') {
+                    this.elementLabel.text = data.methods[i].name
                     this.elementLabel.style.backgroundFill = null
                     this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
@@ -248,12 +248,12 @@ export class UMLNodeStyle extends NodeStyleBase {
                 }
             }
         }
-        if (operationsHeaderOffset <= layout.height) {
+        if (methodsHeaderOffset <= layout.height) {
             this.addControls(
                 ctx,
-                operationsHeaderBackground,
+                methodsHeaderBackground,
                 layout,
-                data.operationsOpen,
+                data.methodsOpen,
                 hasLocalSelection
             )
         }
@@ -316,7 +316,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
         // determine height
         let entries = data.attributesOpen ? data.attributes.length : 0
-        entries += data.operationsOpen ? data.operations.length : 0
+        entries += data.methodsOpen ? data.methods.length : 0
         const height =
             this.classLabel.preferredSize.height +
             VERTICAL_SPACING + // title section
@@ -326,7 +326,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         // determine width
         let width = 125
         const elementFont = this.elementLabel.style.font
-        const elements = data.attributes.concat(data.operations)
+        const elements = data.attributes.concat(data.methods)
         elements.forEach(element => {
             const size = TextRenderSupport.measureText(element.name, elementFont)
             width = Math.max(width, size.width + LEFT_SPACING + 5)
@@ -455,7 +455,7 @@ export class UMLNodeStyle extends NodeStyleBase {
             if (index < 0) {
                 text = data.className
             } else if (index >= data.attributes.length) {
-                text = data.operations[index - data.attributes.length].name || ''
+                text = data.methods[index - data.attributes.length].name || ''
             } else {
                 text = data.attributes[index].name || ''
             }
@@ -466,7 +466,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 data.attributes.push(new Attribute({name: ""}))
                 this.adjustSize(node, editorInputMode)
             } else if (categoryHit === 2) {
-                data.operations.push(new Operation({name: ""}))
+                data.methods.push(new Methods({name: ""}))
                 this.adjustSize(node, editorInputMode)
             }
         }
@@ -494,10 +494,10 @@ export class UMLNodeStyle extends NodeStyleBase {
                     }
                 } else if (categoryHit === 2) {
                     if (adding) {
-                        data.operations[data.operations.length - 1].name = res
-                        data.selectedIndex = data.attributes.length + (data.operations.length - 1)
+                        data.methods[data.methods.length - 1].name = res
+                        data.selectedIndex = data.attributes.length + (data.methods.length - 1)
                     } else {
-                        data.operations[index - data.attributes.length].name = res
+                        data.methods[index - data.attributes.length].name = res
                     }
                 }
             } else {
@@ -507,7 +507,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                     if (categoryHit === 1) {
                         data.attributes.splice(data.attributes.length - 1, 1)
                     } else if (categoryHit === 2) {
-                        data.operations.splice(data.operations.length - 1, 1)
+                        data.methods.splice(data.methods.length - 1, 1)
                     }
                     this.adjustSize(node, editorInputMode)
                 }
@@ -547,12 +547,12 @@ export class UMLNodeStyle extends NodeStyleBase {
         // the vertical relative coordinates of the different interactive parts
         const topAttributesCategory = this.classLabel.preferredSize.height + VERTICAL_SPACING
         const bottomAttributesCategory = topAttributesCategory + this.categoryLabel.preferredSize.height
-        let topOperationsCategory = bottomAttributesCategory
-        let bottomOperationsCategory = topOperationsCategory + this.categoryLabel.preferredSize.height
+        let topmethodsCategory = bottomAttributesCategory
+        let bottommethodsCategory = topmethodsCategory + this.categoryLabel.preferredSize.height
         if (data.attributesOpen) {
             const attributesHeight = this.elementLabel.preferredSize.height * data.attributes.length
-            topOperationsCategory += attributesHeight
-            bottomOperationsCategory += attributesHeight
+            topmethodsCategory += attributesHeight
+            bottommethodsCategory += attributesHeight
         }
 
         // determine which section or button was clicked
@@ -580,13 +580,13 @@ export class UMLNodeStyle extends NodeStyleBase {
                 }
                 return
             }
-        } else if (data.attributesOpen && y > bottomAttributesCategory && y < topOperationsCategory) {
+        } else if (data.attributesOpen && y > bottomAttributesCategory && y < topmethodsCategory) {
             // an attribute was clicked
             data.selectedCategory = 1
             data.selectedIndex =
                 ((y - bottomAttributesCategory) / this.elementLabel.preferredSize.height) | 0
-        } else if (y >= topOperationsCategory && y <= bottomOperationsCategory) {
-            // the operations header was clicked
+        } else if (y >= topmethodsCategory && y <= bottommethodsCategory) {
+            // the methods header was clicked
             if (x >= 5 && x < node.layout.width - 36) {
                 this.toggleOpenState(2, geim, node)
             } else if (x >= node.layout.width - 36 && x <= node.layout.width - 20) {
@@ -595,7 +595,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 x >= node.layout.width - 18 &&
                 x <= node.layout.width - 2 &&
                 data.selectedIndex >= data.attributes.length &&
-                data.selectedIndex <= data.attributes.length + data.operations.length - 1
+                data.selectedIndex <= data.attributes.length + data.methods.length - 1
             ) {
                 this.removeLabel(2, geim, node)
             } else {
@@ -604,12 +604,12 @@ export class UMLNodeStyle extends NodeStyleBase {
                 }
                 return
             }
-        } else if (y > bottomOperationsCategory) {
-            // an operation was clicked
+        } else if (y > bottommethodsCategory) {
+            // an method was clicked
             data.selectedCategory = 2
             data.selectedIndex =
                 (data.attributes.length +
-                    (y - (topOperationsCategory + this.categoryLabel.preferredSize.height)) /
+                    (y - (topmethodsCategory + this.categoryLabel.preferredSize.height)) /
                     this.elementLabel.preferredSize.height) |
                 0
         } else {
@@ -624,7 +624,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
     /**
      * Triggers interactive label adding.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
+     * @param {number} category 1 represents the attributes section, 2 represents the methods section
      * @param {GraphEditorInputMode} geim
      * @param {INode} node
      * @private
@@ -638,9 +638,9 @@ export class UMLNodeStyle extends NodeStyleBase {
         } else if (category === 2) {
             data.selectedIndex = Math.max(
                 data.attributes.length,
-                data.attributes.length + data.operations.length
+                data.attributes.length + data.methods.length
             )
-            data.operationsOpen = true
+            data.methodsOpen = true
         }
         geim.clickInputMode.preventNextDoubleClick()
         geim.addLabel(node)
@@ -648,7 +648,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
     /**
      * Removes the selected label from the node.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
+     * @param {number} category 1 represents the attributes section, 2 represents the methods section
      * @param {GraphEditorInputMode} geim
      * @param {INode} node
      * @private
@@ -660,11 +660,11 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributes.splice(data.selectedIndex, 1)
         } else if (category === 2) {
-            data.operations.splice(data.selectedIndex - data.attributes.length, 1)
+            data.methods.splice(data.selectedIndex - data.attributes.length, 1)
         }
         data.selectedIndex = Math.min(
             data.selectedIndex,
-            data.attributes.length + data.operations.length - 1
+            data.attributes.length + data.methods.length - 1
         )
         data.modify()
         geim.clickInputMode.preventNextDoubleClick()
@@ -673,8 +673,8 @@ export class UMLNodeStyle extends NodeStyleBase {
     }
 
     /**
-     * Toggles the open/closed state of the attributes or operations section.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
+     * Toggles the open/closed state of the attributes or methods section.
+     * @param {number} category 1 represents the attributes section, 2 represents the methods section
      * @param {GraphEditorInputMode} geim
      * @param {INode} node
      * @private
@@ -684,7 +684,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributesOpen = !data.attributesOpen
         } else if (category === 2) {
-            data.operationsOpen = !data.operationsOpen
+            data.methodsOpen = !data.methodsOpen
         }
         data.modify()
         this.fitHeight(node, geim)
@@ -747,7 +747,7 @@ export class UMLNodeStyle extends NodeStyleBase {
             this.categoryLabel.preferredSize.height
         top += slot * this.elementLabel.preferredSize.height
         if ((isAdding && category === 2) || (!isAdding && slot >= data.attributes.length)) {
-            // account for the operations category label
+            // account for the methods category label
             top += this.categoryLabel.preferredSize.height
         }
 

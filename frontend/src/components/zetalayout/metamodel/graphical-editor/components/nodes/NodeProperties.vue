@@ -83,7 +83,7 @@
 
           <v-row>
             <v-col>
-              <v-btn color="primary" @click="onAddOperation(node)">Add Operation</v-btn>
+              <v-btn color="primary" @click="onAddOperation(node)">Add Methods</v-btn>
             </v-col>
           </v-row>
 

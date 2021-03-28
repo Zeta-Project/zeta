@@ -6,7 +6,6 @@
         :graph-component="graphComponent"
         :isEditEnabled="isEditEnabled"
         :save-graph="saveGraph"
-        @reload-graph="plotDefaultGraph()"
         @toggle-editable="toggleEditable"
         @toggle-grid="toggleGrid"
     />
@@ -86,17 +85,15 @@ import {
   executeLayout,
   getDefaultGraphEditorInputMode,
   getEdgesFromReferences,
-  getNodesFromClasses, getStyleForEdge, saveGraph
+  getStyleForEdge, saveGraph
 } from "./GraphEditorUtils";
 import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
 import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
-import {getDefaultGraph} from "../../utils/RESTApi";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
 import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
-import axios from "axios"
-import {EventBus} from "../../../../../../eventbus/eventbus";
+import axios from "axios";
 
 License.value = licenseData;
 
@@ -242,54 +239,6 @@ export default {
       this.grid = new Grid(this.$graphComponent);
       this.grid.initializeGrid();
       this.grid.grid.visible = false;
-    },
-
-    /**
-     * Creates the default graph.
-     */
-    plotDefaultGraph(concept) {
-      const graphNodes = this.plotNodes(concept);
-      this.plotEdges(concept, graphNodes);
-      this.$graphComponent.fitGraphBounds();
-    },
-
-    /**
-     * Plots nodes in the graph
-     * @param concept: concept definition
-     **/
-    plotNodes(concept) {
-      // Get the graph from graph component
-      const graph = this.$graphComponent.graph;
-      // Map data from the concept to uml classes
-      let nodes = getNodesFromClasses(graph, concept.classes);
-      const NodeConstructor = Vue.extend(Node);
-      let methods = {}
-      methods.addAttributeToNode = this.addAttributeToNode;
-      methods.addOperationToNode = this.addOperationToNode;
-      methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
-      methods.deleteOperationFromNode = this.deleteOperationFromNode;
-      methods.changeInputMode = this.changeInputMode;
-      // Create nodes that can be appended to the graph by the builder
-      const graphNodes = nodes.map(node => graph.createNode({
-        tag: node,
-        style: new VuejsNodeStyle(NodeConstructor, methods, this.$graphComponent.inputMode),
-      }));
-
-      const treeBuilder = new TreeBuilder({
-        graphNodes,
-        childBinding: 'subordinates',
-        nodesSource: nodes
-      });
-
-      // use the VuejsNodeStyle, which uses a Vue component to display nodes
-      treeBuilder.graph.nodeDefaults.style = graph.nodeDefaults.style;
-      treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size;
-      treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style;
-      treeBuilder.buildGraph();
-      /*graph.nodes.forEach(node => {
-          node.style.adjustSize(node, this.$graphComponent.inputMode)
-      })*/
-      return graphNodes;
     },
 
     /**

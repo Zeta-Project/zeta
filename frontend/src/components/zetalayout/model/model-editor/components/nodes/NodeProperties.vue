@@ -36,7 +36,7 @@
             <v-col>
               <v-text-field
                   :label="method.name"
-                  v-model="method.name">
+                  v-model="method.value">
               </v-text-field>
             </v-col>
           </v-row>
