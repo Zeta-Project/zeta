@@ -12,6 +12,10 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Triangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Hexagon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Octagon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Diamond
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Star8
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
@@ -38,6 +42,10 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TriangleParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HexagonParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.OctagonParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.DiamondParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.Star8ParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
@@ -121,6 +129,10 @@ object ShapeParseTreeTransformer {
     geoModel match {
       case m: EllipseParseTree => transformGeoModel(m, parentStyle, styles)
       case m: TriangleParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: HexagonParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: OctagonParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: DiamondParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: Star8ParseTree => transformGeoModel(m, parentStyle, styles)
       case m: TextfieldParseTree => transformGeoModel(m, parentStyle, styles)
       case m: StatictextParseTree => transformGeoModel(m, parentStyle, styles)
       case m: RepeatingBoxParseTree => transformGeoModel(m, parentStyle, styles)
@@ -191,6 +203,46 @@ object ShapeParseTreeTransformer {
   private def transformGeoModel(geoModel: TriangleParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Triangle = {
     val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
     Triangle(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
+
+  private def transformGeoModel(geoModel: HexagonParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Hexagon = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Hexagon(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
+
+  private def transformGeoModel(geoModel: OctagonParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Octagon = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Octagon(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
+
+  private def transformGeoModel(geoModel: DiamondParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Diamond = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Diamond(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
+
+  private def transformGeoModel(geoModel: Star8ParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Star8 = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Star8(
       size = transformGeoModelSize(geoModel.size),
       position = transformGeoModelPosition(geoModel.position),
       childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
