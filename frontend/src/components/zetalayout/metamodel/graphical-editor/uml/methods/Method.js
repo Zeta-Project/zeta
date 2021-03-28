@@ -1,4 +1,4 @@
- export class Methods {
+ export class Method {
 
     constructor(data) {
 
@@ -7,7 +7,6 @@
         this.description = (data && data.description) || ""
         this.returnType = (data && data.returnType) || ""
         this.code = (data && data.code) || ""
-        this.value = (data && data.value) || ""
     }
 }
 

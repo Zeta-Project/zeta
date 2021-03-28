@@ -37,7 +37,7 @@ import {
 
 import { UMLClassModel } from '../UMLClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
-import {Operation} from "../../operations/Operation";
+import {Method} from "../../methods/Method";
 
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2
@@ -466,7 +466,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 data.attributes.push(new Attribute({name: ""}))
                 this.adjustSize(node, editorInputMode)
             } else if (categoryHit === 2) {
-                data.methods.push(new Operation({name: ""}))
+                data.methods.push(new Method({name: ""}))
                 this.adjustSize(node, editorInputMode)
             }
         }
@@ -684,7 +684,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributesOpen = !data.attributesOpen
         } else if (category === 2) {
-            data.operationsOpen = !data.operationsOpen
+            data.operationsOpen = !data.methodsOpen
         }
         data.modify()
         this.fitHeight(node, geim)

@@ -37,7 +37,7 @@ import {
 
 import { ModelClassModel } from '../ModelClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
-import {Methods} from "../../methods/Methods";
+import {Method} from "../../methods/Method";
 
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2
@@ -466,7 +466,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 data.attributes.push(new Attribute({name: ""}))
                 this.adjustSize(node, editorInputMode)
             } else if (categoryHit === 2) {
-                data.methods.push(new Methods({name: ""}))
+                data.methods.push(new Method({name: ""}))
                 this.adjustSize(node, editorInputMode)
             }
         }

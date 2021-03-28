@@ -1,7 +1,7 @@
 import {IEdge, INode,} from "yfiles";
 
 import {UMLNodeStyle} from "../../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
-import {Operation} from "../../vue-cli/src/uml/operations/Methods";
+import {Operation} from "../../vue-cli/src/uml/operations/Method";
 import {Parameter} from "../../vue-cli/src/uml/parameters/Parameter";
 import {Attribute} from "../../vue-cli/src/uml/attributes/Attribute";
 import {UMLEdgeModel} from "../../vue-cli/src/uml/edges/ModelEdgeModel";
@@ -453,7 +453,7 @@ function buildOperations(model) {
 
     let addOperationButton = document.createElement('button')
     addOperationButton.className = 'addElementButton'
-    addOperationButton.innerHTML = "Add Methods"
+    addOperationButton.innerHTML = "Add Method"
     addOperationButton.onclick = () => {
         let dummyOperation = new Operation()
         model.operations.push(dummyOperation)
@@ -477,7 +477,7 @@ function buildOperation(model, operation) {
     removeOperationButton.className = 'removeElementButton'
     singleOperation.appendChild(removeOperationButton)
     removeOperationButton.onclick = function (e) {
-        if (confirm('Methods entfernen?')) {
+        if (confirm('Method entfernen?')) {
             this.parentNode.parentNode.removeChild(this.parentNode)
             let index = model.operations.indexOf(operation)
             model.operations.splice(index, 1)

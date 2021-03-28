@@ -26,7 +26,7 @@ import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
 import {Attribute} from "../../model/attributes/Attribute";
 import {Parameter} from "../../model/parameters/Parameter";
-import {Methods} from "../../model/methods/Methods";
+import {Method} from "../../model/methods/Method";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../model/edges/styles/UMLEdgeStyleFactory";
 import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
