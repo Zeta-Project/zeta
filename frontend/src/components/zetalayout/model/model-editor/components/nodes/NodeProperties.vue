@@ -2,34 +2,6 @@
   <v-expansion-panels class="ma-1 full-control" multiple>
 
     <v-expansion-panel>
-      <v-expansion-panel-header>Meta-Information</v-expansion-panel-header>
-
-      <v-expansion-panel-content>
-        <v-container>
-
-          <v-row>
-            <v-col>
-              <v-text-field label="Name" v-model="node.name"/>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
-              <v-text-field label="Description" v-model="node.description"/>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
-              <v-checkbox v-model="node.abstractness" :label="'Is Abstract?'"/>
-            </v-col>
-          </v-row>
-
-        </v-container>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-
-    <v-expansion-panel>
       <v-expansion-panel-header>Attributes</v-expansion-panel-header>
 
       <v-expansion-panel-content>
