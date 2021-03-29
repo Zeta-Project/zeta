@@ -87,7 +87,7 @@ export default {
               fill: shapeNode.style.background.color.hex,
               stroke: shapeNode.style.line.color.hex
             }),
-            tag: new ModelClassModel()
+            tag: new ModelClassModel({description: shapeNode.type})
           })
 
           if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
@@ -157,7 +157,7 @@ export default {
       const nodeList = []
 
       graph.nodes.forEach(node => {
-        nodeList.push({element: node, tooltip: "TEST"}) // diagramKey.name
+        nodeList.push({element: node, tooltip: node.$f.description})
       });
 
       return nodeList

@@ -1,6 +1,5 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.ShearedRectangle
 import de.htwg.zeta.parser.Collector
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers

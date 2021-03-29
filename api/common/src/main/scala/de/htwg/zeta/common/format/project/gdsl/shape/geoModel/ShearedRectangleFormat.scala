@@ -22,7 +22,7 @@ class ShearedRectangleFormat(
                               sStyle: String
                             ) extends OFormat[ShearedRectangle] {
 
-  val vType: String = "star6"
+  val vType: String = "shearedRectangle"
 
   override def writes(clazz: ShearedRectangle): JsObject = Json.obj(
     sType -> vType,

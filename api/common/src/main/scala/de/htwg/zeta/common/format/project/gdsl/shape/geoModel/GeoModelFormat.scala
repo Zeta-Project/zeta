@@ -117,7 +117,6 @@ class GeoModelFormat(
       case star5Format.vType => star5Format.reads(json)
       case trapezFormat.vType => trapezFormat.reads(json)
       case shearedRectangleFormat.vType => shearedRectangleFormat.reads(json)
-      case star5Format.vType => star5Format.reads(json)
       case staticTextFormat.vType => staticTextFormat.reads(json)
       case textFieldFormat.vType => textFieldFormat.reads(json)
       case compartementFormat.vType => compartementFormat.reads(json)
