@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser.shape.parser
 
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.ShearedRectangle
 import de.htwg.zeta.parser.Collector
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
@@ -17,7 +18,7 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{DiamondParseTree, EllipseParseTree, GeoModelParseTree, HexagonParseTree, HorizontalLayoutParseTree, LineParseTree, OctagonParseTree, PolygonParseTree, PolylineParseTree, RectangleParseTree, RepeatingBoxParseTree, RoundedRectangleParseTree, Star8ParseTree, StatictextParseTree, TextfieldParseTree, TriangleParseTree, VerticalLayoutParseTree}
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{DiamondParseTree, EllipseParseTree, GeoModelParseTree, HexagonParseTree, HorizontalLayoutParseTree, LineParseTree, OctagonParseTree, PolygonParseTree, PolylineParseTree, RectangleParseTree, RepeatingBoxParseTree, RoundedRectangleParseTree, ShearedRectangleParseTree, Star5ParseTree, Star6ParseTree, Star8ParseTree, StatictextParseTree, TextfieldParseTree, TrapezParseTree, TriangleParseTree, VerticalLayoutParseTree}
 
 object GeoModelParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
@@ -25,7 +26,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
 
   def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon |
     rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle | triangle | hexagon | octagon |
-    diamond | star8
+    diamond | star8 | star5 | star6 | trapez | shearedRectangle
 
   private def parseGeoModel(name: String, attributes: List[ParseConf[GeoModelAttribute]]): Parser[(Collector, List[GeoModelParseTree])] = {
     (name ~! leftBrace ~ unordered(attributes: _*) ~ geoModels ~ rightBrace).map {
@@ -97,6 +98,54 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     val attributes = List(optional(style), once(position), once(size))
     parseGeoModel("star8", attributes).map {
       case (attrs, geoModels) => Star8ParseTree(
+        attrs.?[Style],
+        attrs.![Position],
+        attrs.![Size],
+        geoModels
+      )
+    }
+  }
+
+  private def star5: Parser[Star5ParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("star5", attributes).map {
+      case (attrs, geoModels) => Star5ParseTree(
+        attrs.?[Style],
+        attrs.![Position],
+        attrs.![Size],
+        geoModels
+      )
+    }
+  }
+
+  private def star6: Parser[Star6ParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("star6", attributes).map {
+      case (attrs, geoModels) => Star6ParseTree(
+        attrs.?[Style],
+        attrs.![Position],
+        attrs.![Size],
+        geoModels
+      )
+    }
+  }
+
+  private def trapez: Parser[TrapezParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("trapez", attributes).map {
+      case (attrs, geoModels) => TrapezParseTree(
+        attrs.?[Style],
+        attrs.![Position],
+        attrs.![Size],
+        geoModels
+      )
+    }
+  }
+
+  private def shearedRectangle: Parser[ShearedRectangleParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("shearedRectangle", attributes).map {
+      case (attrs, geoModels) => ShearedRectangleParseTree(
         attrs.?[Style],
         attrs.![Position],
         attrs.![Size],

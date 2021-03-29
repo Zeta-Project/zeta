@@ -61,6 +61,30 @@ object GeoModelParseTrees {
                                 size: Size,
                                 children: List[GeoModelParseTree]) extends GeoModelParseTree
 
+  case class Star5ParseTree(
+                             style: Option[Style],
+                             position: Position,
+                             size: Size,
+                             children: List[GeoModelParseTree]) extends GeoModelParseTree
+
+  case class Star6ParseTree(
+                             style: Option[Style],
+                             position: Position,
+                             size: Size,
+                             children: List[GeoModelParseTree]) extends GeoModelParseTree
+
+  case class TrapezParseTree(
+                             style: Option[Style],
+                             position: Position,
+                             size: Size,
+                             children: List[GeoModelParseTree]) extends GeoModelParseTree
+
+  case class ShearedRectangleParseTree(
+                             style: Option[Style],
+                             position: Position,
+                             size: Size,
+                             children: List[GeoModelParseTree]) extends GeoModelParseTree
+
   case class TextfieldParseTree(
       style: Option[Style],
       identifier: Identifier,
