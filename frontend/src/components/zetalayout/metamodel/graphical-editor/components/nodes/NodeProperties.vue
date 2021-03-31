@@ -61,7 +61,7 @@
     </v-expansion-panel>
 
     <v-expansion-panel>
-      <v-expansion-panel-header>Operations</v-expansion-panel-header>
+      <v-expansion-panel-header>Methods</v-expansion-panel-header>
 
       <v-expansion-panel-content>
         <v-container>
