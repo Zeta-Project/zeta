@@ -61,7 +61,7 @@
     </v-expansion-panel>
 
     <v-expansion-panel>
-      <v-expansion-panel-header>Operations</v-expansion-panel-header>
+      <v-expansion-panel-header>Methods</v-expansion-panel-header>
 
       <v-expansion-panel-content>
         <v-container>
@@ -83,7 +83,7 @@
 
           <v-row>
             <v-col>
-              <v-btn color="primary" @click="onAddOperation(node)">Add Operation</v-btn>
+              <v-btn color="primary" @click="onAddOperation(node)">Add Method</v-btn>
             </v-col>
           </v-row>
 

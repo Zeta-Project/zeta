@@ -15,6 +15,7 @@
                         :key="palette.name"
                         :title="palette.name"
                         :nodes="palette.nodes"
+                        :concept="concept"
                         :graph-component="graphComponent"
                         :passive-supported="passiveSupported"/>
 
@@ -57,6 +58,10 @@ export default {
       type: Boolean,
       required: true
     },
+    concept: {
+      type: Object,
+      required: true
+    },
     title: {
       type: String,
       default: function () {
@@ -71,7 +76,6 @@ export default {
         let pnodes = palette.nodes.map(pnode => this.shape.nodes.filter(x => {
           return x.name === pnode
         })[0]);
-
 
         return {name: palette.name, nodes: pnodes}
       })

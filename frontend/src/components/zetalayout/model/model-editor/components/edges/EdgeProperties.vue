@@ -91,7 +91,7 @@
 
           <v-row>
             <v-col>
-              <v-btn color="primary" @click="onAddOperation(edge.style.model)">Add Operation</v-btn>
+              <v-btn color="primary" @click="onAddOperation(edge.style.model)">Add Method</v-btn>
             </v-col>
           </v-row>
 

@@ -62,21 +62,28 @@ export default {
       type: Boolean,
       required: true
     },
+    concept: {
+      type: Object,
+      required: true
+    }
   },
   mounted() {
     let divElement = document.querySelector('#drag-and-drop-panel-' + this.title);
     let panelItems = this.getPanelItems(this.nodes);
     // Append svg images as draggable nodes to the drag-and-drop-panel
-    this.appendVisuals(panelItems , divElement)
+    this.appendVisuals(panelItems, divElement)
   },
   methods: {
     getPanelItems(nodes) {
       const graphComponent = new GraphComponent()
-      const graph = graphComponent.graph
+      const graph = graphComponent.graph;
 
       let geoElements = nodes[0].geoElements;
+      let conceptElement = nodes[0].conceptElement;
+
       for (var i = 0; i < geoElements.length; i++) {
         let shapeNode = geoElements[i]
+
         if (typeof shapeNode.size !== 'undefined') {
           //const NodeConstructor = Vue.extend(NodeExample)
 
@@ -87,7 +94,10 @@ export default {
               fill: shapeNode.style.background.color.hex,
               stroke: shapeNode.style.line.color.hex
             }),
-            tag: new ModelClassModel()
+            tag: new ModelClassModel({
+              attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
+              methods: this.concept.classes.find(c => c.name === conceptElement).methods
+            })
           })
 
           if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
@@ -111,7 +121,7 @@ export default {
       }
       return this.createNodeList(graph)
     },
-    selectedShape(shapeNode){
+    selectedShape(shapeNode) {
       switch (shapeNode.type) {
         case "rectangle":
           return ShapeNodeShape.RECTANGLE;
