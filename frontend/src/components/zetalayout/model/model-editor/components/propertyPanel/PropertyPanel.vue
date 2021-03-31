@@ -1,11 +1,6 @@
 <template>
     <div v-if="node">
-        <node-properties :node="node"
-                         @add-attribute="(n, attributeName) => $emit('add-attribute-to-node', n, attributeName)"
-                         @add-operation="(n, operationName) => $emit('add-operation-to-node', n, operationName)"
-                         @delete-attribute="(n, attributeName) => $emit('delete-attribute-from-node', n, attributeName)"
-                         @delete-operation="(n, operationName) => $emit('delete-operation-from-node', n, operationName)"
-        />
+        <node-properties :node="node"/>
     </div>
     <div v-else-if="edge">
         <edge-properties :edge="edge"

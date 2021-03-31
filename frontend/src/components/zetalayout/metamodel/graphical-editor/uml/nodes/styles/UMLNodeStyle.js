@@ -37,7 +37,7 @@ import {
 
 import { UMLClassModel } from '../UMLClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
-import {Operation} from "../../operations/Operation";
+import {Method} from "../../methods/Method";
 
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2
@@ -229,8 +229,8 @@ export class UMLNodeStyle extends NodeStyleBase {
         const operationsHeaderOffset = yOffset
 
         hasLocalSelection = false
-        if (data.operationsOpen) {
-            for (let i = 0; i < data.operations.length; i++, counter++) {
+        if (data.methodsOpen) {
+            for (let i = 0; i < data.methods.length; i++, counter++) {
                 if (counter === selectedIndex) {
                     hasGlobalSelection = true
                     hasLocalSelection = true
@@ -239,8 +239,8 @@ export class UMLNodeStyle extends NodeStyleBase {
                     this.stretchLabelModel.insets = new Insets(1, yOffset, 1, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
                 }
-                if (data.operations[i] !== null && typeof data.operations[i] !== 'undefined') {
-                    this.elementLabel.text = data.operations[i].name
+                if (data.methods[i] !== null && typeof data.methods[i] !== 'undefined') {
+                    this.elementLabel.text = data.methods[i].name
                     this.elementLabel.style.backgroundFill = null
                     this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
@@ -253,7 +253,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 ctx,
                 operationsHeaderBackground,
                 layout,
-                data.operationsOpen,
+                data.methodsOpen,
                 hasLocalSelection
             )
         }
@@ -316,7 +316,7 @@ export class UMLNodeStyle extends NodeStyleBase {
 
         // determine height
         let entries = data.attributesOpen ? data.attributes.length : 0
-        entries += data.operationsOpen ? data.operations.length : 0
+        entries += data.methodsOpen ? data.methods.length : 0
         const height =
             this.classLabel.preferredSize.height +
             VERTICAL_SPACING + // title section
@@ -326,7 +326,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         // determine width
         let width = 125
         const elementFont = this.elementLabel.style.font
-        const elements = data.attributes.concat(data.operations)
+        const elements = data.attributes.concat(data.methods)
         elements.forEach(element => {
             const size = TextRenderSupport.measureText(element.name, elementFont)
             width = Math.max(width, size.width + LEFT_SPACING + 5)
@@ -455,7 +455,7 @@ export class UMLNodeStyle extends NodeStyleBase {
             if (index < 0) {
                 text = data.className
             } else if (index >= data.attributes.length) {
-                text = data.operations[index - data.attributes.length].name || ''
+                text = data.methods[index - data.attributes.length].name || ''
             } else {
                 text = data.attributes[index].name || ''
             }
@@ -466,7 +466,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 data.attributes.push(new Attribute({name: ""}))
                 this.adjustSize(node, editorInputMode)
             } else if (categoryHit === 2) {
-                data.operations.push(new Operation({name: ""}))
+                data.methods.push(new Method({name: ""}))
                 this.adjustSize(node, editorInputMode)
             }
         }
@@ -494,10 +494,10 @@ export class UMLNodeStyle extends NodeStyleBase {
                     }
                 } else if (categoryHit === 2) {
                     if (adding) {
-                        data.operations[data.operations.length - 1].name = res
-                        data.selectedIndex = data.attributes.length + (data.operations.length - 1)
+                        data.methods[data.methods.length - 1].name = res
+                        data.selectedIndex = data.attributes.length + (data.methods.length - 1)
                     } else {
-                        data.operations[index - data.attributes.length].name = res
+                        data.methods[index - data.attributes.length].name = res
                     }
                 }
             } else {
@@ -507,7 +507,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                     if (categoryHit === 1) {
                         data.attributes.splice(data.attributes.length - 1, 1)
                     } else if (categoryHit === 2) {
-                        data.operations.splice(data.operations.length - 1, 1)
+                        data.methods.splice(data.methods.length - 1, 1)
                     }
                     this.adjustSize(node, editorInputMode)
                 }
@@ -595,7 +595,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 x >= node.layout.width - 18 &&
                 x <= node.layout.width - 2 &&
                 data.selectedIndex >= data.attributes.length &&
-                data.selectedIndex <= data.attributes.length + data.operations.length - 1
+                data.selectedIndex <= data.attributes.length + data.methods.length - 1
             ) {
                 this.removeLabel(2, geim, node)
             } else {
@@ -638,7 +638,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         } else if (category === 2) {
             data.selectedIndex = Math.max(
                 data.attributes.length,
-                data.attributes.length + data.operations.length
+                data.attributes.length + data.methods.length
             )
             data.operationsOpen = true
         }
@@ -660,11 +660,11 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributes.splice(data.selectedIndex, 1)
         } else if (category === 2) {
-            data.operations.splice(data.selectedIndex - data.attributes.length, 1)
+            data.methods.splice(data.selectedIndex - data.attributes.length, 1)
         }
         data.selectedIndex = Math.min(
             data.selectedIndex,
-            data.attributes.length + data.operations.length - 1
+            data.attributes.length + data.methods.length - 1
         )
         data.modify()
         geim.clickInputMode.preventNextDoubleClick()
@@ -684,7 +684,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributesOpen = !data.attributesOpen
         } else if (category === 2) {
-            data.operationsOpen = !data.operationsOpen
+            data.operationsOpen = !data.methodsOpen
         }
         data.modify()
         this.fitHeight(node, geim)

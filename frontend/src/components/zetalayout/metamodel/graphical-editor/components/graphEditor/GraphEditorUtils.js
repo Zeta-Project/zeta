@@ -27,7 +27,7 @@ import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
 import {Attribute} from "../../uml/attributes/Attribute";
 import {Parameter} from "../../uml/parameters/Parameter";
-import {Operation} from "../../uml/operations/Operation";
+import {Method} from "../../uml/methods/Method";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
@@ -182,7 +182,7 @@ export function getNodesFromClasses(graph, classes) {
         const attributes = node.attributes.map(attribute => new Attribute(attribute));
         const methods = node.methods.map(method => {
             const parameters = method.parameters.map(parameter => new Parameter(parameter));
-            return new Operation({
+            return new Method({
                 name: method.name,
                 parameters: parameters,
                 description: method.description,

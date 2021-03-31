@@ -50,7 +50,7 @@
                    xlink:href="../../assets/triangle_90deg_rotated.svg"/>
           </g>
           <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
-                :style="{  fontSize: '16px', fill: 'black' }">Operation:
+                :style="{  fontSize: '16px', fill: 'black' }">Method:
           </text>
           <image :x="layout.width - 22" :y="87 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
                  :width="18" xlink:href="../../assets/add-sign.svg"

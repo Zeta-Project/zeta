@@ -26,7 +26,7 @@ import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
 import {Attribute} from "../../model/attributes/Attribute";
 import {Parameter} from "../../model/parameters/Parameter";
-import {Operation} from "../../model/operations/Operation";
+import {Method} from "../../model/methods/Method";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../model/edges/styles/UMLEdgeStyleFactory";
 import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
@@ -167,35 +167,6 @@ export function getGroupId(edge, marker) {
     }
 
     return null
-}
-
-/**
- * Returns a list of nodes based on the classes of the definition.
- * The nodes are modelled after the default zeta node model
- * @param graph: graphComponent.graph
- * @param classes: classes of definition
- * @returns {*}
- */
-export function getNodesFromClasses(graph, classes) {
-    return classes.map(node => {
-        const attributes = node.attributes.map(attribute => new Attribute(attribute));
-        const methods = node.methods.map(method => {
-            const parameters = method.parameters.map(parameter => new Parameter(parameter));
-            return new Operation({
-                name: method.name,
-                parameters: parameters,
-                description: method.description,
-                returnType: method.returnType,
-                code: method.code
-            })
-        });
-
-        return {
-            ...node,
-            attributes: attributes,
-            methods: methods
-        };
-    });
 }
 
 /**

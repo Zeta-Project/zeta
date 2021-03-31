@@ -92,7 +92,7 @@ import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios"
 import {EventBus} from "../../../../../../eventbus/eventbus";
 import { Attribute } from "../../uml/attributes/Attribute";
-import { Operation } from "../../uml/operations/Operation";
+import { Method } from "../../uml/methods/Method";
 
 
 License.value = licenseData;
@@ -461,7 +461,7 @@ export default {
      * @param name: name of the operation to add.
      */
     addOperationToNode(node, name) {
-      node.methods = node.methods.concat(new Operation({
+      node.methods = node.methods.concat(new Method({
         name: name,
         returnType: "String",
         }));
@@ -510,7 +510,7 @@ export default {
      * @param name: name of the operation to add.
      */
     addOperationToEdge(edge, name) {
-      edge.operations = edge.operations.concat(new Operation({
+      edge.operations = edge.operations.concat(new Method({
         name: name,
         returnType: "String"
         })
