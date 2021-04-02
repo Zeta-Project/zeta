@@ -48,6 +48,10 @@ export default {
       type: Object,
       required: true,
     },
+     references: {
+      type: Array,
+      required: true,
+    },
     nodes: {
       type: Array,
       required: true,
@@ -77,6 +81,7 @@ export default {
     getPanelItems(nodes) {
       const graphComponent = new GraphComponent()
       const graph = graphComponent.graph;
+      const name = nodes[0].name;
 
       let geoElements = nodes[0].geoElements;
       let conceptElement = nodes[0].conceptElement;
@@ -97,7 +102,7 @@ export default {
             tag: new ModelClassModel({
               attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
               methods: this.concept.classes.find(c => c.name === conceptElement).methods,
-              description: shapeNode.type
+              description: name
             })
           })
 

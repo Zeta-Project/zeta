@@ -15,6 +15,7 @@
                         :key="palette.name"
                         :title="palette.name"
                         :nodes="palette.nodes"
+                        :references="references"
                         :concept="concept"
                         :graph-component="graphComponent"
                         :passive-supported="passiveSupported"/>
@@ -45,6 +46,10 @@ export default {
     diagram: {
       type: Object,
       required: true,
+    },
+    references: {
+      type: Array,
+      required: false,
     },
     styleModel: {
       type: Object,

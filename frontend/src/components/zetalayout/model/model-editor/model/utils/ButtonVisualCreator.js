@@ -1,5 +1,6 @@
 import {
   Animator,
+  Arrow, ArrowType, Fill,
   BaseClass,
   Font,
   GraphComponent,
@@ -11,7 +12,7 @@ import {
   Point,
   Rect,
   ShapeNodeShape,
-  ShapeNodeStyle,
+  ShapeNodeStyle, Stroke,
   SvgExport,
   SvgVisual,
   TextRenderSupport,
@@ -26,6 +27,9 @@ import {
   createGeneralizationStyle
 } from '../edges/styles/UMLEdgeStyleFactory.js'
 
+import {ModelEdgeModel} from "@/components/zetalayout/model/model-editor/model/edges/ModelEdgeModel";
+import {UMLEdgeStyle} from "@/components/zetalayout/model/model-editor/model/edges/styles/UMLEdgeStyle";
+
 /**
  * Provides the visuals of the edge creation buttons.
  */
@@ -34,16 +38,28 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
    * The provided edge creation buttons.
    * @returns {IEdgeStyle[]}
    */
+
+   edgesForCurrentNode = [];
+
   static get edgeCreationButtons() {
-    return [
-      // createRealizationStyle(),
-      createGeneralizationStyle(),
-      createCompositionStyle(),
-      createAggregationStyle(),
-      // createDependencyStyle(),
-      // createDirectedAssociationStyle(),
-      createAssociationStyle()
-    ]
+    if(window.edgesForCurrentNode)
+    {
+      return window.edgesForCurrentNode.map(node => {
+        const model = new ModelEdgeModel({
+          sourceDeletionDeletesTarget: false,
+          targetDeletionDeletesSource: true
+        })
+
+        return new UMLEdgeStyle(model, {
+          targetArrow: new Arrow({
+            stroke: Stroke.BLACK,
+            fill: Fill.WHITE,
+            type: ArrowType.TRIANGLE
+          })
+        })
+      })
+    }
+    return [];
   }
 
   /**
@@ -66,6 +82,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
    * @returns {.Visual}
    */
   createVisual(ctx) {
+    console.log("in createVisual...")
     // save the button elements to conveniently use them for hit testing
     ButtonVisualCreator.buttons = []
 
@@ -77,6 +94,13 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     let first = -60
     const step = 40
     const animations = []
+
+    const shape = JSON.parse(localStorage.getItem("shape"));
+    const activeNodeName = this.node.tag.description;
+    window.edgesForCurrentNode = shape.nodes.filter( node => node.name === activeNodeName);
+    window.edgesForCurrentNode = window.edgesForCurrentNode.length === 0 ? [] : window.edgesForCurrentNode[0].edges
+  
+
     for (let i = 0; i < ButtonVisualCreator.edgeCreationButtons.length; i++) {
       const child = this.renderer.renderButton(ButtonVisualCreator.edgeCreationButtons[i])
       const childg1 = document.createElementNS('http://www.w3.org/2000/svg', 'g')
@@ -97,22 +121,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     const topRight = layout.topRight
     SvgVisual.setTranslate(container, topRight.x, topRight.y)
 
-    // add interface/abstract toggle buttons
-    const interfaceButton = this.renderer.renderTextButton('I')
-    SvgVisual.setTranslate(interfaceButton, layout.x - topRight.x, layout.y - topRight.y - 25)
-    const abstractButton = this.renderer.renderTextButton('A')
-    SvgVisual.setTranslate(abstractButton, layout.x - topRight.x + 25, layout.y - topRight.y - 25)
-    container.appendChild(interfaceButton)
-    container.appendChild(abstractButton)
-
-    // visualize the button state
-    if (this.node.tag.stereotype === 'interface') {
-      interfaceButton.setAttribute('class', 'interface-toggle toggled')
-    }
-    if (this.node.tag.constraint === 'abstract') {
-      abstractButton.setAttribute('class', 'abstract-toggle toggled')
-    }
-
+  
     // we fade the buttons via CSS
     container.setAttribute('opacity', '0')
     setTimeout(() => {
