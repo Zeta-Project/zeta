@@ -102,7 +102,8 @@ export default {
             tag: new ModelClassModel({
               attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
               methods: this.concept.classes.find(c => c.name === conceptElement).methods,
-              description: name
+              description: shapeNode.type,
+              className: name
             })
           })
 

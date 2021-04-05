@@ -28,7 +28,7 @@ import {
 } from '../edges/styles/UMLEdgeStyleFactory.js'
 
 import {ModelEdgeModel} from "@/components/zetalayout/model/model-editor/model/edges/ModelEdgeModel";
-import {UMLEdgeStyle} from "@/components/zetalayout/model/model-editor/model/edges/styles/UMLEdgeStyle";
+import {CustomPolyEdgeStyle} from "@/components/zetalayout/model/model-editor/model/edges/styles/CustomPolyEdgeStyle";
 
 /**
  * Provides the visuals of the edge creation buttons.
@@ -44,19 +44,17 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
   static get edgeCreationButtons() {
     if(window.edgesForCurrentNode)
     {
+      console.log("window.edgesForCurrentNode:");
+      console.log(window.edgesForCurrentNode);
       return window.edgesForCurrentNode.map(node => {
         const model = new ModelEdgeModel({
           sourceDeletionDeletesTarget: false,
           targetDeletionDeletesSource: true
         })
 
-        return new UMLEdgeStyle(model, {
-          targetArrow: new Arrow({
-            stroke: Stroke.BLACK,
-            fill: Fill.WHITE,
-            type: ArrowType.TRIANGLE
-          })
-        })
+        // TODO: create Custom EdgeStyleClass
+        // TODO: read info from GEOElement
+        return new CustomPolyEdgeStyle(model);
       })
     }
     return [];
@@ -82,7 +80,6 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
    * @returns {.Visual}
    */
   createVisual(ctx) {
-    console.log("in createVisual...")
     // save the button elements to conveniently use them for hit testing
     ButtonVisualCreator.buttons = []
 
@@ -96,7 +93,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     const animations = []
 
     const shape = JSON.parse(localStorage.getItem("shape"));
-    const activeNodeName = this.node.tag.description;
+    const activeNodeName = this.node.tag.className;
     window.edgesForCurrentNode = shape.nodes.filter( node => node.name === activeNodeName);
     window.edgesForCurrentNode = window.edgesForCurrentNode.length === 0 ? [] : window.edgesForCurrentNode[0].edges
   
