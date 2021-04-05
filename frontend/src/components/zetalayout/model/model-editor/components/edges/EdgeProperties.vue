@@ -32,7 +32,7 @@
           <v-row
               v-if="edge.style.model.operations"
               v-for="(operation, index) in edge.style.model.operations"
-              :key="`${edge.style.model.name}-properties-operations-${index}`">
+              :key="`${edge.style.model.name}-properties-methods-${index}`">
             <v-col>
               <v-text-field
                   label="Name"

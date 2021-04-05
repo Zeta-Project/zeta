@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels class="ma-1 full-control" multiple>
+  <v-expansion-panels class="ma-1" multiple>
 
     <v-expansion-panel>
       <v-expansion-panel-header>Attributes</v-expansion-panel-header>
@@ -32,7 +32,7 @@
           <v-row
               v-if="node.methods"
               v-for="(method, index) in node.methods"
-              :key="`${node.name}-properties-operations-${index}`">
+              :key="`${node.name}-properties-methods-${index}`">
             <v-col>
               <v-text-field
                   :label="method.name"
@@ -54,11 +54,6 @@ export default {
   data: function () {
     return {}
   },
-  watch: {
-    node: function (newVal, oldVal) { // watch it
-      //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-    }
-  },
   props: {
     node: {
       validator: prop => typeof prop === 'object' || prop === null,
@@ -71,13 +66,5 @@ export default {
 </script>
 
 <style scoped>
-    .full-control > .md-list {
-        width: 100%;
-        max-width: 100%;
-        height: 400px;
-        display: inline-block;
-        overflow: auto;
-        border: 1px solid;
-        vertical-align: top;
-    }
+
 </style>
