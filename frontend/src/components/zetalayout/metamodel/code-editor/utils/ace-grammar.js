@@ -137,8 +137,8 @@ const shapeGrammar = {
         [TOKEN.DECORATOR]: simpleToken("RegExp::/@[_A-Za-z][_A-Za-z0-9]*/"),
         [TOKEN.PROPERTY]: simpleToken("RegExp::/\w+\.\w+(\.\w+\.\w+)?/"),
         [TOKEN.KEYWORD]: simpleToken([
-            "node", "edge", "for", "ellipse", "textfield", "repeatingBox", "line", "polyline", "polygon",
-            "rectangle", "horizontalLayout", "verticalLayout", "statictext", "roundedRectangle", "placing"
+            "node", "edge", "for", "ellipse", "rectangle", "roundedRectangle", "placing",
+            "triangle", "shearedRectangle", "trapez", "star5", "star6", "star8", "diamond", "octagon", "hexagon"
         ], true),
         [TOKEN.BUILTIN]: simpleToken([
             "resizing", "style", "sizeMin", "sizeMax", "anchor", "edges", "target",

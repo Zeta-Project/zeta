@@ -4,6 +4,15 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Compartement
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Triangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Hexagon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Octagon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Diamond
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Star8
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Star6
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Star5
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Trapez
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.ShearedRectangle
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
@@ -28,6 +37,15 @@ class GeoModelFormat(
     rectangleFormat: RectangleFormat,
     roundedRectangleFormat: RoundedRectangleFormat,
     ellipseFormat: EllipseFormat,
+    triangleFormat: TriangleFormat,
+    hexagonFormat: HexagonFormat,
+    octagonFormat: OctagonFormat,
+    diamondFormat: DiamondFormat,
+    star8Format: Star8Format,
+    star6Format: Star6Format,
+    star5Format: Star5Format,
+    shearedRectangleFormat: ShearedRectangleFormat,
+    trapezFormat: TrapezFormat,
     staticTextFormat: StaticTextFormat,
     textFieldFormat: TextFieldFormat,
     compartementFormat: CompartementFormat,
@@ -45,6 +63,15 @@ class GeoModelFormat(
       case p: Rectangle => rectangleFormat.writes(p)
       case p: RoundedRectangle => roundedRectangleFormat.writes(p)
       case p: Ellipse => ellipseFormat.writes(p)
+      case p: Triangle => triangleFormat.writes(p)
+      case p: Hexagon => hexagonFormat.writes(p)
+      case p: Octagon => octagonFormat.writes(p)
+      case p: Diamond => diamondFormat.writes(p)
+      case p: Star8 => star8Format.writes(p)
+      case p: Star6 => star6Format.writes(p)
+      case p: Star5 => star5Format.writes(p)
+      case p: ShearedRectangle => shearedRectangleFormat.writes(p)
+      case p: Trapez => trapezFormat.writes(p)
       case p: StaticText => staticTextFormat.writes(p)
       case p: TextField => textFieldFormat.writes(p)
       case p: Compartement => compartementFormat.writes(p)
@@ -81,6 +108,15 @@ class GeoModelFormat(
       case rectangleFormat.vType => rectangleFormat.reads(json)
       case roundedRectangleFormat.vType => roundedRectangleFormat.reads(json)
       case ellipseFormat.vType => ellipseFormat.reads(json)
+      case triangleFormat.vType => triangleFormat.reads(json)
+      case hexagonFormat.vType => hexagonFormat.reads(json)
+      case octagonFormat.vType => octagonFormat.reads(json)
+      case diamondFormat.vType => diamondFormat.reads(json)
+      case star8Format.vType => star8Format.reads(json)
+      case star6Format.vType => star6Format.reads(json)
+      case star5Format.vType => star5Format.reads(json)
+      case trapezFormat.vType => trapezFormat.reads(json)
+      case shearedRectangleFormat.vType => shearedRectangleFormat.reads(json)
       case staticTextFormat.vType => staticTextFormat.reads(json)
       case textFieldFormat.vType => textFieldFormat.reads(json)
       case compartementFormat.vType => compartementFormat.reads(json)
@@ -98,6 +134,15 @@ object GeoModelFormat {
     RectangleFormat(geoModelFormatProvider),
     RoundedRectangleFormat(geoModelFormatProvider),
     EllipseFormat(geoModelFormatProvider),
+    TriangleFormat(geoModelFormatProvider),
+    HexagonFormat(geoModelFormatProvider),
+    OctagonFormat(geoModelFormatProvider),
+    DiamondFormat(geoModelFormatProvider),
+    Star8Format(geoModelFormatProvider),
+    Star6Format(geoModelFormatProvider),
+    Star5Format(geoModelFormatProvider),
+    ShearedRectangleFormat(geoModelFormatProvider),
+    TrapezFormat(geoModelFormatProvider),
     StaticTextFormat(geoModelFormatProvider),
     TextFieldFormat(geoModelFormatProvider),
     CompartementFormat(geoModelFormatProvider),
