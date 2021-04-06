@@ -28,11 +28,6 @@
           :styleModel="styleModel"
           :is-expanded="isDndExpanded"
           :passive-supported="true"
-          @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
-          @add-operation-to-node="(node, operationName) => addOperationToNode(node, operationName)"
-          @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"
-          @delete-operation-from-node="(node, operationName) => deleteOperationFromNode(node, operationName)"
-          @change-input-mode="() => changeInputMode()"
       />
       </div>
     </aside>
@@ -45,17 +40,6 @@
           :is-open="selectedItem !== null"
           :node="sharedData.focusedNodeData"
           :edge="sharedData.focusedEdgeData"
-          @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
-          @add-operation-to-node="(node, operationName) => addOperationToNode(node, operationName)"
-          @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"
-          @delete-operation-from-node="(node, operationName) => deleteOperationFromNode(node, operationName)"
-
-          @add-attribute-to-edge="(edge, attributeName) => addAttributeToEdge(edge, attributeName)"
-          @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
-          @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
-          @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
-          @on-edge-name-change="(edge, name) => updateEdgeLabel(edge, name)"
-          @on-edge-style-change="edge => updateEdgeStyle(edge)"
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -268,28 +252,6 @@ export default {
     },
 
     /**
-     * It is possible for a single edge to have multiple labels but only one tag. In our use case
-     * the name property on the tag object of an edge determines the label name.
-     */
-    updateEdgeLabel(edge, name) {
-      const selectedEdges = this.$graphComponent.selection.selectedEdges;
-
-      selectedEdges.forEach(edge => {
-        edge.labels.forEach(label => {
-          this.$graphComponent.graph.setLabelText(label, name)
-        })
-      });
-    },
-
-    /**
-     * Updates the edge style for the given edge
-     */
-    updateEdgeStyle(edge) {
-      const newStyle = getStyleForEdge(edge.style.model)
-      this.$graphComponent.graph.setStyle(edge, newStyle)
-    },
-
-    /**
      * Returns the default zeta input mode
      */
     getInputMode(graphComponent) {
@@ -424,102 +386,6 @@ export default {
     toggleDnd() {
       this.isDndExpanded = !this.isDndExpanded;
       this.$emit('on-toggle-dnd', this.isDndExpanded);
-    },
-
-    /**
-     * Adds an attribute to a given node.
-     *
-     * @param node: node the attribute should be added to.
-     * @param name: name of the attribute to add.
-     */
-    addAttributeToNode(node, name) {
-      node.attributes = node.attributes.concat({name: name});
-    },
-
-    /**
-     * Deletes an attribute from the given node by its name.
-     * Deletes all attributes from the node with the same name.
-     * This is currently a feature, not a bug, since multiple attributes with the same
-     * name are not allowed. This might change in the future.
-     *
-     * @param node: node the attribute should be deleted from.
-     * @param name: name of the attribute to delete.
-     */
-    deleteAttributeFromNode(node, name) {
-      node.attributes = node.attributes.filter(attribute => attribute.name !== name);
-    },
-
-    /**
-     * Adds an operation to the given node.
-     *
-     * @param node: node the operation should be added to.
-     * @param name: name of the operation to add.
-     */
-    addOperationToNode(node, name) {
-      node.methods = node.methods.concat({name: name});
-    },
-
-    /**
-     * Deletes an operation from the given node by its name.
-     * Deletes all operation from the node with the same name.
-     * This is currently a feature, not a bug, since multiple operations with the same
-     * name are not allowed. This might change in the future.
-     *
-     * @param node: node the operation should be deleted from.
-     * @param name: name of the operation to delete
-     */
-    deleteOperationFromNode(node, name) {
-      node.methods = node.methods.filter(attribute => attribute.name !== name);
-    },
-
-    /**
-     * Adds an attribute to a given edge.
-     *
-     * @param edge: edge the attribute should be added to.
-     * @param name: name of the attribute to add.
-     */
-    addAttributeToEdge(edge, name) {
-      edge.attributes = edge.attributes.concat({name: name});
-    },
-
-    /**
-     * Deletes an attribute from the given edge by its name.
-     * Deletes all attributes from the edge with the same name.
-     * This is currently a feature, not a bug, since multiple attributes with the same
-     * name are not allowed. This might change in the future.
-     *
-     * @param edge: edge the attribute should be deleted from.
-     * @param name: name of the attribute to delete.
-     */
-    deleteAttributeFromEdge(edge, name) {
-      edge.attributes = edge.attributes.filter(attribute => attribute.name !== name);
-    },
-
-    /**
-     * Adds an operation to the given edge.
-     *
-     * @param edge: edge the operation should be added to.
-     * @param name: name of the operation to add.
-     */
-    addOperationToEdge(edge, name) {
-      edge.operations = edge.operations.concat({name: name});
-    },
-
-    /**
-     * Deletes an operation from the given edge by its name.
-     * Deletes all operation from the node with the same name.
-     * This is currently a feature, not a bug, since multiple operations with the same
-     * name are not allowed. This might change in the future.
-     *
-     * @param edge: edge the operation should be deleted from.
-     * @param name: name of the operation to delete
-     */
-    deleteOperationFromEdge(edge, name) {
-      edge.operations = edge.operations.filter(attribute => attribute.name !== name);
-    },
-
-    changeInputMode(newInputMode) {
-      this.$graphComponent.inputMode = newInputMode;
     }
   }
 }
