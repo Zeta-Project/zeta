@@ -305,6 +305,8 @@ export default {
       mode.addItemClickedListener((src, args) => {
         if (args.item.style && args.item.style instanceof UMLEdgeStyle)
           this.handleItemClicked(args, args.item.tag, args.item.style)
+        else if (args.item.style && args.item.style instanceof ShapeNodeStyle)
+          this.handleItemClicked(args, args.item.tag, args.item.style)
       }); // For edges only
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
