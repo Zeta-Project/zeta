@@ -28,21 +28,9 @@ const createProject = function(name) {
     ).then(
         (response) => {
             EventBus.$emit('metaModelAdded', {id: response.data.id, name: response.data.name});
-            setProjectDefinition(response.data.id)
+            EventBus.$emit("successMessage","Successfully created new metamodel");
         },
         (error) => EventBus.$emit("errorMessage","Could not create metamodel: " + error)
-    )
-}
-
-const setProjectDefinition = function(metaModelId) {
-    const defaultMetamodelDefinition = require('./defaultMetamodelDefinition.json')
-    axios.put(
-        "http://localhost:9000/rest/v1/meta-models/" + metaModelId +"/definition",
-        defaultMetamodelDefinition,
-        { withCredentials: true}
-    ).then(
-        (response) => EventBus.$emit("successMessage","Successfully created new metamodel"),
-        (error) => EventBus.$emit("errorMessage","Failed to created metamodel-definition: " + error)
     )
 }
 
