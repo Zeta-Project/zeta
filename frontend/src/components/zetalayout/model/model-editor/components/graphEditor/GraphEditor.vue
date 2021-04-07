@@ -265,8 +265,7 @@ export default {
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.addCanvasClickedListener(() => this.handleCanvasClicked());
       mode.addItemClickedListener((src, args) => {
-        if (args.item.style && args.item.style instanceof UMLEdgeStyle)
-          this.handleItemClicked(args, args.item.tag, args.item.style)
+        this.handleItemClicked(args, args.item.tag, args.item.style)
       }); // For edges only
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
