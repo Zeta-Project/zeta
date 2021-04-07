@@ -74,13 +74,13 @@ import {
   getEdgesFromReferences,
   getStyleForEdge, saveGraph
 } from "./GraphEditorUtils";
-import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
 import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
 import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
+import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 
 License.value = licenseData;
 
@@ -219,7 +219,7 @@ export default {
         textFill: '#fff',
         font: new Font('Robot, sans-serif', 14)
       });
-      this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.ModelEdgeModel());
+      this.$graphComponent.graph.edgeDefaults.style = new CustomPolyEdgeStyle(new umlEdgeModel.ModelEdgeModel());
       this.$graphComponent.graph.undoEngineEnabled = true
     },
 
@@ -265,7 +265,7 @@ export default {
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.addCanvasClickedListener(() => this.handleCanvasClicked());
       mode.addItemClickedListener((src, args) => {
-        if (args.item.style && args.item.style instanceof UMLEdgeStyle)
+        if (args.item.style && args.item.style instanceof CustomPolyEdgeStyle)
           this.handleItemClicked(args, args.item.tag, args.item.style)
       }); // For edges only
       // Configure input mode for dndPanel actions
@@ -319,11 +319,11 @@ export default {
      * Handles the item click action. Used as a callback for a item-clicked-event.
      */
     handleItemClicked(args, tag, type) {
-      if (tag || (type instanceof UMLEdgeStyle && type.model)) {
+      if (tag || (type instanceof CustomPolyEdgeStyle && type.model)) {
         if (type instanceof ShapeNodeStyle) {
           this.sharedData.focusedNodeData = tag;
           this.sharedData.focusedEdgeData = null;
-        } else if (type instanceof UMLEdgeStyle) {
+        } else if (type instanceof CustomPolyEdgeStyle) {
           this.sharedData.focusedEdgeData = args.item;
           this.sharedData.focusedNodeData = null;
         }
