@@ -17,16 +17,19 @@
         v-show="isEditEnabled"
         v-if="diagram !== null && shape !== null && concept !== null"
     >
+       <div v-if="this.concept.references !== null">
       <DndPanel
           v-if="graphComponent"
           :graph-component="graphComponent"
           :shape="shape"
           :diagram="diagram"
           :concept="concept"
+          :references="this.concept.references"
           :styleModel="styleModel"
           :is-expanded="isDndExpanded"
           :passive-supported="true"
       />
+      </div>
     </aside>
     <aside
         class="md-scrollbar property-panel"
@@ -146,6 +149,9 @@ export default {
             axios.get("http://localhost:9000/rest/v1/models/" + uuid + "/definition", {withCredentials: true})
                 .then(
                     response => {
+                      if(this.concept.graphicalDslId) {
+                              getMetaConcept(this.concept.graphicalDslId).then( metamodel => this.concept.references = metamodel.data.references) 
+                        }
                       // this.plotDefaultGraph(this.concept)
                       this.executeLayout()
                           .then(() => {
@@ -169,6 +175,7 @@ export default {
                   ).then(
                       response => {
                         this.shape = response.data
+                        localStorage.setItem('shape', JSON.stringify(this.shape));
                       }
                   ).catch(error => reject(error))
 
