@@ -267,7 +267,12 @@ export default {
       mode.addCanvasClickedListener(() => this.handleCanvasClicked(umlContextButtonsInputMode));
       mode.addItemClickedListener((src, args) => {
         this.handleItemClicked(args, args.item.tag, args.item.style)
-        umlContextButtonsInputMode.onCurrentItemChanged()
+
+        if (args.item.style instanceof ShapeNodeStyle) {
+          umlContextButtonsInputMode.onCurrentItemChanged()
+        } else if (args.item.style instanceof CustomPolyEdgeStyle) {
+          umlContextButtonsInputMode.hideButtons()
+        }
       });
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
