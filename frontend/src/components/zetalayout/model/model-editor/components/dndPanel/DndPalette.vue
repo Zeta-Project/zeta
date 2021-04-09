@@ -81,13 +81,13 @@ export default {
     getPanelItems(nodes) {
       const graphComponent = new GraphComponent()
       const graph = graphComponent.graph;
-      const name = nodes[0].name;
 
       let numberOfNodes = nodes.length
 
       for (let i = 0; i < numberOfNodes; i++) {
         let conceptElement = nodes[i].conceptElement
         let geoElements = nodes[i].geoElements
+        let name = nodes[i].name;
 
         for (let j = 0; j < geoElements.length; j++) {
           let shapeNode = geoElements[j]
