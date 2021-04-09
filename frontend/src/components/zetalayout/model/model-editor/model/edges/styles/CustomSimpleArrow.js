@@ -58,8 +58,9 @@ export class CustomSimpleArrow extends BaseClass(IArrow, IVisualCreator, IBounds
   /**
    * Initializes a new instance of the {@link CustomSimpleArrow} class.
    */
-  constructor() {
+  constructor(placings) {
     super()
+    this.placings = placings;
     this.anchor = Point.ORIGIN
     this.direction = Point.ORIGIN
     this.$thickness = 2.0
@@ -181,19 +182,30 @@ export class CustomSimpleArrow extends BaseClass(IArrow, IVisualCreator, IBounds
     // });
 
       this.arrowFigure = new GeneralPath()
-      this.arrowFigure.moveTo(new Point(7, -1.5))
-      this.arrowFigure.lineTo(new Point(7, 1.5))
-      this.arrowFigure.cubicTo(new Point(5, 1.5), new Point(1.5, 1.5), new Point(-1, 5))
-      this.arrowFigure.cubicTo(new Point(0, 2.5), new Point(0, -2.5), new Point(-1, -5))
-      this.arrowFigure.cubicTo(new Point(1.5, -1.5), new Point(5, -1.5), new Point(7, -1.5))
-      this.arrowFigure.close()
+
+      // if(this.placings[0].geoElement.type == "polygon") {
+      //   if(this.placings[0].geoElement.points.length) {
+      //     const points = this.placings[0].geoElement.points;
+      //     this.arrowFigure.moveTo(new Point(points[0].x, points[0].y));
+      //     for(let i = 1; i < points.length; i++) {
+      //       this.arrowFigure.lineTo(new Point(points[i].x, points[i].y));
+      //   }
+      // }
+
+      this.arrowFigure.moveTo(new Point(5, 5));
+      this.arrowFigure.lineTo(new Point(0, 0));
+      this.arrowFigure.lineTo(new Point(5, -5));
+      this.arrowFigure.lineTo(new Point(10, 0));
+      this.arrowFigure.close();
   }
 
      const path = this.arrowFigure.createSvgPath()
 
     // add the gradient to the global defs section if necessary and returns the id
     const gradientId = ctx.getDefsId(GRADIENT)
-    path.setAttribute('fill', `url(#${gradientId})`)
+
+    // path.setAttribute('fill', `url(#${gradientId})`);
+    path.setAttribute('fill', `rgb(255,0,0)`);
 
     // Remember thickness for update
     path['data-renderDataCache'] = this.arrowThickness

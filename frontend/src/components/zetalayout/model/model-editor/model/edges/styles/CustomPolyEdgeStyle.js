@@ -36,7 +36,9 @@
     ISelectionIndicatorInstaller,
     PolylineEdgeStyle,
     Stroke,
-    SvgVisual
+    SvgVisual,
+    ArrowType,
+    Fill
   } from 'yfiles'
   import {ModelEdgeModel} from '../ModelEdgeModel'
   import {CustomSimpleArrow} from '../styles/CustomSimpleArrow'
@@ -45,17 +47,28 @@
    * This class is an example for a custom edge style based on {@link EdgeStyleBase}.
    */
   export class CustomPolyEdgeStyle extends EdgeStyleBase  {
-  
+
     /**
      * Initializes a new instance of the {@link CustomSimpleEdgeStyle} class.
      */
-    constructor (model, options) {
+    constructor (model, placings, options) {
       super()
       this.$model = model || new ModelEdgeModel()
-      this.$arrows = new CustomSimpleArrow()
+
+      if(placings.length > 0) {
+        this.customTargetArrow = new CustomSimpleArrow(placings[0])  
+      }
+
+      if(placings.length > 1) {
+        this.customSourceArrow = new CustomSimpleArrow(placings[1])
+      }
+
+      this.$arrows = [this.customTargetArrow, this.customSourceArrow];
+
       this.$pathThickness = 3
-      if (options)
+      if (options) {
         this.setOptions(options)
+      }
     }
   
     /**
@@ -105,7 +118,7 @@
      * Gets the arrows drawn at the beginning and at the end of the edge.
      * @type {number}
      */
-    get arrows () {
+    get arrows () {      
       return this.$arrows
     }
   
@@ -197,7 +210,7 @@
             other.thickness === this.thickness &&
             other.selected === this.selected &&
             other.color === this.color &&
-            this.arrows.equals(other.arrows)
+            JSON.stringify(this.arrows)==JSON.stringify(other.arrows)
           )
         },
         pathEquals (other) {
@@ -231,9 +244,8 @@
       }
   
       container.appendChild(path)
-  
-      // add the arrows to the container
-      super.addArrows(context, container, edge, cache.path, cache.arrows, cache.arrows)
+
+      super.addArrows(context, container, edge, cache.path, this.customSourceArrow, this.customTargetArrow)
     }
   
     /**
@@ -264,7 +276,7 @@
       path.setAttribute('d', updatedPath.getAttribute('d'))
   
       // update the arrows
-      super.updateArrows(context, container, edge, gp, cache.arrows, cache.arrows)
+      super.updateArrows(context, container, edge, gp, this.customTargetArrow, this.custom)
     }
   
     /**
@@ -283,7 +295,8 @@
       path.lineTo(edge.targetPort.location)
   
       // shorten the path in order to provide room for drawing the arrows.
-      const croppedPath = super.cropPath(edge, this.arrows, this.arrows, path)
+      // const croppedPath = super.cropPath(edge, this.arrows, this.arrows, path)
+      const croppedPath = super.cropPath(edge, this.arrows[0], this.arrows[1], path)
       return croppedPath
     }
   

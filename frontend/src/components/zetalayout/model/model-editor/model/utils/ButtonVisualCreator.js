@@ -52,9 +52,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
           targetDeletionDeletesSource: true
         })
 
-        // TODO: create Custom EdgeStyleClass
-        // TODO: read info from GEOElement
-        return new CustomPolyEdgeStyle(model);
+        return new CustomPolyEdgeStyle(model, node.placings);
       })
     }
     return [];
