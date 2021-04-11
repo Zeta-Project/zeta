@@ -54,13 +54,13 @@ export class CustomPolyEdgeStyle extends EdgeStyleBase {
         super()
         this.$model = model || new ModelEdgeModel()
 
-        if (edge.placings.length > 0) {
+        if (edge !== undefined && edge.placings.length > 0) {
             this.customTargetArrow = new CustomSimpleArrow(edge.placings[0])
         } else {
             this.customTargetArrow = new Arrow({type: ArrowType.NONE})
         }
 
-        if (edge.placings.length > 1) {
+        if (edge !== undefined && edge.placings.length > 1) {
             this.customSourceArrow = new CustomSimpleArrow(edge.placings[1])
         } else {
             this.customSourceArrow = new Arrow({type: ArrowType.NONE})

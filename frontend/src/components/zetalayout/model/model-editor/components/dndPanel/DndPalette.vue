@@ -81,48 +81,52 @@ export default {
     getPanelItems(nodes) {
       const graphComponent = new GraphComponent()
       const graph = graphComponent.graph;
-      const name = nodes[0].name;
 
-      let geoElements = nodes[0].geoElements;
-      let conceptElement = nodes[0].conceptElement;
+      let numberOfNodes = nodes.length
 
-      for (var i = 0; i < geoElements.length; i++) {
-        let shapeNode = geoElements[i]
+      for (let i = 0; i < numberOfNodes; i++) {
+        let conceptElement = nodes[i].conceptElement
+        let geoElements = nodes[i].geoElements
+        let name = nodes[i].name;
 
-        if (typeof shapeNode.size !== 'undefined') {
-          //const NodeConstructor = Vue.extend(NodeExample)
+        for (let j = 0; j < geoElements.length; j++) {
+          let shapeNode = geoElements[j]
 
-          const node = graph.createNode({
-            layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
-            style: new ShapeNodeStyle({
-              shape: this.selectedShape(shapeNode),
-              fill: shapeNode.style.background.color.hex,
-              stroke: shapeNode.style.line.color.hex
-            }),
-            tag: new ModelClassModel({
-              attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
-              methods: this.concept.classes.find(c => c.name === conceptElement).methods,
-              description: shapeNode.type,
-              className: name
-            })
-          })
+          if (typeof shapeNode.size !== 'undefined') {
+            //const NodeConstructor = Vue.extend(NodeExample)
 
-          if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
-            const fontStyle = new Font({
-              fontFamily: shapeNode.style.fontFamily,
-              fontSize: shapeNode.style.font.size
-            })
-
-            graph.addLabel({
-              owner: node,
-              text: shapeNode.childGeoElements[0].identifier,
-              layoutParameter: InteriorLabelModel.CENTER,
-              style: new DefaultLabelStyle({
-                font: fontStyle,
-                verticalTextAlignment: "center",
-                horizontalTextAlignment: "center"
+            const node = graph.createNode({
+              layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
+              style: new ShapeNodeStyle({
+                shape: this.selectedShape(shapeNode),
+                fill: shapeNode.style.background.color.hex,
+                stroke: shapeNode.style.line.color.hex
+              }),
+              tag: new ModelClassModel({
+                attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
+                methods: this.concept.classes.find(c => c.name === conceptElement).methods,
+                description: shapeNode.type,
+                className: name
               })
             })
+
+            if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
+              const fontStyle = new Font({
+                fontFamily: shapeNode.style.fontFamily,
+                fontSize: shapeNode.style.font.size
+              })
+
+              graph.addLabel({
+                owner: node,
+                text: shapeNode.childGeoElements[0].identifier,
+                layoutParameter: InteriorLabelModel.CENTER,
+                style: new DefaultLabelStyle({
+                  font: fontStyle,
+                  verticalTextAlignment: "center",
+                  horizontalTextAlignment: "center"
+                })
+              })
+            }
           }
         }
       }
