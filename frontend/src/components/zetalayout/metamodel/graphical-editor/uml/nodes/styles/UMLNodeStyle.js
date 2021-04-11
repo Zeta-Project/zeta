@@ -640,7 +640,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                 data.attributes.length,
                 data.attributes.length + data.methods.length
             )
-            data.operationsOpen = true
+            data.methodsOpen = true
         }
         geim.clickInputMode.preventNextDoubleClick()
         geim.addLabel(node)
@@ -684,7 +684,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         if (category === 1) {
             data.attributesOpen = !data.attributesOpen
         } else if (category === 2) {
-            data.operationsOpen = !data.methodsOpen
+            data.methodsOpen = !data.methodsOpen
         }
         data.modify()
         this.fitHeight(node, geim)
