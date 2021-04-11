@@ -68,7 +68,6 @@ import {
   License,
   PolylineEdgeRouterData,
   Size, TreeBuilder,
-  ShowFocusPolicy
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -306,18 +305,18 @@ export default {
       // execute a layout after certain gestures
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
-      mode.addCanvasClickedListener(() => this.handleCanvasClicked());
+      mode.addCanvasClickedListener(() => this.handleCanvasClicked(umlContextButtonsInputMode));
       mode.addItemClickedListener((src, args) => {
-        if (args.item.style && args.item.style instanceof UMLEdgeStyle)
-          this.handleItemClicked(args, args.item.tag, args.item.style)
-      }); // For edges only
+        this.handleItemClicked(args, args.item.tag, args.item.style)
+
+        if (args.item.style instanceof VuejsNodeStyle) {
+          umlContextButtonsInputMode.onCurrentItemChanged()
+        } else if (args.item.style instanceof UMLEdgeStyle) {
+          umlContextButtonsInputMode.hideButtons()
+        }
+      });
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
-      this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS;
-      this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
-        if (this.$graphComponent.focusIndicatorManager.focusedItem)
-          this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem, this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
-      }); // For nodes only
 
       return mode
     },
@@ -379,10 +378,11 @@ export default {
      * clicks the empty graph (neither a node, nor an edge), this function will be called.
      * The focused node as well as the focused edge will be set to null and no item is selected.
      */
-    handleCanvasClicked() {
+    handleCanvasClicked(umlContextButtonsInputMode) {
       this.sharedData.focusedNodeData = null;
       this.sharedData.focusedEdgeData = null;
       this.selectedItem = null;
+      umlContextButtonsInputMode.hideButtons()
     },
 
     /**

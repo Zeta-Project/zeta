@@ -75,6 +75,13 @@ export default class UMLContextButtonsInputMode extends InputModeBase {
   }
 
   /**
+   * Called when a user clicks the empty graph (neither a node, nor an edge).
+   */
+  hideButtons() {
+    this.buttonNodes.clear()
+  }
+
+  /**
    * Remove the button visuals when the node is deleted.
    * @param {IModelItem} item
    */
