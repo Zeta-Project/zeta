@@ -271,7 +271,9 @@ export default {
         });
         graph.addLabel(graphEdge, edge.name)
       });
-      graph.addLabelTextChangedListener((sender, event) => console.log("event", event));
+      graph.addLabelTextChangedListener((sender, event) => {
+        event.item.owner.tag.name = event.item.text;
+      });
     },
 
     /**

@@ -57,6 +57,7 @@
   </div>
 </template>
 <script>
+
 import ProjectSelectionRow from "./ProjectSelectionRow";
 import ImportProjectDialog from "./dialogs/ImportProjectDialog";
 import ProjectUtils from "./ProjectUtils";
