@@ -32,17 +32,31 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
      * @returns {IEdgeStyle[]}
      */
 
-    edgesForCurrentNode = [];
+    static edgesForCurrentNode = [];
+    static concept = {};
 
     static get edgeCreationButtons() {
-        if (window.edgesForCurrentNode) {
-            return window.edgesForCurrentNode.map(node => {
+        if (ButtonVisualCreator.edgesForCurrentNode && ButtonVisualCreator.concept) {
+            return ButtonVisualCreator.edgesForCurrentNode.map(edge => {
+                // ToDo: Is the concept element name for edges always <node>.<edge-name>? If not the next line must be adjusted
+                const conceptEdge = ButtonVisualCreator.concept.references.find(r => r.name === edge.conceptElement.split(".")[1]);
+
+                console.log("conceptEdge", conceptEdge);
+
                 const model = new ModelEdgeModel({
-                    sourceDeletionDeletesTarget: false,
-                    targetDeletionDeletesSource: true
+                    name: conceptEdge.name,
+                    description: conceptEdge.description,
+                    sourceDeletionDeletesTarget: conceptEdge.sourceDeletionDeletesTarget,
+                    targetDeletionDeletesSource: conceptEdge.targetDeletionDeletesSource,
+                    sourceLowerBounds: conceptEdge.sourceLowerBounds,
+                    sourceUpperBounds: conceptEdge.sourceUpperBounds,
+                    targetLowerBounds: conceptEdge.targetLowerBounds,
+                    targetUpperBounds: conceptEdge.targetUpperBounds,
+                    methods: conceptEdge.methods,
+                    attributes: conceptEdge.attributes
                 })
 
-                return new CustomPolyEdgeStyle(model, node);
+                return new CustomPolyEdgeStyle(model, edge);
             })
         }
         return [];
@@ -80,11 +94,13 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
         const step = 40
         const animations = []
 
+        // ToDo: Find better solution to not dependent on local storage
         const shape = JSON.parse(localStorage.getItem("shape"));
         const activeNodeName = this.node.tag.className;
-        window.edgesForCurrentNode = shape.nodes.filter(node => node.name === activeNodeName);
-        window.edgesForCurrentNode = window.edgesForCurrentNode.length === 0 ? [] : window.edgesForCurrentNode[0].edges
+        ButtonVisualCreator.edgesForCurrentNode = shape.nodes.filter(node => node.name === activeNodeName);
+        ButtonVisualCreator.edgesForCurrentNode = ButtonVisualCreator.edgesForCurrentNode.length === 0 ? [] : ButtonVisualCreator.edgesForCurrentNode[0].edges;
 
+        ButtonVisualCreator.concept = JSON.parse(localStorage.getItem("concept"));
 
         for (let i = 0; i < ButtonVisualCreator.edgeCreationButtons.length; i++) {
             const child = this.renderer.renderButton(ButtonVisualCreator.edgeCreationButtons[i])

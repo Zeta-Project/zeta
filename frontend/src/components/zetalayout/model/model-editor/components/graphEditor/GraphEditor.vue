@@ -167,6 +167,7 @@ export default {
             ).then(
                 response => {
                   this.concept = response.data.concept
+                  localStorage.setItem('concept', JSON.stringify(this.concept));
 
                   const metamodelId = response.data.model.graphicalDslId;
 
