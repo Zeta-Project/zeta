@@ -96,9 +96,6 @@ export default {
             //const NodeConstructor = Vue.extend(NodeExample)
             let conceptClass = this.concept.classes.find(c => c.name === conceptElement);
 
-            //console.log(conceptClass);
-            console.log("name: " + conceptClass.name);
-
             const node = graph.createNode({
               layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
               style: new ShapeNodeStyle({
