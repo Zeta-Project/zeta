@@ -94,6 +94,10 @@ export default {
 
           if (typeof shapeNode.size !== 'undefined') {
             //const NodeConstructor = Vue.extend(NodeExample)
+            let conceptClass = this.concept.classes.find(c => c.name === conceptElement);
+
+            //console.log(conceptClass);
+            console.log("name: " + conceptClass.name);
 
             const node = graph.createNode({
               layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
@@ -103,9 +107,11 @@ export default {
                 stroke: shapeNode.style.line.color.hex
               }),
               tag: new ModelClassModel({
-                attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
-                methods: this.concept.classes.find(c => c.name === conceptElement).methods,
-                description: shapeNode.type,
+                attributes: conceptClass.attributes,
+                methods: conceptClass.methods,
+                name: conceptClass.name,
+                description: conceptClass.description,
+                abstractness: conceptClass.abstractness,
                 className: name
               })
             })

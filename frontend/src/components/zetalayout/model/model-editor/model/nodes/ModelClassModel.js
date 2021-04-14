@@ -19,7 +19,9 @@ export class ModelClassModel {
     }
 
     constructor(data) {
+        this.name = (data && data.name) || ''
         this.description = (data && data.description) || ''
+        this.abstractness = (data && data.abstractness) || false
         this.abstract = (data && data.abstract) || false
         this.superTypeNames = (data && data.superTypeNames) || []
         this.stereotype = (data && data.stereotype) || '' //if data && data.stereotype != null, use data.stereotype. else ''
