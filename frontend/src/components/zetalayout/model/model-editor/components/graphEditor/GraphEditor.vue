@@ -74,6 +74,7 @@ import {
   getEdgesFromReferences,
   getStyleForEdge, saveGraph
 } from "./GraphEditorUtils";
+import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
 import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
@@ -245,18 +246,18 @@ export default {
       // execute a layout after certain gestures
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
-      mode.addCanvasClickedListener(() => this.handleCanvasClicked());
+      mode.addCanvasClickedListener(() => this.handleCanvasClicked(umlContextButtonsInputMode));
       mode.addItemClickedListener((src, args) => {
-        if (args.item.style && args.item.style instanceof CustomPolyEdgeStyle)
-          this.handleItemClicked(args, args.item.tag, args.item.style)
-      }); // For edges only
+        this.handleItemClicked(args, args.item.tag, args.item.style)
+
+        if (args.item.style instanceof ShapeNodeStyle) {
+          umlContextButtonsInputMode.onCurrentItemChanged()
+        } else if (args.item.style instanceof CustomPolyEdgeStyle) {
+          umlContextButtonsInputMode.hideButtons()
+        }
+      });
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
-      this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS;
-      this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
-        if (this.$graphComponent.focusIndicatorManager.focusedItem)
-          this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem, this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
-      }); // For nodes only
 
       return mode
     },
@@ -318,10 +319,11 @@ export default {
      * clicks the empty graph (neither a node, nor an edge), this function will be called.
      * The focused node as well as the focused edge will be set to null and no item is selected.
      */
-    handleCanvasClicked() {
+    handleCanvasClicked(umlContextButtonsInputMode) {
       this.sharedData.focusedNodeData = null;
       this.sharedData.focusedEdgeData = null;
       this.selectedItem = null;
+      umlContextButtonsInputMode.hideButtons()
     },
 
     /**
