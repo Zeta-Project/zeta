@@ -60,7 +60,7 @@ export default (function () {
         /*let generalizations = this.graph.outEdgesAt(node).filter(edge => isGeneralization(edge.style));
 
         let superTypes = generalizations.map(edge => {
-            return edge.targetNode.style.model.className;
+            return edge.targetNode.tag.className;
         });
 
         return superTypes;*/
@@ -139,7 +139,7 @@ export default (function () {
       Returns the description of the given edge.
      */
     Graph.prototype.getReferenceDescription = function (reference) {
-        let result = reference.style.model.description;
+        let result = reference.tag.description;
         if (typeof result !== 'string') {
             return "";
         }
@@ -151,7 +151,7 @@ export default (function () {
     */
 
     Graph.prototype.getSourceDeletionDeletesTarget = function (reference) {
-        return reference.style.model.sourceDeletionDeletesTarget || false;
+        return reference.tag.sourceDeletionDeletesTarget || false;
     };
 
     /*
@@ -159,7 +159,7 @@ export default (function () {
     */
 
     Graph.prototype.getTargetDeletionDeletesSource = function (reference) {
-        return reference.style.model.targetDeletionDeletesSource || false;
+        return reference.tag.targetDeletionDeletesSource || false;
     };
 
     /*
@@ -177,35 +177,35 @@ export default (function () {
     };
 
     Graph.prototype.getReferenceAttributes = function (reference) {
-        if (reference.style.model.attributes !== null) {
-            return reference.style.model.attributes
+        if (reference.tag.attributes !== null) {
+            return reference.tag.attributes
         } else {
             return []
         }
     };
 
     Graph.prototype.getReferenceMethods = function (reference) {
-        if (reference.style.model.operations !== null) {
-            return reference.style.model.operations
+        if (reference.tag.methods !== null) {
+            return reference.tag.methods
         } else {
             return []
         }
     };
 
     Graph.prototype.getSourceLowerBounds = function (reference) {
-        return reference.style.model.sourceLowerBounds
+        return reference.tag.sourceLowerBounds
     };
 
     Graph.prototype.getSourceUpperBounds = function (reference) {
-        return reference.style.model.sourceUpperBounds
+        return reference.tag.sourceUpperBounds
     };
 
     Graph.prototype.getTargetLowerBounds = function (reference) {
-        return reference.style.model.targetLowerBounds
+        return reference.tag.targetLowerBounds
     };
 
     Graph.prototype.getTargetUpperBounds = function (reference) {
-        return reference.style.model.targetUpperBounds
+        return reference.tag.targetUpperBounds
     };
 
     /*

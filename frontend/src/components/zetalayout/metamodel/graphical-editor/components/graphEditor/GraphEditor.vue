@@ -265,9 +265,13 @@ export default {
         const graphEdge = graph.createEdge({
           source: edge.source,
           target: edge.target,
-          style: getStyleForEdge(edge)
+          style: getStyleForEdge(edge),
+          tag: edge
         });
         graph.addLabel(graphEdge, edge.name)
+      });
+      graph.addLabelTextChangedListener((sender, event) => {
+        event.item.owner.tag.name = event.item.text;
       });
     },
 
@@ -366,7 +370,7 @@ export default {
           this.sharedData.focusedNodeData = tag;
           this.sharedData.focusedEdgeData = null;
         } else if (type instanceof UMLEdgeStyle) {
-          this.sharedData.focusedEdgeData = args.item;
+          this.sharedData.focusedEdgeData = tag;
           this.sharedData.focusedNodeData = null;
         }
         this.selectedItem = args;
@@ -504,13 +508,13 @@ export default {
     },
 
     /**
-     * Adds an operation to the given edge.
+     * Adds an method to the given edge.
      *
-     * @param edge: edge the operation should be added to.
-     * @param name: name of the operation to add.
+     * @param edge: edge the method should be added to.
+     * @param name: name of the method to add.
      */
     addOperationToEdge(edge, name) {
-      edge.operations = edge.operations.concat(new Method({
+      edge.methods = edge.methods.concat(new Method({
         name: name,
         returnType: "String"
         })
@@ -518,16 +522,16 @@ export default {
     },
 
     /**
-     * Deletes an operation from the given edge by its name.
-     * Deletes all operation from the node with the same name.
-     * This is currently a feature, not a bug, since multiple operations with the same
+     * Deletes an method from the given edge by its name.
+     * Deletes all method from the node with the same name.
+     * This is currently a feature, not a bug, since multiple methods with the same
      * name are not allowed. This might change in the future.
      *
-     * @param edge: edge the operation should be deleted from.
-     * @param name: name of the operation to delete
+     * @param edge: edge the method should be deleted from.
+     * @param name: name of the method to delete
      */
     deleteOperationFromEdge(edge, name) {
-      edge.operations = edge.operations.filter(attribute => attribute.name !== name);
+      edge.methods = edge.methods.filter(attribute => attribute.name !== name);
     },
 
     changeInputMode(newInputMode) {
