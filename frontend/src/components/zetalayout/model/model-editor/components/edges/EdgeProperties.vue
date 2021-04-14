@@ -62,6 +62,28 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
 
+    <v-expansion-panel>
+      <v-expansion-panel-header>Methods</v-expansion-panel-header>
+
+      <v-expansion-panel-content>
+        <v-container>
+
+          <v-row
+              v-if="edge.style.model.methods"
+              v-for="(method, index) in edge.style.model.methods"
+              :key="`${edge.style.model.name}-properties-methods-${index}`">
+            <v-col>
+              <v-text-field
+                  :label="method.name"
+                  v-model="method.value">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+        </v-container>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
   </v-expansion-panels>
 </template>
 
