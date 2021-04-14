@@ -293,7 +293,7 @@ export default {
      * Updates the edge style for the given edge
      */
     updateEdgeStyle(edge) {
-      const newStyle = getStyleForEdge(edge.style.model)
+      const newStyle = getStyleForEdge(edge.tag)
       this.$graphComponent.graph.setStyle(edge, newStyle)
     },
 
