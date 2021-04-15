@@ -7,27 +7,24 @@
       <v-expansion-panel-content>
         <v-container>
 
-          <v-row
-              v-if="edge.labels"
-              v-for="(label, index) in edge.labels"
-              :key="`${edge.name}-labels-${index}`">
+          <v-row>
             <v-col>
-              <v-text-field label="Name" :value="label.text" @input="name => onAttributeNameChange(edge, name)"/>
+              <v-text-field label="Name" v-model="edge.name" @input="name => onAttributeNameChange(edge, name)" />
             </v-col>
           </v-row>
 
           <v-row>
             <v-col>
-              <v-text-field label="Description" v-model="edge.style.model.description"/>
+              <v-text-field label="Description" v-model="edge.description"/>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col>
-              <v-checkbox v-model="edge.style.model.sourceDeletionDeletesTarget"
+              <v-checkbox v-model="edge.sourceDeletionDeletesTarget"
                           :label="'sourceDeletionDeletesTarget'"
                           @change="onSourceDeletionDeletesTargetChange(edge)"/>
-              <v-checkbox v-model="edge.style.model.targetDeletionDeletesSource"
+              <v-checkbox v-model="edge.targetDeletionDeletesSource"
                           :label="'targetDeletionDeletesSource'"
                           @change="onTargetDeletionDeletesSourceChange(edge)"/>
             </v-col>
@@ -44,14 +41,14 @@
         <v-container>
 
           <v-row
-              v-if="edge.style.model.attributes"
-              v-for="(attribute, index) in edge.style.model.attributes"
-              :key="`${edge.style.model.name}-properties-attributes-${index}`">
+              v-if="edge.attributes"
+              v-for="(attribute, index) in edge.attributes"
+              :key="`${edge.name}-properties-attributes-${index}`">
             <v-col>
               <v-text-field
                   label="Name"
                   v-model="attribute.name">
-                <v-btn slot="append-outer" icon @click="onDeleteAttribute(edge.style.model, attribute.name)">
+                <v-btn slot="append-outer" icon @click="onDeleteAttribute(edge, attribute.name)">
                   <v-icon color="red">mdi-trash-can-outline</v-icon>
                 </v-btn>
               </v-text-field>
@@ -60,7 +57,7 @@
 
           <v-row>
             <v-col>
-              <v-btn color="primary" @click="onAddAttribute(edge.style.model)">Add Attribute</v-btn>
+              <v-btn color="primary" @click="onAddAttribute(edge)">Add Attribute</v-btn>
             </v-col>
           </v-row>
 
@@ -69,20 +66,20 @@
     </v-expansion-panel>
 
     <v-expansion-panel>
-      <v-expansion-panel-header>Operations</v-expansion-panel-header>
+      <v-expansion-panel-header>Methods</v-expansion-panel-header>
 
       <v-expansion-panel-content>
         <v-container>
 
           <v-row
-              v-if="edge.style.model.operations"
-              v-for="(operation, index) in edge.style.model.operations"
-              :key="`${edge.style.model.name}-properties-operations-${index}`">
+              v-if="edge.methods"
+              v-for="(method, index) in edge.methods"
+              :key="`${edge.name}-properties-methods-${index}`">
             <v-col>
               <v-text-field
                   label="Name"
-                  v-model="operation.name">
-                <v-btn slot="append-outer" icon @click="onDeleteOperation(edge.style.model, operation.name)">
+                  v-model="method.name">
+                <v-btn slot="append-outer" icon @click="onDeleteOperation(edge, method.name)">
                   <v-icon color="red">mdi-trash-can-outline</v-icon>
                 </v-btn>
               </v-text-field>
@@ -91,7 +88,7 @@
 
           <v-row>
             <v-col>
-              <v-btn color="primary" @click="onAddOperation(edge.style.model)">Add Method</v-btn>
+              <v-btn color="primary" @click="onAddOperation(edge)">Add Method</v-btn>
             </v-col>
           </v-row>
 
@@ -132,17 +129,17 @@ export default {
     onTargetDeletionDeletesSourceChange(edge) {
       this.$emit('on-edge-style-change', edge);
     },
-    onDeleteAttribute(model, name) {
-      this.$emit('delete-attribute', model, name);
+    onDeleteAttribute(edge, name) {
+      this.$emit('delete-attribute', edge, name);
     },
-    onAddAttribute(model) {
-      this.$emit('add-attribute', model, 'default');
+    onAddAttribute(edge) {
+      this.$emit('add-attribute', edge, 'default');
     },
-    onDeleteOperation(model, name) {
-      this.$emit('delete-operation', model, name);
+    onDeleteOperation(edge, name) {
+      this.$emit('delete-operation', edge, name);
     },
-    onAddOperation(model) {
-      this.$emit('add-operation', model, 'default');
+    onAddOperation(edge) {
+      this.$emit('add-operation', edge, 'default');
     }
   }
 }

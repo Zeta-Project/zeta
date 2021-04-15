@@ -13,7 +13,7 @@
               :key="`${edge.style.model.name}-properties-attributes-${index}`">
             <v-col>
               <v-text-field
-                  label="attribute.name"
+                  :label="attribute.name"
                   v-model="attribute.value">
               </v-text-field>
             </v-col>

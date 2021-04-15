@@ -214,7 +214,7 @@ export function addNodeStyleToNodes(vuejsComponent, nodes) {
                 abstract: node.abstractness,
                 superTypeNames: node.superTypeNames,
                 attributes: node.attributes,
-                operations: node.methods
+                methods: node.methods
             })
         );
 
@@ -260,7 +260,7 @@ export function getEdgesFromReferences(graph, references, nodes) {
             sourceUpperBounds: reference.sourceUpperBounds,
             targetLowerBounds: reference.targetLowerBounds,
             targetUpperBounds: reference.targetUpperBounds,
-            operations: reference.operations,
+            methods: reference.methods,
             attributes: reference.attributes,
         });
 

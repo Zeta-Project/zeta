@@ -21,7 +21,7 @@ export class UMLEdgeModel {
         this.sourceUpperBounds = (data && data.sourceUpperBounds) || -1;
         this.targetLowerBounds = (data && data.targetLowerBounds) || 0;
         this.targetUpperBounds = (data && data.targetUpperBounds) || -1;
-        this.operations = (data && data.operations) || []
+        this.methods = (data && data.methods) || []
         this.attributes = (data && data.attributes) || []
         this.labels = (data && data.labels) || []
 

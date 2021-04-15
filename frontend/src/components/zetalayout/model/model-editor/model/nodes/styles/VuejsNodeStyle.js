@@ -137,7 +137,7 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         // determine width
         /*let width = 125
         const elementFont = this.elementLabel.style.font
-        const elements = data.attributes.concat(data.operations)
+        const elements = data.attributes.concat(data.methods)
         elements.forEach(element => {
             const size = TextRenderSupport.measureText(element.name, elementFont)
             width = Math.max(width, size.width + LEFT_SPACING + 5)

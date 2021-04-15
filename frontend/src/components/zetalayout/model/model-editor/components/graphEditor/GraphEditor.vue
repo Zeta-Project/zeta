@@ -168,6 +168,7 @@ export default {
             ).then(
                 response => {
                   this.concept = response.data.concept
+                  localStorage.setItem('concept', JSON.stringify(this.concept));
 
                   const metamodelId = response.data.model.graphicalDslId;
 
@@ -202,25 +203,6 @@ export default {
     },
 
     initializeDefaultStyles() {
-      let methods = {}
-      methods.addAttributeToNode = this.addAttributeToNode;
-      methods.addOperationToNode = this.addOperationToNode;
-      methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
-      methods.deleteOperationFromNode = this.deleteOperationFromNode;
-      methods.changeInputMode = this.changeInputMode;
-      const NodeConstructor = Vue.extend(Node);
-      //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
-      this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor, methods, this.$graphComponent.inputMode);
-      this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
-      this.$graphComponent.graph.nodeDefaults.size = new Size(150, 250);
-      // this.$graphComponent.graph.
-      // this.$graphComponent.setNodeLayout(node, new Rect(layout.x, layout.y, 500, 50))
-      //this.$graphComponent.graph.size = nodeData.size || [50, 50]
-      this.$graphComponent.graph.nodeDefaults.labels.style = new DefaultLabelStyle({
-        textFill: '#fff',
-        font: new Font('Robot, sans-serif', 14)
-      });
-      this.$graphComponent.graph.edgeDefaults.style = new CustomPolyEdgeStyle(new umlEdgeModel.ModelEdgeModel());
       this.$graphComponent.graph.undoEngineEnabled = true
     },
 
