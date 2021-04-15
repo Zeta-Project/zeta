@@ -197,9 +197,7 @@ export default {
 
       items.forEach(item => {
         const modelItem = INode.isInstance(item) || IEdge.isInstance(item) ? item : item.element
-        const visual = INode.isInstance(modelItem)
-            ? this.createNodeVisual(item, graphComponent)
-            : this.createEdgeVisual(item, graphComponent)
+        const visual = INode.isInstance(modelItem) ? this.createNodeVisual(item, graphComponent) : null
         this.addPointerDownListener(modelItem, visual, this.beginDragCallback)
         divElement.appendChild(visual)
       });
@@ -234,30 +232,6 @@ export default {
         graph.addPort(node, port.locationParameter, port.style, port.tag)
       })
       this.updateViewport(graphComponent)
-
-      return this.exportAndWrap(graphComponent, original.tooltip)
-    },
-
-    /**
-     * Creates an element that contains the visualization of the given edge.
-     * @return {HTMLDivElement}
-     */
-    createEdgeVisual(original, graphComponent) {
-      const graph = graphComponent.graph
-      graph.clear()
-
-      const originalEdge = IEdge.isInstance(original) ? original : original.element
-
-      const n1 = graph.createNode(new Rect(0, 10, 0, 0), VoidNodeStyle.INSTANCE)
-      const n2 = graph.createNode(new Rect(50, 40, 0, 0), VoidNodeStyle.INSTANCE)
-      const edge = graph.createEdge(n1, n2, originalEdge.style)
-      graph.addBend(edge, new Point(25, 10))
-      graph.addBend(edge, new Point(25, 40))
-
-      this.updateViewport(graphComponent)
-
-      // provide some more insets to account for the arrow heads
-      graphComponent.updateContentRect(new Insets(5))
 
       return this.exportAndWrap(graphComponent, original.tooltip)
     },

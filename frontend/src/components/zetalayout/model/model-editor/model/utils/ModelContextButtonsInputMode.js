@@ -129,6 +129,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
               createEdgeInputMode.removeGestureCanceledListener(listener)
               createEdgeInputMode.removeGestureFinishedListener(listener)
             }
+            // createEdgeInputMode.addTargetPortCandidateChangedListener(evt => (console.log(evt)))
             createEdgeInputMode.addGestureFinishedListener(listener)
             createEdgeInputMode.addGestureCanceledListener(listener)
             return
