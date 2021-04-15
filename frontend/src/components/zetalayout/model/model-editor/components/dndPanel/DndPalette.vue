@@ -93,8 +93,6 @@ export default {
           let shapeNode = geoElements[j]
 
           if (typeof shapeNode.size !== 'undefined') {
-            //const NodeConstructor = Vue.extend(NodeExample)
-
             const node = graph.createNode({
               layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
               style: new ShapeNodeStyle({

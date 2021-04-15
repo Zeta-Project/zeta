@@ -6,20 +6,19 @@ import {
   FreeNodePortLocationModel,
   GraphEditorInputMode,
   ICanvasObjectDescriptor,
-  IInputMode,
   IInputModeContext,
   IModelItem,
   INode,
   ISelectionIndicatorInstaller,
   InputModeBase,
-  ItemSelectionChangedEventArgs,
   ModelManager,
   Point,
   SolidColorFill,
-  delegate
+  YString
 } from 'yfiles'
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
+import NodeCandidateProvider from './NodeCandidateProvider.js'
 
 /**
  * An {@link IInputMode} which will provide buttons for edge creation for the graph component's current item.
@@ -109,6 +108,8 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
           const parentInputMode = this.inputModeContext.parentInputMode
           if (parentInputMode instanceof GraphEditorInputMode) {
             const createEdgeInputMode = parentInputMode.createEdgeInputMode
+            console.log("register port candidate provider")
+            registerPortCandidateProvider(graphComponent.graph)
 
             // initialize dummy edge
             const modelEdgeType = styleButton
@@ -251,4 +252,26 @@ class MySelectionIndicatorManager extends ModelManager {
   onDisabled() {}
 
   onEnabled() {}
+}
+
+/**
+ * Registers a callback function as decorator that provides a custom
+ * {@link IPortCandidateProvider} for each node.
+ * This callback function is called whenever a node in the graph is queried
+ * for its <code>IPortCandidateProvider</code>. In this case, the 'node'
+ * parameter will be assigned that node.
+ * @param {IGraph} graph The given graph
+ */
+ function registerPortCandidateProvider(graph) {
+  graph.decorator.nodeDecorator.portCandidateProviderDecorator.setFactory(node => {
+    // Obtain the tag from the edge
+    const nodeTag = node.tag
+
+    console.log("nodeTag:" + JSON.stringify(nodeTag.className));
+
+    // Check if it is a known tag and choose the respective implementation
+    if (nodeTag) {
+      return new NodeCandidateProvider(node);
+    }
+  })
 }
