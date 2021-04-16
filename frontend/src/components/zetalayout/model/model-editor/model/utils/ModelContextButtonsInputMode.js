@@ -18,6 +18,7 @@ import {
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
 import NodeCandidateProvider from './NodeCandidateProvider.js'
+import {ModelEdgeModel} from "../edges/ModelEdgeModel";
 
 /**
  * An {@link IInputMode} which will provide buttons for edge creation for the graph component's current item.
@@ -105,6 +106,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     buttonNode,
                     location
                 )
+
                 if (styleButton) {
                     if (styleButton?.model?.name) {
                         const shape = JSON.parse(window.localStorage.getItem("shape"))
@@ -131,6 +133,10 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         const modelEdgeType = styleButton
                         const dummyEdgeGraph = createEdgeInputMode.dummyEdgeGraph
                         const dummyEdge = createEdgeInputMode.dummyEdge
+
+                        // Mirror the model content to the 'tag' property to be able to access the model via the 'tag'
+                        // property (for consistency between node and edge handling)
+                        dummyEdge.tag = styleButton.model;
                         dummyEdgeGraph.setStyle(dummyEdge, modelEdgeType)
                         dummyEdgeGraph.addLabel(dummyEdge, "")
                         dummyEdgeGraph.edgeDefaults.style = modelEdgeType

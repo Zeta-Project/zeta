@@ -365,7 +365,7 @@ export default {
      * Handles the item click action. Used as a callback for a item-clicked-event.
      */
     handleItemClicked(args, tag, type) {
-      if (tag || (type instanceof UMLEdgeStyle && type.model)) {
+      if (tag) {
         if (type instanceof VuejsNodeStyle) {
           this.sharedData.focusedNodeData = tag;
           this.sharedData.focusedEdgeData = null;

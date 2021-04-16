@@ -283,12 +283,12 @@ export default {
      * Handles the item click action. Used as a callback for a item-clicked-event.
      */
     handleItemClicked(args, tag, type) {
-      if (tag || (type instanceof CustomPolyEdgeStyle && type.model)) {
+      if (tag) {
         if (type instanceof ShapeNodeStyle) {
           this.sharedData.focusedNodeData = tag;
           this.sharedData.focusedEdgeData = null;
         } else if (type instanceof CustomPolyEdgeStyle) {
-          this.sharedData.focusedEdgeData = args.item;
+          this.sharedData.focusedEdgeData = tag;
           this.sharedData.focusedNodeData = null;
         }
         this.selectedItem = args;
