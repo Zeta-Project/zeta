@@ -370,7 +370,7 @@ export default {
           this.sharedData.focusedNodeData = tag;
           this.sharedData.focusedEdgeData = null;
         } else if (type instanceof UMLEdgeStyle) {
-          this.sharedData.focusedEdgeData = tag;
+          this.sharedData.focusedEdgeData = args.item;
           this.sharedData.focusedNodeData = null;
         }
         this.selectedItem = args;
