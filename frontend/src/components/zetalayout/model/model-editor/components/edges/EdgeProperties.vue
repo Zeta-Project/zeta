@@ -9,14 +9,6 @@
 
           <v-row>
             <v-col>
-              <p class="font-italic">
-                Meta-Information can only be changed in Concept-Editor.
-              </p>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
               <v-text-field label="Name" v-model="edge.style.model.name" disabled/>
             </v-col>
           </v-row>
@@ -40,14 +32,13 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
 
-    <v-expansion-panel>
+    <v-expansion-panel v-if="edge.style.model.attributes && edge.style.model.attributes.length > 0">
       <v-expansion-panel-header>Attributes</v-expansion-panel-header>
 
       <v-expansion-panel-content>
         <v-container>
 
           <v-row
-              v-if="edge.style.model.attributes"
               v-for="(attribute, index) in edge.style.model.attributes"
               :key="`${edge.style.model.name}-properties-attributes-${index}`">
             <v-col>
@@ -62,14 +53,13 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
 
-    <v-expansion-panel>
+    <v-expansion-panel v-if="edge.style.model.methods && edge.style.model.methods.length > 0">
       <v-expansion-panel-header>Methods</v-expansion-panel-header>
 
       <v-expansion-panel-content>
         <v-container>
 
           <v-row
-              v-if="edge.style.model.methods"
               v-for="(method, index) in edge.style.model.methods"
               :key="`${edge.style.model.name}-properties-methods-${index}`">
             <v-col>

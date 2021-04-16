@@ -21,7 +21,6 @@ export class ModelClassModel {
     constructor(data) {
         this.name = (data && data.name) || ''
         this.description = (data && data.description) || ''
-        this.abstractness = (data && data.abstractness) || false
         this.abstract = (data && data.abstract) || false
         this.superTypeNames = (data && data.superTypeNames) || []
         this.stereotype = (data && data.stereotype) || '' //if data && data.stereotype != null, use data.stereotype. else ''
@@ -46,6 +45,7 @@ export class ModelClassModel {
         clone.stereotype = this.stereotype
         clone.constraint = this.constraint
         clone.className = this.className
+        clone.name = this.name
         clone.attributes = Array.from(this.attributes)
         clone.methods = Array.from(this.methods)
         clone.attributesOpen = this.attributesOpen

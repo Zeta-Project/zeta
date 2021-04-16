@@ -108,7 +108,7 @@ export default {
                 methods: conceptClass.methods,
                 name: conceptClass.name,
                 description: conceptClass.description,
-                abstractness: conceptClass.abstractness,
+                abstract: conceptClass.abstractness,
                 className: name
               })
             })
