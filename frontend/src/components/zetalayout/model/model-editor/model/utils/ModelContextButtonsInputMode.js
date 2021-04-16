@@ -18,7 +18,6 @@ import {
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
 import NodeCandidateProvider from './NodeCandidateProvider.js'
-import {ModelEdgeModel} from "../edges/ModelEdgeModel";
 
 /**
  * An {@link IInputMode} which will provide buttons for edge creation for the graph component's current item.

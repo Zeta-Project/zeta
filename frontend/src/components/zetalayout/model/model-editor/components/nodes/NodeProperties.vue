@@ -21,7 +21,7 @@
 
           <v-row>
             <v-col>
-              <v-checkbox v-model="node.abstract" :label="'Is Abstract?'" disabled/>
+              <v-checkbox v-model="node.abstractness" :label="'Is Abstract?'" disabled/>
             </v-col>
           </v-row>
 
