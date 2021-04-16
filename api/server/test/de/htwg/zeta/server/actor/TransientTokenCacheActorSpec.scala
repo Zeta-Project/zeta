@@ -17,7 +17,7 @@ import org.scalatest.matchers.should.Matchers
 class TransientTokenCacheActorSpec extends AnyFlatSpec with Matchers {
 
   val system: ActorSystem = ActorSystem()
-  val timeout: Timeout = Duration(1, TimeUnit.MINUTES)
+  val timeout: Timeout = Duration(3, TimeUnit.MINUTES)
   var createActor: TokenCache = new TokenCacheActor(system,timeout)
   var uid : UUID = UUID.randomUUID()
   var userToken : Option[UUID] = None
