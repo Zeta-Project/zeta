@@ -279,6 +279,26 @@ class ButtonIconRenderer {
     this.gc.graphModelManager.edgeGroup.above(this.gc.graphModelManager.nodeGroup)
   }
 
+  renderButton(edgeStyle) {
+    const graph = this.gc.graph
+    graph.clear()
+    const style = new ShapeNodeStyle({
+      fill: 'white',
+      stroke: '#607D8B',
+      shape: ShapeNodeShape.ELLIPSE
+    })
+    graph.createNode(new Rect(-15, -15, 30, 30), style)
+    const src = graph.createNode(new Rect(-10, 0, 1, 1), VoidNodeStyle.INSTANCE)
+    const tgt = graph.createNode(new Rect(10, 0, 1, 1), VoidNodeStyle.INSTANCE)
+    graph.createEdge({
+      source: src,
+      target: tgt,
+      style: edgeStyle
+    })
+    const svgExport = new SvgExport(new Rect(-18, -18, 36, 36))
+    return svgExport.exportSvg(this.gc)
+  }
+
   renderTextButton(text) {
     const textSize = TextRenderSupport.measureText(
       text,
