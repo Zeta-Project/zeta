@@ -216,25 +216,6 @@ export default {
     },
 
     /**
-     * Plots the edges in the graph
-     * @param concept: concept definition
-     * @param graphNodes: has to be already existing nodes in the graph for it to work
-     * */
-    plotEdges(concept, graphNodes) {
-      // Get the node constructor from the node component
-      const graph = this.$graphComponent.graph;
-      let edges = getEdgesFromReferences(graph, concept.references, graphNodes);
-      edges.forEach(edge => {
-        const graphEdge = graph.createEdge({
-          source: edge.source,
-          target: edge.target,
-          style: getStyleForEdge(edge)
-        });
-        graph.addLabel(graphEdge, edge.name)
-      });
-    },
-
-    /**
      * Returns the default zeta input mode
      */
     getInputMode(graphComponent) {
