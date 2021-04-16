@@ -93,6 +93,9 @@ export default {
           let shapeNode = geoElements[j]
 
           if (typeof shapeNode.size !== 'undefined') {
+            //const NodeConstructor = Vue.extend(NodeExample)
+            let conceptClass = this.concept.classes.find(c => c.name === conceptElement);
+
             const node = graph.createNode({
               layout: new Rect(0, 0, shapeNode.size.width, shapeNode.size.height),
               style: new ShapeNodeStyle({
@@ -101,9 +104,11 @@ export default {
                 stroke: shapeNode.style.line.color.hex
               }),
               tag: new ModelClassModel({
-                attributes: this.concept.classes.find(c => c.name === conceptElement).attributes,
-                methods: this.concept.classes.find(c => c.name === conceptElement).methods,
-                description: shapeNode.type,
+                attributes: conceptClass.attributes,
+                methods: conceptClass.methods,
+                name: conceptClass.name,
+                description: conceptClass.description,
+                abstractness: conceptClass.abstractness,
                 className: name
               })
             })
@@ -195,7 +200,9 @@ export default {
 
       items.forEach(item => {
         const modelItem = INode.isInstance(item) || IEdge.isInstance(item) ? item : item.element
-        const visual = INode.isInstance(modelItem) ? this.createNodeVisual(item, graphComponent) : null
+        const visual = INode.isInstance(modelItem)
+            ? this.createNodeVisual(item, graphComponent)
+            : this.createEdgeVisual(item, graphComponent)
         this.addPointerDownListener(modelItem, visual, this.beginDragCallback)
         divElement.appendChild(visual)
       });
@@ -230,6 +237,30 @@ export default {
         graph.addPort(node, port.locationParameter, port.style, port.tag)
       })
       this.updateViewport(graphComponent)
+
+      return this.exportAndWrap(graphComponent, original.tooltip)
+    },
+
+    /**
+     * Creates an element that contains the visualization of the given edge.
+     * @return {HTMLDivElement}
+     */
+    createEdgeVisual(original, graphComponent) {
+      const graph = graphComponent.graph
+      graph.clear()
+
+      const originalEdge = IEdge.isInstance(original) ? original : original.element
+
+      const n1 = graph.createNode(new Rect(0, 10, 0, 0), VoidNodeStyle.INSTANCE)
+      const n2 = graph.createNode(new Rect(50, 40, 0, 0), VoidNodeStyle.INSTANCE)
+      const edge = graph.createEdge(n1, n2, originalEdge.style)
+      graph.addBend(edge, new Point(25, 10))
+      graph.addBend(edge, new Point(25, 40))
+
+      this.updateViewport(graphComponent)
+
+      // provide some more insets to account for the arrow heads
+      graphComponent.updateContentRect(new Insets(5))
 
       return this.exportAndWrap(graphComponent, original.tooltip)
     },
