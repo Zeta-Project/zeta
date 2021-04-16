@@ -38,7 +38,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     static get edgeCreationButtons() {
         if (ButtonVisualCreator.edgesForCurrentNode && ButtonVisualCreator.concept) {
             return ButtonVisualCreator.edgesForCurrentNode.map(edge => {
-                // ToDo: Is the concept element name for edges always <node>.<edge-name>? If not the next line must be adjusted
+                // ToDo: Is the concept element name for edges always "<node>.<edge-name>"? If not the next line must be adjusted
                 const conceptEdge = ButtonVisualCreator.concept.references.find(r => r.name === edge.conceptElement.split(".")[1]);
                 const model = new ModelEdgeModel({
                     name: conceptEdge.name,
