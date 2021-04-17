@@ -155,6 +155,7 @@ export class DragAndDropPanel {
     const n1 = graph.createNode(new Rect(0, 10, 0, 0), VoidNodeStyle.INSTANCE)
     const n2 = graph.createNode(new Rect(50, 40, 0, 0), VoidNodeStyle.INSTANCE)
     const edge = graph.createEdge(n1, n2, originalEdge.style)
+
     graph.addBend(edge, new Point(25, 10))
     graph.addBend(edge, new Point(25, 40))
 

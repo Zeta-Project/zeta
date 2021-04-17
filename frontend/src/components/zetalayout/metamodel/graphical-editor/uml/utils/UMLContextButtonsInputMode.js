@@ -114,6 +114,10 @@ export default class UMLContextButtonsInputMode extends InputModeBase {
             const umlEdgeType = styleButton
             const dummyEdgeGraph = createEdgeInputMode.dummyEdgeGraph
             const dummyEdge = createEdgeInputMode.dummyEdge
+
+            // Mirror the model content to the 'tag' property to be able to access the model via the 'tag'
+            // property (for consistency between node and edge handling)
+            dummyEdge.tag = styleButton.model;
             dummyEdgeGraph.setStyle(dummyEdge, umlEdgeType)
             dummyEdgeGraph.addLabel(dummyEdge, "")
             dummyEdgeGraph.edgeDefaults.style = umlEdgeType
