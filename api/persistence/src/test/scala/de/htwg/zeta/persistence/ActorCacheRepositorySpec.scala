@@ -41,15 +41,21 @@ import de.htwg.zeta.persistence.transient.TransientPasswordInfoRepository
 import de.htwg.zeta.persistence.transient.TransientSettingsRepository
 import de.htwg.zeta.persistence.transient.TransientTimedTaskRepository
 import de.htwg.zeta.persistence.transient.TransientUserRepository
+import org.scalatest.BeforeAndAfterAll
+import scala.concurrent.Await
 
 /**
  * ActorCacheMicroServiceTest.
  */
-class ActorCacheRepositorySpec extends RepositoryBehavior {
+class ActorCacheRepositorySpec extends RepositoryBehavior with BeforeAndAfterAll {
 
   val system = ActorSystem()
   val cacheDuration = Duration(1, TimeUnit.MINUTES)
   val timeout: Timeout = Duration(1, TimeUnit.MINUTES)
+
+  override def afterAll(): Unit = {
+    Await.result(system.terminate(), Duration.Inf)
+  }
 
   "ActorCacheRepository" should behave like repositoryBehavior(
     new ActorCacheAccessAuthorisationRepository(new TransientAccessAuthorisationRepository, system, 3, cacheDuration, timeout),

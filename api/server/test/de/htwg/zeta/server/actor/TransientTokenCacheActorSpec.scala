@@ -10,17 +10,22 @@ import scala.util.Success
 import akka.actor.ActorSystem
 import akka.util.Timeout
 import de.htwg.zeta.server.model.TokenCache
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 
-class TransientTokenCacheActorSpec extends AnyFlatSpec with Matchers {
+class TransientTokenCacheActorSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   val system: ActorSystem = ActorSystem()
-  val timeout: Timeout = Duration(3, TimeUnit.MINUTES)
+  val timeout: Timeout = Duration(1, TimeUnit.MINUTES)
   var createActor: TokenCache = new TokenCacheActor(system,timeout)
   var uid : UUID = UUID.randomUUID()
   var userToken : Option[UUID] = None
+
+  override def afterAll(): Unit = {
+    Await.result(system.terminate(), Duration.Inf)
+  }
 
   "ActorTokenCache" should "create instances" in {
     createActor.getClass shouldBe classOf[TokenCacheActor]
