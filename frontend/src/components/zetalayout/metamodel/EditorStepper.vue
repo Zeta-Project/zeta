@@ -176,7 +176,8 @@ export default {
       currentStep: 1,
       shapeEditor: {},
       styleEditor: {},
-      diagramEditor: {}
+      diagramEditor: {},
+      isOpen: false
     }
   },
   mounted() {
@@ -208,6 +209,8 @@ export default {
       this.diagramEditor = new EditorSelection(editorElements[2], this.gdslProject.id, this.step4, this.gdslProject.diagram)
 
       this.setCurrentStep(this.getInitialStep());
+
+      this.isOpen = true;
     },
     getEditorElements() {
       return [this.$refs.shapeEditorElement, this.$refs.styleEditorElement, this.$refs.diagramEditorElement]
@@ -223,6 +226,8 @@ export default {
 
       this.diagramEditor?.destroy();
       this.diagramEditor = null;
+
+      this.isOpen = false;
     },
     setCurrentStep(step) {
       if (this.currentStep === step) {
@@ -278,16 +283,16 @@ export default {
       return !this.isDiagramEmpty && this.currentStep !== 4;
     },
     isConceptActive: function () {
-      return this.currentStep === 1;
+      return this.currentStep === 1 && this.isOpen;
     },
     isShapeActive: function () {
-      return this.currentStep === 2;
+      return this.currentStep === 2 && this.isOpen;
     },
     isStyleActive: function () {
-      return this.currentStep === 3;
+      return this.currentStep === 3 && this.isOpen;
     },
     isDiagramActive: function () {
-      return this.currentStep === 4;
+      return this.currentStep === 4 && this.isOpen;
     },
     allowContinue: function () {
       return this.currentStep < 4;
