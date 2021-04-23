@@ -80,6 +80,7 @@ import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsI
 import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
+import {EventBus} from "@/eventbus/eventbus";
 
 License.value = licenseData;
 
@@ -238,8 +239,10 @@ export default {
       mode.addItemRightClickedListener((src, args) => {
         if (graphComponent.graph.isGroupNode(args.item)) {
           graphComponent.graph.setIsGroupNode(args.item, false)
+          EventBus.$emit('infoMessage', "Unset current item as group node")
         } else {
           graphComponent.graph.setIsGroupNode(args.item, true)
+          EventBus.$emit('infoMessage', "Set current item to group node")
         }
       });
       // Configure input mode for dndPanel actions
