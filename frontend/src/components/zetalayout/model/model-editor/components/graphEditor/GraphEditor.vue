@@ -74,12 +74,10 @@ import {
   getEdgesFromReferences,
   getStyleForEdge, saveGraph
 } from "./GraphEditorUtils";
-import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
 import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
-import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 
@@ -228,13 +226,20 @@ export default {
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.addCanvasClickedListener(() => this.handleCanvasClicked(umlContextButtonsInputMode));
-      mode.addItemClickedListener((src, args) => {
+      mode.addItemLeftClickedListener((src, args) => {
         this.handleItemClicked(args, args.item.tag, args.item.style)
 
         if (args.item.style instanceof ShapeNodeStyle) {
           umlContextButtonsInputMode.onCurrentItemChanged()
         } else if (args.item.style instanceof CustomPolyEdgeStyle) {
           umlContextButtonsInputMode.hideButtons()
+        }
+      });
+      mode.addItemRightClickedListener((src, args) => {
+        if (graphComponent.graph.isGroupNode(args.item)) {
+          graphComponent.graph.setIsGroupNode(args.item, false)
+        } else {
+          graphComponent.graph.setIsGroupNode(args.item, true)
         }
       });
       // Configure input mode for dndPanel actions
