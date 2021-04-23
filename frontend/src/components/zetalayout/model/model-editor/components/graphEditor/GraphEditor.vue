@@ -43,6 +43,12 @@
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
+
+    <!-- Delete group node dialog -->
+    <DeleteParentNodeDialog
+        :show-dialog="showDeleteDialog"
+        @cancel="toggleDeleteDialog"
+    />
   </div>
 </template>
 
@@ -81,6 +87,7 @@ import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
+import DeleteParentNodeDialog from "../../../../overview/dialogs/DeleteParentNodeDialog";
 
 License.value = licenseData;
 
@@ -94,6 +101,7 @@ License.value = licenseData;
 export default {
   name: 'GraphEditorComponent',
   components: {
+    DeleteParentNodeDialog,
     Toolbar,
     PropertyPanel,
     DndPanel
@@ -116,10 +124,12 @@ export default {
       isDndExpanded: false,
       grid: null,
       selectedItem: null,
+      showDeleteDialog: false,
       sharedData: {focusedNodeData: null, focusedEdgeData: null},
       diagram: null,
       shape: null,
-      styleModel: null
+      styleModel: null,
+      currentGroupNode: null
     }
   },
   computed: {
@@ -139,6 +149,9 @@ export default {
     /**
      * Initialize and mount the y-Files graph component
      **/
+    toggleDeleteDialog() {
+      this.showDeleteDialog = !this.showDeleteDialog;
+    },
     initGraphComponent() {
       return new Promise((resolve, reject) => {
             this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
@@ -238,19 +251,41 @@ export default {
       });
       mode.addItemRightClickedListener((src, args) => {
         if (graphComponent.graph.isGroupNode(args.item)) {
-          graphComponent.graph.setIsGroupNode(args.item, false)
-          EventBus.$emit('infoMessage', "Unset current item as group node")
+          if (graphComponent.graph.getChildren(args.item).size !== 0) {
+            EventBus.$emit('infoMessage', "The current item cannot be unset as parent node as long as it has children")
+          } else {
+            graphComponent.graph.setIsGroupNode(args.item, false)
+            EventBus.$emit('infoMessage', "Unset current item as group node")
+          }
         } else {
           graphComponent.graph.setIsGroupNode(args.item, true)
           EventBus.$emit('infoMessage', "Set current item to group node")
         }
       });
+      // Check if parent node can be deleted or not (child nodes)
+      mode.deletablePredicate = item => {
+        if (graphComponent.graph.isGroupNode(item)) {
+          if (graphComponent.graph.getChildren(item).size !== 0 ) {
+            this.currentGroupNode = item;
+            this.toggleDeleteDialog();
+          }
+        }
+      };
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
       return mode
     },
-
+    /**
+     * Delete all child-nodes within a group node incl. the group node itself
+     */
+    deleteGroupNode() {
+/*      this.$graphComponent.graph.getChildren(this.currentGroupNode).forEach( () => {
+        getDefaultGraphEditorInputMode().deletablePredicate = item => {
+          return true;
+        };
+      })*/
+    },
     /**
      * Routes all edges that connect to selected nodes.
      * This is used when a selection of nodes is moved or resized.
