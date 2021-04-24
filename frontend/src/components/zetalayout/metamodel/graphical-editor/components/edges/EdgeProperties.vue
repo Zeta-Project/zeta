@@ -23,10 +23,12 @@
             <v-col>
               <v-checkbox v-model="edge.sourceDeletionDeletesTarget"
                           :label="'Source deletion deletes target'"
-                          @change="onSourceDeletionDeletesTargetChange(edge)"/>
+                          @change="onSourceDeletionDeletesTargetChange(edge)"
+                          disabled/>
               <v-checkbox v-model="edge.targetDeletionDeletesSource"
                           :label="'Target deletion deletes source'"
-                          @change="onTargetDeletionDeletesSourceChange(edge)"/>
+                          @change="onTargetDeletionDeletesSourceChange(edge)"
+                          disabled/>
             </v-col>
           </v-row>
 
