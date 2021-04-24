@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name: "DeleteParentNodeDialog",
+  name: "DeleteGroupNodeDialog",
   props: {
     showDialog: Boolean
   },

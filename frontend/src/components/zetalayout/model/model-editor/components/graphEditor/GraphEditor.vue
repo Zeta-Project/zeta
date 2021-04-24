@@ -45,7 +45,7 @@
     <div class="graph-component-container" ref="GraphComponentElement"></div>
 
     <!-- Delete group node dialog -->
-    <DeleteParentNodeDialog
+    <DeleteGroupNodeDialog
         :show-dialog="showDeleteDialog"
         @cancel="toggleDeleteDialog"
     />
@@ -66,7 +66,7 @@ import {
   License,
   PolylineEdgeRouterData,
   Size, TreeBuilder,
-  ShowFocusPolicy, ShapeNodeStyle
+  ShowFocusPolicy, ShapeNodeStyle, GraphItemTypes
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -87,7 +87,7 @@ import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
-import DeleteParentNodeDialog from "../../../../overview/dialogs/DeleteParentNodeDialog";
+import DeleteGroupNodeDialog from "../../../../overview/dialogs/DeleteGroupNodeDialog";
 
 License.value = licenseData;
 
@@ -101,7 +101,7 @@ License.value = licenseData;
 export default {
   name: 'GraphEditorComponent',
   components: {
-    DeleteParentNodeDialog,
+    DeleteGroupNodeDialog,
     Toolbar,
     PropertyPanel,
     DndPanel
@@ -232,6 +232,8 @@ export default {
      */
     getInputMode(graphComponent) {
       const mode = getDefaultGraphEditorInputMode();
+      // Turning off interactive node resizing
+      mode.showHandleItems = GraphItemTypes.ALL & ~GraphItemTypes.NODE
       // Add buttons that appear above a selected node for the creation of a new edge
       const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
@@ -252,14 +254,16 @@ export default {
       mode.addItemRightClickedListener((src, args) => {
         if (graphComponent.graph.isGroupNode(args.item)) {
           if (graphComponent.graph.getChildren(args.item).size !== 0) {
-            EventBus.$emit('infoMessage', "The current item cannot be unset as parent node as long as it has children")
+            EventBus.$emit('infoMessage', "The current item cannot be unset as group node as long as it has children")
           } else {
             graphComponent.graph.setIsGroupNode(args.item, false)
             EventBus.$emit('infoMessage', "Unset current item as group node")
           }
         } else {
-          graphComponent.graph.setIsGroupNode(args.item, true)
-          EventBus.$emit('infoMessage', "Set current item to group node")
+          if (graphComponent.graph.getParent(args.item) == null) {
+            graphComponent.graph.setIsGroupNode(args.item, true)
+            EventBus.$emit('infoMessage', "Set current item to group node")
+          }
         }
       });
       // Check if parent node can be deleted or not (child nodes)
@@ -268,7 +272,11 @@ export default {
           if (graphComponent.graph.getChildren(item).size !== 0 ) {
             this.currentGroupNode = item;
             this.toggleDeleteDialog();
+          } else {
+            return true
           }
+        } else {
+          return true
         }
       };
       // Configure input mode for dndPanel actions
@@ -276,16 +284,15 @@ export default {
 
       return mode
     },
+
     /**
-     * Delete all child-nodes within a group node incl. the group node itself
+     * Delete all child nodes within a group node incl. the group node itself.
      */
     deleteGroupNode() {
-/*      this.$graphComponent.graph.getChildren(this.currentGroupNode).forEach( () => {
-        getDefaultGraphEditorInputMode().deletablePredicate = item => {
-          return true;
-        };
-      })*/
+      // TODO implementation of delete function
+      this.toggleDeleteDialog();
     },
+
     /**
      * Routes all edges that connect to selected nodes.
      * This is used when a selection of nodes is moved or resized.
