@@ -14,7 +14,7 @@
 
     <!-- Set 'eager' on dialog to force rendering of the dialog components even if the dialog is still closed,
      we need this to be able to get the editor elements to initialize the ACE editors before opening the dialog -->
-    <v-dialog persistent v-model="editProjectDialog" eager fullscreen hide-overlay transition="dialog-bottom-transition">
+    <v-dialog persistent no-click-animation v-model="editProjectDialog" eager fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on, attrs }">
         <div id="app" data-app>
           <v-btn v-on:click="onOpenEditorDialog" class="mt-4" color="primary" depressed v-bind="attrs"
