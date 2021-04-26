@@ -43,12 +43,6 @@
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
-
-    <!-- Delete group node dialog -->
-    <DeleteGroupNodeDialog
-        :show-dialog="showDeleteDialog"
-        @cancel="toggleDeleteDialog"
-    />
   </div>
 </template>
 
@@ -87,7 +81,6 @@ import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
-import DeleteGroupNodeDialog from "../../../../overview/dialogs/DeleteGroupNodeDialog";
 
 License.value = licenseData;
 
@@ -101,7 +94,6 @@ License.value = licenseData;
 export default {
   name: 'GraphEditorComponent',
   components: {
-    DeleteGroupNodeDialog,
     Toolbar,
     PropertyPanel,
     DndPanel
@@ -112,7 +104,7 @@ export default {
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
     }).catch(error => {
-      // TODO add snackbar error
+      EventBus.$emit('errorMessage', error.toString())
       console.error(error)
     });
   },
@@ -124,12 +116,10 @@ export default {
       isDndExpanded: false,
       grid: null,
       selectedItem: null,
-      showDeleteDialog: false,
       sharedData: {focusedNodeData: null, focusedEdgeData: null},
       diagram: null,
       shape: null,
-      styleModel: null,
-      currentGroupNode: null
+      styleModel: null
     }
   },
   computed: {
@@ -149,9 +139,6 @@ export default {
     /**
      * Initialize and mount the y-Files graph component
      **/
-    toggleDeleteDialog() {
-      this.showDeleteDialog = !this.showDeleteDialog;
-    },
     initGraphComponent() {
       return new Promise((resolve, reject) => {
             this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
@@ -266,31 +253,10 @@ export default {
           }
         }
       });
-      // Check if parent node can be deleted or not (child nodes)
-      mode.deletablePredicate = item => {
-        if (graphComponent.graph.isGroupNode(item)) {
-          if (graphComponent.graph.getChildren(item).size !== 0 ) {
-            this.currentGroupNode = item;
-            this.toggleDeleteDialog();
-          } else {
-            return true
-          }
-        } else {
-          return true
-        }
-      };
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
       return mode
-    },
-
-    /**
-     * Delete all child nodes within a group node incl. the group node itself.
-     */
-    deleteGroupNode() {
-      // TODO implementation of delete function
-      this.toggleDeleteDialog();
     },
 
     /**
