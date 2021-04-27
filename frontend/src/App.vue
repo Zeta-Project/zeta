@@ -1,15 +1,15 @@
 <template>
   <v-app>
     <div class="alerts">
-      <v-alert dense type="error" v-if="errorMessage" transition="fade-transition" dismissible
+      <v-alert dense type="error" :value="!!errorMessage" transition="scale-transition" dismissible
                class="col-md-6 offset-md-3">
         <strong>Error!</strong> {{ errorMessage }}
       </v-alert>
-      <v-alert dense type="info" v-if="infoMessage" transition="fade-transition" dismissible
+      <v-alert dense type="info" :value="!!infoMessage" transition="scale-transition" dismissible
                class="col-md-6 offset-md-3">
         <strong>Info!</strong> {{ infoMessage }}
       </v-alert>
-      <v-alert dense type="success" :value="!!successMessage" transition="fade-transition" dismissible
+      <v-alert dense type="success" :value="!!successMessage" transition="scale-transition" dismissible
                class="col-md-6 offset-md-3">
         <strong>Success!</strong> {{ successMessage }}
       </v-alert>
