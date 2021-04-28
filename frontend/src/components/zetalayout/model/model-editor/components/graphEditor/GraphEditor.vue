@@ -60,7 +60,7 @@ import {
   License,
   PolylineEdgeRouterData,
   Size, TreeBuilder,
-  ShowFocusPolicy, ShapeNodeStyle
+  ShowFocusPolicy, ShapeNodeStyle, GraphItemTypes
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -74,14 +74,13 @@ import {
   getEdgesFromReferences,
   getStyleForEdge, saveGraph
 } from "./GraphEditorUtils";
-import {UMLEdgeStyle} from "../../model/edges/styles/UMLEdgeStyle";
 import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
-import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
+import {EventBus} from "@/eventbus/eventbus";
 
 License.value = licenseData;
 
@@ -105,7 +104,7 @@ export default {
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
     }).catch(error => {
-      // TODO add snackbar error
+      EventBus.$emit('errorMessage', error.toString())
       console.error(error)
     });
   },
@@ -220,6 +219,8 @@ export default {
      */
     getInputMode(graphComponent) {
       const mode = getDefaultGraphEditorInputMode();
+      // Turning off interactive node resizing
+      mode.showHandleItems = GraphItemTypes.ALL & ~GraphItemTypes.NODE
       // Add buttons that appear above a selected node for the creation of a new edge
       const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
@@ -228,13 +229,28 @@ export default {
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.addCanvasClickedListener(() => this.handleCanvasClicked(umlContextButtonsInputMode));
-      mode.addItemClickedListener((src, args) => {
+      mode.addItemLeftClickedListener((src, args) => {
         this.handleItemClicked(args, args.item.tag, args.item.style)
 
         if (args.item.style instanceof ShapeNodeStyle) {
           umlContextButtonsInputMode.onCurrentItemChanged()
         } else if (args.item.style instanceof CustomPolyEdgeStyle) {
           umlContextButtonsInputMode.hideButtons()
+        }
+      });
+      mode.addItemRightClickedListener((src, args) => {
+        if (graphComponent.graph.isGroupNode(args.item)) {
+          if (graphComponent.graph.getChildren(args.item).size !== 0) {
+            EventBus.$emit('infoMessage', "The current item cannot be unset as group node as long as it has children")
+          } else {
+            graphComponent.graph.setIsGroupNode(args.item, false)
+            EventBus.$emit('infoMessage', "Unset current item as group node")
+          }
+        } else {
+          if (graphComponent.graph.getParent(args.item) == null) {
+            graphComponent.graph.setIsGroupNode(args.item, true)
+            EventBus.$emit('infoMessage', "Set current item to group node")
+          }
         }
       });
       // Configure input mode for dndPanel actions

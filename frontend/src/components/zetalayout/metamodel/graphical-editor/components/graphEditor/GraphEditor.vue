@@ -89,7 +89,7 @@ import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMo
 import {Grid} from "../../layout/grid/Grid";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios"
-import {EventBus} from "../../../../../../eventbus/eventbus";
+import {EventBus} from "@/eventbus/eventbus";
 import { Attribute } from "../../uml/attributes/Attribute";
 import { Method } from "../../uml/methods/Method";
 
@@ -116,7 +116,7 @@ export default {
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
     }).catch(error => {
-      // TODO add snackbar error
+      EventBus.$emit('errorMessage', error.toString())
       console.error(error)
     });
   },
