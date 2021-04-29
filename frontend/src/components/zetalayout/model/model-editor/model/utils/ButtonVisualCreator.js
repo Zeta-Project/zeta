@@ -157,36 +157,9 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
         // update the container layout
         SvgVisual.setTranslate(svgElement, topRight.x, topRight.y)
 
-        // maybe update the toggle buttons
-        const interfaceButton = svgElement.childNodes[svgElement.childNodes.length - 2]
-        const abstractButton = svgElement.childNodes[svgElement.childNodes.length - 1]
-        if (!interfaceButton || !abstractButton) {
-            this.createVisual(ctx)
-        }
-
         if (cache.width !== layout.width || cache.height !== layout.height) {
-            SvgVisual.setTranslate(interfaceButton, layout.x - topRight.x, layout.y - topRight.y - 25)
-            SvgVisual.setTranslate(abstractButton, layout.x - topRight.x + 25, layout.y - topRight.y - 25)
             cache.width = layout.width
             cache.height = layout.height
-        }
-
-        // update the button state if they have changed
-        if (cache.interfaceToggle !== this.node.tag.stereotype) {
-            interfaceButton.setAttribute(
-                'class',
-                this.node.style.model.stereotype.length > 0
-                    ? 'interface-toggle toggled'
-                    : 'interface-toggle'
-            )
-            cache.interfaceToggle = this.node.style.model.stereotype
-        }
-        if (cache.constraintToggle !== this.node.tag.constraint) {
-            abstractButton.setAttribute(
-                'class',
-                this.node.tag.constraint.length > 0 ? 'abstract-toggle toggled' : 'abstract-toggle'
-            )
-            cache.constraintToggle = this.node.tag.constraint
         }
 
         return oldVisual
@@ -213,33 +186,6 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             ) {
                 return ButtonVisualCreator.edgeCreationButtons[i]
             }
-        }
-        return null
-    }
-
-    /**
-     * Helper method to get the context button at the given location.
-     * @param {INode} node The node who should be checked for a button.
-     * @param {IPoint} location The world location to check for a button.
-     * @returns {string|object} The context button at the given or null.
-     */
-    static getContextButtonAt(node, location) {
-        const layout = node.layout
-        if (
-            location.x >= layout.x &&
-            location.x <= layout.x + 20 &&
-            location.y <= layout.y - 5 &&
-            location.y >= layout.y - 25
-        ) {
-            return 'interface'
-        }
-        if (
-            location.x >= layout.x + 25 &&
-            location.x <= layout.x + 45 &&
-            location.y <= layout.y - 5 &&
-            location.y >= layout.y - 25
-        ) {
-            return 'abstract'
         }
         return null
     }
@@ -330,7 +276,6 @@ class ButtonIconRenderer {
         textElement.textContent = text
         container.appendChild(background)
         container.appendChild(textElement)
-        container.setAttribute('class', text === 'I' ? 'interface-toggle' : 'abstract-toggle')
         return container
     }
 }
