@@ -219,8 +219,6 @@ export default {
      */
     getInputMode(graphComponent) {
       const mode = getDefaultGraphEditorInputMode();
-      // Turning off interactive node resizing
-      mode.showHandleItems = GraphItemTypes.ALL & ~GraphItemTypes.NODE
       // Add buttons that appear above a selected node for the creation of a new edge
       const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;

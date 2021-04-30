@@ -30,7 +30,6 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
 
         // initializes listener functions in order to install/uninstall them
         this.onCurrentItemChangedListener = () => this.onCurrentItemChanged()
-        this.onCanvasClickedListener = (sender, evt) => this.onCanvasClicked(evt.location)
         this.onNodeRemovedListener = (sender, evt) => this.onNodeRemoved(evt.item)
         this.startEdgeCreationListener = (sender, evt) => this.startEdgeCreation(evt.location)
 
@@ -57,7 +56,6 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
         graphComponent.addMouseClickListener(this.startEdgeCreationListener)
         graphComponent.addTouchMoveListener(this.startEdgeCreationListener)
         graphComponent.addTouchDownListener(this.startEdgeCreationListener)
-        graphComponent.inputMode.addCanvasClickedListener(this.onCanvasClickedListener)
         graphComponent.graph.addNodeRemovedListener(this.onNodeRemovedListener)
     }
 
@@ -161,38 +159,6 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
     }
 
     /**
-     * Check whether a context button has been clicked.
-     * @param {Point} location
-     */
-    onCanvasClicked(location) {
-        if (this.active && this.canRequestMutex()) {
-            const graphComponent = this.inputModeContext.canvasComponent
-            for (let enumerator = this.buttonNodes.getEnumerator(); enumerator.moveNext();) {
-                const buttonNode = enumerator.current
-                const contextButton = ButtonVisualCreator.getContextButtonAt(buttonNode, location)
-                if (contextButton) {
-                    if (contextButton === 'interface') {
-                        const isInterface = buttonNode.style.model.stereotype === 'interface'
-                        buttonNode.style.model.stereotype = isInterface ? '' : 'interface'
-                        buttonNode.style.model.constraint = ''
-                        buttonNode.style.fill = isInterface
-                            ? new SolidColorFill(0x60, 0x7d, 0x8b)
-                            : Fill.SEA_GREEN
-                    } else if (contextButton === 'abstract') {
-                        const isAbstract = buttonNode.style.model.constraint === 'abstract'
-                        buttonNode.style.model.constraint = isAbstract ? '' : 'abstract'
-                        buttonNode.style.model.stereotype = ''
-                        buttonNode.style.fill = isAbstract ? new SolidColorFill(0x60, 0x7d, 0x8b) : Fill.CRIMSON
-                    }
-                    buttonNode.style.model.modify()
-                    graphComponent.invalidate()
-                    graphComponent.inputMode.clickInputMode.preventNextDoubleClick()
-                }
-            }
-        }
-    }
-
-    /**
      * Removed the installed listeners when they are not needed anymore.
      * @param {IInputModeContext} context - The context to remove this mode from. This is the same
      *   instance that has been passed to {@link InputModeBase#install}.
@@ -204,7 +170,6 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
         graphComponent.removeMouseClickListener(this.startEdgeCreationListener)
         graphComponent.removeTouchMoveListener(this.startEdgeCreationListener)
         graphComponent.removeTouchDownListener(this.startEdgeCreationListener)
-        graphComponent.inputMode.removeCanvasClickedListener(this.onCanvasClickedListener)
         graphComponent.graph.removeNodeRemovedListener(this.onNodeRemovedListener)
         this.buttonNodes.clear()
         this.manager.dispose()
