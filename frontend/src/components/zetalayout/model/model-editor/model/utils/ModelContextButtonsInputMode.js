@@ -12,8 +12,7 @@ import {
     ISelectionIndicatorInstaller,
     InputModeBase,
     ModelManager,
-    Point,
-    SolidColorFill
+    Point
 } from 'yfiles'
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
@@ -104,12 +103,13 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     location
                 )
 
+                const edgeModel = styleButton?.model?.edgeModel;
                 if (styleButton) {
-                    if (styleButton?.model?.name) {
+                    if (edgeModel?.name) {
                         const shape = JSON.parse(window.localStorage.getItem("shape"))
                         if (shape?.edges) {
                             shape.edges.forEach(edge => {
-                                if (edge.conceptElement && styleButton.model.name === edge.conceptElement.split(".").pop() && edge.target) {
+                                if (edge.conceptElement && edgeModel.name === edge.conceptElement.split(".").pop() && edge.target) {
                                     const currentNodes = shape.nodes.filter(node => {
                                         return node.conceptElement === edge.target
                                     })
@@ -133,10 +133,39 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
 
                         // Mirror the model content to the 'tag' property to be able to access the model via the 'tag'
                         // property (for consistency between node and edge handling)
-                        dummyEdge.tag = styleButton.model;
+                        dummyEdge.tag = edgeModel;
                         dummyEdgeGraph.setStyle(dummyEdge, modelEdgeType)
-                        dummyEdgeGraph.addLabel(dummyEdge, "")
                         dummyEdgeGraph.edgeDefaults.style = modelEdgeType
+
+
+
+
+                        // Currently only labels of type "textfield" are displayed
+                        const labelPlacing = styleButton.model.placings
+                            .find(p => p.geoElement.type === "textfield");
+
+                        console.log("labelPlacing", JSON.stringify(labelPlacing));
+                        console.log("edgeModel", JSON.stringify(edgeModel));
+
+                        if(labelPlacing){
+                            const text = labelPlacing.geoElement.textBody;
+                            dummyEdgeGraph.addLabel(dummyEdge, text);
+                        }
+
+                        // dummyEdgeGraph.addLabel(dummyEdge, "lorem ipsum test x 123 lol foo ba", null, new DefaultLabelStyle({
+                        //     wrapping: "word",
+                        //     maximumSize: new Size(100, 200)
+                        // }))
+
+                        // const x = new FreeLabelModel()
+                        // const y = x.createDefaultParameter()
+                        //
+                        // const v = new DefaultLabelStyle({wrapping: "word"})
+                        // const c = dummyEdgeGraph.addLabel(dummyEdge, "",)
+                        // dummyEdgeGraph.label
+
+
+
 
                         // start edge creation and hide buttons until the edge is finished
                         this.buttonNodes.clear()
