@@ -17,18 +17,18 @@
         v-show="isEditEnabled"
         v-if="diagram !== null && shape !== null && concept !== null"
     >
-       <div v-if="this.concept.references !== null">
-      <DndPanel
-          v-if="graphComponent"
-          :graph-component="graphComponent"
-          :shape="shape"
-          :diagram="diagram"
-          :concept="concept"
-          :references="this.concept.references"
-          :styleModel="styleModel"
-          :is-expanded="isDndExpanded"
-          :passive-supported="true"
-      />
+      <div v-if="this.concept.references !== null">
+        <DndPanel
+            v-if="graphComponent"
+            :graph-component="graphComponent"
+            :shape="shape"
+            :diagram="diagram"
+            :concept="concept"
+            :references="this.concept.references"
+            :styleModel="styleModel"
+            :is-expanded="isDndExpanded"
+            :passive-supported="true"
+        />
       </div>
     </aside>
     <aside
@@ -81,6 +81,7 @@ import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
+import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/model/utils/NodeCandidateProvider";
 
 License.value = licenseData;
 
@@ -149,9 +150,9 @@ export default {
             axios.get("http://localhost:9000/rest/v1/models/" + uuid + "/definition", {withCredentials: true})
                 .then(
                     response => {
-                      if(this.concept.graphicalDslId) {
-                              getMetaConcept(this.concept.graphicalDslId).then( metamodel => this.concept.references = metamodel.data.references) 
-                        }
+                      if (this.concept.graphicalDslId) {
+                        getMetaConcept(this.concept.graphicalDslId).then(metamodel => this.concept.references = metamodel.data.references)
+                      }
                       // this.plotDefaultGraph(this.concept)
                       this.executeLayout()
                           .then(() => {
@@ -224,25 +225,60 @@ export default {
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
       mode.add(umlContextButtonsInputMode);
 
+      mode.createEdgeInputMode.startOverCandidateOnly = true;
+
       mode.createEdgeInputMode.addEdgeCreationStartedListener((sender, args) => {
         let FirstEdge;
 
-        for(let i = 0; i < this.shape.nodes.length; i++)
-        {
-          if(this.shape.nodes[i].name === args.sourcePortOwner.tag.className)
-          {
-            if(this.shape.nodes[i].edges.length > 0)
-            {
+        for (let i = 0; i < this.shape.nodes.length; i++) {
+          if (this.shape.nodes[i].name === args.sourcePortOwner.tag.className) {
+            if (this.shape.nodes[i].edges.length > 0) {
               FirstEdge = this.shape.nodes[i].edges[0];
             }
           }
         }
         const createEdgeInputMode = sender
-        // TODO if there is no edge, dont draw it
-        if(FirstEdge)
-        {
+
+        if (FirstEdge) {
           createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, FirstEdge)
           createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, FirstEdge)
+          mode.createEdgeInputMode.addTargetPortCandidateChangedListener((sender, args) => {
+            console.log("addTargetPortCandidateChangedListener")
+            if(args?.item?.owner?.tag?.className){
+              console.log("args.item.owner.tag.className")
+              console.log(args.item.owner.tag.className)
+              let target;
+              //const shape = JSON.parse(window.localStorage.getItem("shape"))
+              if (this.shape?.edges) {
+                this.shape.edges.forEach(edge => {
+                  //console.log("edge")
+                  //console.log(edge)
+                  //console.log("FirstEdge")
+
+                  if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
+                    console.log("edge.conceptElement")
+                    console.log(edge.conceptElement)
+                    console.log("FirstEdge.conceptElement")
+                    console.log(FirstEdge.conceptElement)
+                    console.log("edge.conceptElement, edge.target")
+                    console.log(edge.conceptElement, edge.target)
+                    const currentNodes = this.shape.nodes.filter(node => {
+                      return node.conceptElement === edge.target
+                    })
+                    if (currentNodes.length) {
+                      target = currentNodes[0].name
+                    }
+                  }
+                })
+              }
+              if(FirstEdge)
+              {
+                this.registerPortCandidateProvider(graphComponent.graph, target)
+              }
+            }
+          })
+        } else {
+          // TODO if there is no edge, dont draw it
         }
       })
 
@@ -278,6 +314,18 @@ export default {
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
       return mode
+    },
+    registerPortCandidateProvider(graph, target) {
+      console.log("registerPortCandidateProvider")
+      graph.decorator.nodeDecorator.portCandidateProviderDecorator.setFactory(node => {
+        // Obtain the tag from the edge
+        const nodeTag = node.tag
+
+        // Check if it is a known tag and choose the respective implementation
+        if (nodeTag) {
+          return new NodeCandidateProvider(node, target);
+        }
+      })
     },
 
     /**

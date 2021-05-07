@@ -110,6 +110,9 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         if (shape?.edges) {
                             shape.edges.forEach(edge => {
                                 if (edge.conceptElement && styleButton.model.name === edge.conceptElement.split(".").pop() && edge.target) {
+                                    console.log("styleButton.model.name")
+                                    console.log(styleButton.model.name)
+                                    console.log(styleButton)
                                     const currentNodes = shape.nodes.filter(node => {
                                         return node.conceptElement === edge.target
                                     })
@@ -124,6 +127,8 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     const parentInputMode = this.inputModeContext.parentInputMode
                     if (parentInputMode instanceof GraphEditorInputMode) {
                         const createEdgeInputMode = parentInputMode.createEdgeInputMode
+                        console.log("this.target")
+                        console.log(this.target)
                         registerPortCandidateProvider(graphComponent.graph, this.target)
 
                         // initialize dummy edge
