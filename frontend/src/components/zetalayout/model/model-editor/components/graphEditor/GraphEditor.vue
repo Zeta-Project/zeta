@@ -223,6 +223,29 @@ export default {
       const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
       mode.add(umlContextButtonsInputMode);
+
+      mode.createEdgeInputMode.addEdgeCreationStartedListener((sender, args) => {
+        let FirstEdge;
+
+        for(let i = 0; i < this.shape.nodes.length; i++)
+        {
+          if(this.shape.nodes[i].name === args.sourcePortOwner.tag.className)
+          {
+            if(this.shape.nodes[i].edges.length > 0)
+            {
+              FirstEdge = this.shape.nodes[i].edges[0];
+            }
+          }
+        }
+        const createEdgeInputMode = sender
+        // TODO if there is no edge, dont draw it
+        if(FirstEdge)
+        {
+          createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, FirstEdge)
+          createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, FirstEdge)
+        }
+      })
+
       // execute a layout after certain gestures
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
