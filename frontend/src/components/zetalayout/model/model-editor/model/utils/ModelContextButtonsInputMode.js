@@ -12,7 +12,15 @@ import {
     ISelectionIndicatorInstaller,
     InputModeBase,
     ModelManager,
-    Point
+    Point,
+    EdgeSegmentLabelModel,
+    EdgeSides,
+    DefaultLabelStyle,
+    Size,
+    SolidColorFill,
+    Font,
+    FontStyle,
+    FontWeight
 } from 'yfiles'
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
@@ -137,35 +145,60 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         dummyEdgeGraph.setStyle(dummyEdge, modelEdgeType)
                         dummyEdgeGraph.edgeDefaults.style = modelEdgeType
 
+                        /*
+                            Create the edge labels as they are given by the concept
+                         */
 
+                        // Currently only labels of type 'textfield' are displayed
+                        const labelPlacings = styleButton.model.placings
+                            .filter(p => p.geoElement.type === "textfield");
 
+                        labelPlacings.forEach(lp => {
+                            const position = lp.geoElement.position;
+                            const size = lp.geoElement.size;
+                            const style = lp.geoElement.style;
 
-                        // Currently only labels of type "textfield" are displayed
-                        const labelPlacing = styleButton.model.placings
-                            .find(p => p.geoElement.type === "textfield");
+                            const text = lp.geoElement.textBody;
+                            const segmentRatio = position.x;    // Position of label: '0' at source node, '1' at target node
 
-                        console.log("labelPlacing", JSON.stringify(labelPlacing));
-                        console.log("edgeModel", JSON.stringify(edgeModel));
+                            const labelModel = new EdgeSegmentLabelModel({
+                                distance: position.y    // Distance between Edge and Label
+                            }).createParameterFromCenter(segmentRatio, EdgeSides.ABOVE_EDGE);
 
-                        if(labelPlacing){
-                            const text = labelPlacing.geoElement.textBody;
-                            dummyEdgeGraph.addLabel(dummyEdge, text);
-                        }
+                            const font = new Font({
+                                fontFamily: style.font.name,
+                                fontSize: style.font.size
+                            });
 
-                        // dummyEdgeGraph.addLabel(dummyEdge, "lorem ipsum test x 123 lol foo ba", null, new DefaultLabelStyle({
-                        //     wrapping: "word",
-                        //     maximumSize: new Size(100, 200)
-                        // }))
+                            if (style.font.bold)
+                                font.fontWeight = FontWeight.BOLD;
+                            if (style.font.italic)
+                                font.fontStyle = FontStyle.ITALIC;
 
-                        // const x = new FreeLabelModel()
-                        // const y = x.createDefaultParameter()
-                        //
-                        // const v = new DefaultLabelStyle({wrapping: "word"})
-                        // const c = dummyEdgeGraph.addLabel(dummyEdge, "",)
-                        // dummyEdgeGraph.label
+                            const fontColor = new SolidColorFill(
+                                style.font.color.r,
+                                style.font.color.g,
+                                style.font.color.b,
+                                style.font.color.a * 255    // Y-Files uses 255 as max alpha, we're using 1
+                            )
 
+                            const backgroundColor = new SolidColorFill(
+                                style.background.color.r,
+                                style.background.color.g,
+                                style.background.color.b,
+                                style.background.color.a * 255  // Y-Files uses 255 as max alpha, we're using 1
+                            );
 
+                            const labelStyle = new DefaultLabelStyle({
+                                maximumSize: new Size(size.width, size.height),
+                                font: font,
+                                textFill: fontColor,
+                                backgroundFill: backgroundColor,
+                                wrapping: "word"
+                            });
 
+                            dummyEdgeGraph.addLabel(dummyEdge, text, labelModel, labelStyle);
+                        });
 
                         // start edge creation and hide buttons until the edge is finished
                         this.buttonNodes.clear()
