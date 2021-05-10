@@ -242,43 +242,42 @@ export default {
         if (FirstEdge) {
           createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, FirstEdge)
           createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, FirstEdge)
-          mode.createEdgeInputMode.addTargetPortCandidateChangedListener((sender, args) => {
-            console.log("addTargetPortCandidateChangedListener")
-            if(args?.item?.owner?.tag?.className){
-              console.log("args.item.owner.tag.className")
-              console.log(args.item.owner.tag.className)
-              let target;
-              //const shape = JSON.parse(window.localStorage.getItem("shape"))
-              if (this.shape?.edges) {
-                this.shape.edges.forEach(edge => {
-                  //console.log("edge")
-                  //console.log(edge)
-                  //console.log("FirstEdge")
-
-                  if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
-                    console.log("edge.conceptElement")
-                    console.log(edge.conceptElement)
-                    console.log("FirstEdge.conceptElement")
-                    console.log(FirstEdge.conceptElement)
-                    console.log("edge.conceptElement, edge.target")
-                    console.log(edge.conceptElement, edge.target)
-                    const currentNodes = this.shape.nodes.filter(node => {
-                      return node.conceptElement === edge.target
-                    })
-                    if (currentNodes.length) {
-                      target = currentNodes[0].name
-                    }
-                  }
-                })
-              }
-              if(FirstEdge)
-              {
-                this.registerPortCandidateProvider(graphComponent.graph, target)
-              }
-            }
-          })
         } else {
           // TODO if there is no edge, dont draw it
+        }
+      })
+
+      mode.createEdgeInputMode.addMovingListener((sender, args) => {
+        const sourceNode = this.nodeByPoint(graphComponent, sender.startPoint);
+        const targetNode = this.nodeByPoint(graphComponent, sender.dragPoint);
+
+        if(targetNode?.tag?.className)
+        {
+          let FirstEdge;
+          for (let i = 0; i < this.shape.nodes.length; i++) {
+            if (this.shape.nodes[i].name === sourceNode.tag.className) {
+              if (this.shape.nodes[i].edges.length > 0) {
+                FirstEdge = this.shape.nodes[i].edges[0];
+              }
+            }
+          }
+          let target;
+          if (this.shape?.edges) {
+            this.shape.edges.forEach(edge => {
+              if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
+                const currentNodes = this.shape.nodes.filter(node => {
+                  return node.conceptElement === edge.target
+                })
+                if (currentNodes.length) {
+                  target = currentNodes[0].name
+                }
+              }
+            })
+          }
+          if(FirstEdge)
+          {
+            this.registerPortCandidateProvider(graphComponent.graph, target)
+          }
         }
       })
 
@@ -316,7 +315,6 @@ export default {
       return mode
     },
     registerPortCandidateProvider(graph, target) {
-      console.log("registerPortCandidateProvider")
       graph.decorator.nodeDecorator.portCandidateProviderDecorator.setFactory(node => {
         // Obtain the tag from the edge
         const nodeTag = node.tag
@@ -326,6 +324,10 @@ export default {
           return new NodeCandidateProvider(node, target);
         }
       })
+    },
+    nodeByPoint(graphComponent, point) {
+      const allNodes = graphComponent.graph.nodes;
+      return allNodes.find(node => node.layout.contains(point));
     },
 
     /**
