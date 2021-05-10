@@ -94,7 +94,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
     startEdgeCreation(location) {
         if (this.active && this.canRequestMutex()) {
             const graphComponent = this.inputModeContext.canvasComponent
-
+            window.currentEdge = undefined;
             // check which node currently has the buttons and invoke create edge input mode to create a new edge
             for (let enumerator = this.buttonNodes.getEnumerator(); enumerator.moveNext();) {
                 const buttonNode = enumerator.current
@@ -110,9 +110,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         if (shape?.edges) {
                             shape.edges.forEach(edge => {
                                 if (edge.conceptElement && styleButton.model.name === edge.conceptElement.split(".").pop() && edge.target) {
-                                    console.log("styleButton.model.name")
-                                    console.log(styleButton.model.name)
-                                    console.log(styleButton)
+                                    window.currentEdge = styleButton.model.name
                                     const currentNodes = shape.nodes.filter(node => {
                                         return node.conceptElement === edge.target
                                     })
@@ -127,8 +125,6 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     const parentInputMode = this.inputModeContext.parentInputMode
                     if (parentInputMode instanceof GraphEditorInputMode) {
                         const createEdgeInputMode = parentInputMode.createEdgeInputMode
-                        console.log("this.target")
-                        console.log(this.target)
                         registerPortCandidateProvider(graphComponent.graph, this.target)
 
                         // initialize dummy edge
@@ -158,6 +154,8 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         createEdgeInputMode.addGestureCanceledListener(listener)
                         return
                     }
+                } else {
+                    window.currentEdge = undefined;
                 }
             }
         }

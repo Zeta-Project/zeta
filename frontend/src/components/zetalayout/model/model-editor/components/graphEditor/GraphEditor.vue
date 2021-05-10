@@ -228,55 +228,63 @@ export default {
       mode.createEdgeInputMode.startOverCandidateOnly = true;
 
       mode.createEdgeInputMode.addEdgeCreationStartedListener((sender, args) => {
-        let FirstEdge;
+        let CurrentEdge;
 
         for (let i = 0; i < this.shape.nodes.length; i++) {
           if (this.shape.nodes[i].name === args.sourcePortOwner.tag.className) {
             if (this.shape.nodes[i].edges.length > 0) {
-              FirstEdge = this.shape.nodes[i].edges[0];
+              for (let j = 0; j < this.shape.nodes[i].edges.length; j++) {
+                let currentEdgeName = this.shape.nodes[i].edges[j].conceptElement.split(".").pop()
+                if (currentEdgeName === window.currentEdge) {
+                  CurrentEdge = this.shape.nodes[i].edges[j];
+                }
+              }
+              if (!window.currentEdge) {
+                CurrentEdge = this.shape.nodes[i].edges[0];
+              }
             }
           }
         }
         const createEdgeInputMode = sender
 
-        if (FirstEdge) {
-          createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, FirstEdge)
-          createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, FirstEdge)
+        if (CurrentEdge) {
+          createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, CurrentEdge)
+          createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, CurrentEdge)
         } else {
           // TODO if there is no edge, dont draw it
         }
       })
 
       mode.createEdgeInputMode.addMovingListener((sender, args) => {
-        const sourceNode = this.nodeByPoint(graphComponent, sender.startPoint);
-        const targetNode = this.nodeByPoint(graphComponent, sender.dragPoint);
+        if (!window.currentEdge) {
+          const sourceNode = this.nodeByPoint(graphComponent, sender.startPoint);
+          const targetNode = this.nodeByPoint(graphComponent, sender.dragPoint);
 
-        if(targetNode?.tag?.className)
-        {
-          let FirstEdge;
-          for (let i = 0; i < this.shape.nodes.length; i++) {
-            if (this.shape.nodes[i].name === sourceNode.tag.className) {
-              if (this.shape.nodes[i].edges.length > 0) {
-                FirstEdge = this.shape.nodes[i].edges[0];
-              }
-            }
-          }
-          let target;
-          if (this.shape?.edges) {
-            this.shape.edges.forEach(edge => {
-              if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
-                const currentNodes = this.shape.nodes.filter(node => {
-                  return node.conceptElement === edge.target
-                })
-                if (currentNodes.length) {
-                  target = currentNodes[0].name
+          if (targetNode?.tag?.className) {
+            let FirstEdge;
+            for (let i = 0; i < this.shape.nodes.length; i++) {
+              if (this.shape.nodes[i].name === sourceNode.tag.className) {
+                if (this.shape.nodes[i].edges.length > 0) {
+                  FirstEdge = this.shape.nodes[i].edges[0];
                 }
               }
-            })
-          }
-          if(FirstEdge)
-          {
-            this.registerPortCandidateProvider(graphComponent.graph, target)
+            }
+            let target;
+            if (this.shape?.edges) {
+              this.shape.edges.forEach(edge => {
+                if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
+                  const currentNodes = this.shape.nodes.filter(node => {
+                    return node.conceptElement === edge.target
+                  })
+                  if (currentNodes.length) {
+                    target = currentNodes[0].name
+                  }
+                }
+              })
+            }
+            if (FirstEdge) {
+              this.registerPortCandidateProvider(graphComponent.graph, target)
+            }
           }
         }
       })
