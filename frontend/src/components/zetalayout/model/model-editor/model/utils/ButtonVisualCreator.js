@@ -109,6 +109,13 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             childg2.setAttribute('transform', 'translate(0 0)')
             childg3.setAttribute('transform', `rotate(${-first})`)
             animations.push(new ButtonAnimation(childg1, first, childg2))
+
+            // 08-05-2021: Tooltip-Gedöhns auf dem Edge-Button
+            const title = document.createElement("title")
+            title.style.setProperty("display", "inline")
+            const titleText = document.createTextNode(ButtonVisualCreator.edgesForCurrentNode[i].conceptElement)
+            title.appendChild(titleText)
+            child.appendChild(title)
             childg1.appendChild(child)
             childg2.appendChild(childg1)
             childg3.appendChild(childg2)
