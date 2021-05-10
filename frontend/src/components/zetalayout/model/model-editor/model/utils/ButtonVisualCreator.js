@@ -139,6 +139,8 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             constraintToggle: this.node.tag.constraint
         }
 
+        ButtonVisualCreator.buttons.reverse()
+
         return new SvgVisual(container)
     }
 
