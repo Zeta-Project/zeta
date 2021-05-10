@@ -251,7 +251,7 @@ export default {
           createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, CurrentEdge)
           createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, CurrentEdge)
         } else {
-          // TODO if there is no edge, dont draw it
+          mode.createEdgeInputMode.cancel()
         }
       })
 
