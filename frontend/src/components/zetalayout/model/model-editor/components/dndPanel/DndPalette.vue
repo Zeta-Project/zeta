@@ -113,23 +113,30 @@ export default {
               })
             })
 
-            if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
-              const fontStyle = new Font({
-                fontFamily: shapeNode.style.fontFamily,
-                fontSize: shapeNode.style.font.size
-              })
+            const fontStyle = new Font({
+              fontFamily: shapeNode.style.fontFamily,
+              fontSize: shapeNode.style.font.size
+            })
+
+            // Node labels (defined in shape-DSL)
+            shapeNode.childGeoElements.forEach(element => {
+              // Currently, only textfield is supported
+              if(element.type !== 'textfield') {
+                return
+              }
 
               graph.addLabel({
                 owner: node,
-                text: shapeNode.childGeoElements[0].identifier,
+                text: element.identifier,
                 layoutParameter: InteriorLabelModel.CENTER,
+                preferredSize: element.size,
                 style: new DefaultLabelStyle({
                   font: fontStyle,
                   verticalTextAlignment: "center",
                   horizontalTextAlignment: "center"
                 })
               })
-            }
+            })
           }
         }
       }
