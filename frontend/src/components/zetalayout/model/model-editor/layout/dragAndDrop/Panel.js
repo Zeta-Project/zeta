@@ -9,11 +9,9 @@ import {
   IPort,
   IStripe,
   ListEnumerable,
-  Point,
   Rect,
   SimpleNode,
-  SvgExport,
-  VoidNodeStyle
+  SvgExport
 } from 'yfiles'
 
 /**
