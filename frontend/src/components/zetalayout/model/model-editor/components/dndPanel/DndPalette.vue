@@ -344,7 +344,7 @@ export default {
           simpleNode.layout = item.layout
           simpleNode.style = item.style.clone()
           simpleNode.tag = item.tag
-          simpleNode.labels = this.$copyNodeLabels ? item.labels : IListEnumerable.EMPTY
+          simpleNode.labels = item.labels
           if (item.ports.size > 0) {
             simpleNode.ports = new ListEnumerable(item.ports)
           }
