@@ -94,7 +94,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
     startEdgeCreation(location) {
         if (this.active && this.canRequestMutex()) {
             const graphComponent = this.inputModeContext.canvasComponent
-
+            window.currentEdge = undefined;
             // check which node currently has the buttons and invoke create edge input mode to create a new edge
             for (let enumerator = this.buttonNodes.getEnumerator(); enumerator.moveNext();) {
                 const buttonNode = enumerator.current
@@ -110,6 +110,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         if (shape?.edges) {
                             shape.edges.forEach(edge => {
                                 if (edge.conceptElement && styleButton.model.name === edge.conceptElement.split(".").pop() && edge.target) {
+                                    window.currentEdge = styleButton.model.name
                                     const currentNodes = shape.nodes.filter(node => {
                                         return node.conceptElement === edge.target
                                     })
@@ -153,6 +154,8 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         createEdgeInputMode.addGestureCanceledListener(listener)
                         return
                     }
+                } else {
+                    window.currentEdge = undefined;
                 }
             }
         }
