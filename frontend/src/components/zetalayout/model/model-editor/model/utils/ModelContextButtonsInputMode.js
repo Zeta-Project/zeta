@@ -2,7 +2,6 @@ import {
     ConcurrencyController,
     DefaultPortCandidate,
     DefaultSelectionModel,
-    Fill,
     FreeNodePortLocationModel,
     GraphEditorInputMode,
     ICanvasObjectDescriptor,
@@ -13,14 +12,14 @@ import {
     InputModeBase,
     ModelManager,
     Point,
-    EdgeSegmentLabelModel,
     EdgeSides,
     DefaultLabelStyle,
     Size,
     SolidColorFill,
     Font,
     FontStyle,
-    FontWeight
+    FontWeight,
+    EdgePathLabelModel
 } from 'yfiles'
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
@@ -159,11 +158,14 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                             const style = lp.geoElement.style;
 
                             const text = lp.geoElement.textBody;
-                            const segmentRatio = position.x;    // Position of label: '0' at source node, '1' at target node
+                            const segmentRatio = lp.position.offset;    // Position of label: '0' at source node, '1' at target node
+                            // const angle = Math.atan2(position.y, position.x);
 
-                            const labelModel = new EdgeSegmentLabelModel({
+                            const labelModel = new EdgePathLabelModel({
+                                autoRotation: true,
+                                // angle: angle,
                                 distance: position.y    // Distance between Edge and Label
-                            }).createParameterFromCenter(segmentRatio, EdgeSides.ABOVE_EDGE);
+                            }).createRatioParameter(segmentRatio, EdgeSides.ABOVE_EDGE);
 
                             const font = new Font({
                                 fontFamily: style.font.name,
