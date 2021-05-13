@@ -25,237 +25,245 @@ https://github.com/causelabs/vue-inline-text-editor
 -->
 
 <template>
-    <div class="inline-editor" :class="classes">
-        <div v-if="editingValue !== null" class="content-field">
-            <input
-                type="text"
-                v-model="editingValue"
-                @change="emitChange"
-                @blur="emitBlur"
-                @keyup.enter="updateValue"
-                @keyup.esc="cancelEdit"
-                greetings
-                :placeholder="placeholder"
-                :required="required"
-                ref="input"
-            >
-        </div>
-        <div  @click.stop="clickHandler" class="value-display" v-if="currentlyEditing == false">
+  <div class="inline-editor" :class="classes">
+    <div v-if="editingValue !== null" class="content-field">
+      <input
+          type="text"
+          v-model="editingValue"
+          @change="emitChange"
+          @blur="emitBlur"
+          @keyup.enter="updateValue"
+          @keyup.esc="cancelEdit"
+          greetings
+          :placeholder="placeholder"
+          :required="required"
+          ref="input"
+      >
+    </div>
+    <div @click.stop="clickHandler" class="value-display" v-if="currentlyEditing == false">
             <span>{{ formattedValue }}
             </span>
-        </div>
     </div>
+  </div>
 </template>
 
 <script>
 
 export default {
-    name: 'VueInlineTextEditor',
-    props: {
-        autofocus: {
-            type: Boolean,
-            default: true
-        },
-        closeOnBlur: {
-            type: Boolean,
-            default: false
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        hoverEffects: {
-            type: Boolean,
-            default: false
-        },
-        maxLength: {
-            type: Number,
-            default: null
-        },
-        minLength: {
-            type: Number,
-            default: null
-        },
-        placeholder: {
-            type: String,
-            default: null
-        },
-        required: {
-            type: Boolean,
-            default: false
-        },
-        type: {
-            type: String,
-            default: 'text',
-            validator (value) {
-                return ['text', 'number', 'currency', 'percentage'].indexOf(value) > -1
-            }
-        },
-        inputMode:{
-            required: true
-        },
-        value: {
-            required: true
-        }
+  name: 'VueInlineTextEditor',
+  props: {
+    autofocus: {
+      type: Boolean,
+      default: true
     },
-    data () {
-        return {
-            editingValue: null,
-            internalValue: this.value,
-            currentlyEditing: false,
-            savedInputMode: null
-        }
+    closeOnBlur: {
+      type: Boolean,
+      default: false
     },
-    computed: {
-        classes () {
-            let classNames = []
-            if (this.hoverEffects) {
-                classNames.push('hover-effects')
-            }
-            if (this.editingValue !== null) {
-                classNames.push('editing')
-            }
-            if (this.disabled) {
-                classNames.push('disabled')
-            }
-            classNames.push('type-' + this.type)
-            return classNames.join(' ')
-        },
-
-        formattedValue () {
-            if ((null === this.internalValue) || ('' === this.internalValue)) {
-                return this.placeholder
-            }
-            return this.internalValue
-        }
+    disabled: {
+      type: Boolean,
+      default: false
     },
-    watch: {
-        internalValue (newValue) {
-           // console.log(newValue)
-            this.$emit('update:value', newValue)
-        },
-        selectValue (newValue) {
-            console.log(newValue)
-            this.internalSelectValue = newValue
-        },
-        value (newValue) {
-            console.log(newValue)
-            this.internalValue = newValue
-        },
+    hoverEffects: {
+      type: Boolean,
+      default: false
     },
-    mounted () {
-        // If this field is required, but is empty, open the editor
-        if (this.required) {
-            if ((this.internalValue === '') || (this.internalValue === null)) {
-                this.editingValue = ''
-                this.showSelect = true
-            }
-        }
+    maxLength: {
+      type: Number,
+      default: null
     },
-    methods: {
-        cancelEdit () {
-            this.internalSelectValue = this.originalSelectValue
-            this.closeEditor()
-        },
-        closeEditor () {
-            this.unlockInputMode();
-            this.currentlyEditing = false;
-            this.editingValue = null
-            this.$emit('close')
-            this.originalSelectValue = null
-        },
-        clickHandler(){          
-            this.currentlyEditing = true;
-            this.lockInputMode();
-            this.editValue()
-        },
-        
-        lockInputMode(){
-            this.savedInputMode = this.inputMode 
-            this.$emit('change-input-mode', null);
-        },
-
-        unlockInputMode(){
-            this.$emit('change-input-mode', this.savedInputMode);
-        },
-
-        editValue () {
-            if (this.disabled) {
-                return
-            }
-            if (this.internalValue === null) {
-                // Clicking into an empty editor, set to an empty string
-                this.editingValue = ''
-            } else {
-                this.editingValue = this.internalValue
-            }
-            this.filterValue()
-            this.originalSelectValue = this.internalSelectValue
-            // Set the focus to the input
-            window.setTimeout(() => {
-                this.showSelect = true
-                this.focus()
-            }, 10)
-            this.$emit('open')
-        },
-        emitBlur (e) {
-            this.$emit('blur', e)
-            if (this.closeOnBlur === true) {
-                this.updateValue()
-            }
-        },
-        emitChange (e) {
-            this.$emit('change', e)
-        },
-        filterValue () {
-            if (this.editingValue === null) {
-                return
-            }
-            if (['number', 'currency', 'percentage'].indexOf(this.type) > -1) {
-                this.editingValue = this.editingValue.toString().replace(/[^0-9.]/g, '')
-            }
-        },
-        focus () {
-            try {
-                this.$nextTick(() => {
-                    if (this.$refs && this.$refs.input) {
-                        this.$refs.input.focus()
-                    }
-                })
-            } catch (ignore) {
-                // ignore
-            }
-        },
-        updateValue () {
-            let isChanged = false
-            if (this.internalValue !== this.editingValue) {
-                this.internalValue = this.editingValue
-                isChanged = true
-            }
-            if (isChanged) {
-                this.$nextTick(() => {
-                    this.$emit('update')
-                })
-            }
-            this.closeEditor()
-        },
+    minLength: {
+      type: Number,
+      default: null
+    },
+    placeholder: {
+      type: String,
+      default: null
+    },
+    required: {
+      type: Boolean,
+      default: false
+    },
+    type: {
+      type: String,
+      default: 'text',
+      validator(value) {
+        return ['text', 'number', 'currency', 'percentage'].indexOf(value) > -1
+      }
+    },
+    inputMode: {
+      required: true
+    },
+    value: {
+      required: true
+    },
+    isEditEnabled: {
+      type: Boolean,
+      required: true
     }
+  },
+  data() {
+    return {
+      editingValue: null,
+      internalValue: this.value,
+      currentlyEditing: false,
+      savedInputMode: null
+    }
+  },
+  computed: {
+    classes() {
+      let classNames = []
+      if (this.hoverEffects) {
+        classNames.push('hover-effects')
+      }
+      if (this.editingValue !== null) {
+        classNames.push('editing')
+      }
+      if (this.disabled) {
+        classNames.push('disabled')
+      }
+      classNames.push('type-' + this.type)
+      return classNames.join(' ')
+    },
+
+    formattedValue() {
+      if ((null === this.internalValue) || ('' === this.internalValue)) {
+        return this.placeholder
+      }
+      return this.internalValue
+    }
+  },
+  watch: {
+    internalValue(newValue) {
+      // console.log(newValue)
+      this.$emit('update:value', newValue)
+    },
+    selectValue(newValue) {
+      console.log(newValue)
+      this.internalSelectValue = newValue
+    },
+    value(newValue) {
+      console.log(newValue)
+      this.internalValue = newValue
+    },
+  },
+  mounted() {
+    // If this field is required, but is empty, open the editor
+    if (this.required) {
+      if ((this.internalValue === '') || (this.internalValue === null)) {
+        this.editingValue = ''
+        this.showSelect = true
+      }
+    }
+  },
+  methods: {
+    cancelEdit() {
+      this.internalSelectValue = this.originalSelectValue
+      this.closeEditor()
+    },
+    closeEditor() {
+      this.unlockInputMode();
+      this.currentlyEditing = false;
+      this.editingValue = null
+      this.$emit('close')
+      this.originalSelectValue = null
+    },
+    clickHandler() {
+      if (this.isEditEnabled) {
+        this.currentlyEditing = true;
+        this.lockInputMode();
+        this.editValue()
+      }
+    },
+
+    lockInputMode() {
+      this.savedInputMode = this.inputMode
+      this.$emit('change-input-mode', null);
+    },
+
+    unlockInputMode() {
+      this.$emit('change-input-mode', this.savedInputMode);
+    },
+
+    editValue() {
+      if (this.disabled) {
+        return
+      }
+      if (this.internalValue === null) {
+        // Clicking into an empty editor, set to an empty string
+        this.editingValue = ''
+      } else {
+        this.editingValue = this.internalValue
+      }
+      this.filterValue()
+      this.originalSelectValue = this.internalSelectValue
+      // Set the focus to the input
+      window.setTimeout(() => {
+        this.showSelect = true
+        this.focus()
+      }, 10)
+      this.$emit('open')
+    },
+    emitBlur(e) {
+      this.closeEditor()
+      this.$emit('blur', e)
+      if (this.closeOnBlur === true) {
+        this.updateValue()
+      }
+    },
+    emitChange(e) {
+      this.$emit('change', e)
+    },
+    filterValue() {
+      if (this.editingValue === null) {
+        return
+      }
+      if (['number', 'currency', 'percentage'].indexOf(this.type) > -1) {
+        this.editingValue = this.editingValue.toString().replace(/[^0-9.]/g, '')
+      }
+    },
+    focus() {
+      try {
+        this.$nextTick(() => {
+          if (this.$refs && this.$refs.input) {
+            this.$refs.input.focus()
+          }
+        })
+      } catch (ignore) {
+        // ignore
+      }
+    },
+    updateValue() {
+      let isChanged = false
+      if (this.internalValue !== this.editingValue) {
+        this.internalValue = this.editingValue
+        isChanged = true
+      }
+      if (isChanged) {
+        this.$nextTick(() => {
+          this.$emit('update')
+        })
+      }
+      this.closeEditor()
+    },
+  }
 }
 </script>
 
 <style lang="css" scoped>
 
 
-.inline-editor{
-    display: inline-block;
-    cursor: text;
+.inline-editor {
+  display: inline-block;
+  cursor: text;
 }
 
-.value-display{
-    font-size: 15px;
+.value-display {
+  font-size: 15px;
 }
-.content-field{
-    background-color: white;
-    font-size: 15px;
+
+.content-field {
+  background-color: white;
+  font-size: 15px;
 }
 </style>

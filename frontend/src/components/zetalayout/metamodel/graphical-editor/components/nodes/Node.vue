@@ -26,7 +26,8 @@
                 <VueInlineTextEditor
                     @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"
                     :inputMode="inputMode"
-                    :value.sync="attribute.name"/>
+                    :value.sync="attribute.name"
+                    :isEditEnabled="methods.getIsEditEnabled()"/>
               </foreignObject>
               <image :x="layout.width - 22"
                      :y="45"
@@ -63,7 +64,8 @@
                 <VueInlineTextEditor
                     @change-input-mode="(newInputMode) => methods.changeInputMode(newInputMode)"
                     :inputMode="inputMode"
-                    :value.sync="method.name"/>
+                    :value.sync="method.name"
+                    :isEditEnabled="methods.getIsEditEnabled()"/>
               </foreignObject>
               <image :x="layout.width - 22"
                      :y="75 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
