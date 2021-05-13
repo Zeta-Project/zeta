@@ -110,7 +110,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     location
                 )
 
-                const edgeModel = styleButton?.model?.edgeModel;
+                const edgeModel = styleButton?.model;
                 if (styleButton) {
                     if (edgeModel?.name) {
                         const shape = JSON.parse(window.localStorage.getItem("shape"))
@@ -148,11 +148,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                             Create the edge labels as they are given by the concept
                          */
 
-                        // Currently only labels of type 'textfield' are displayed
-                        const labelPlacings = styleButton.model.placings
-                            .filter(p => p.geoElement.type === "textfield");
-
-                        labelPlacings.forEach(lp => {
+                        edgeModel.labels.forEach(lp => {
                             const position = lp.geoElement.position;
                             const size = lp.geoElement.size;
                             const style = lp.geoElement.style;

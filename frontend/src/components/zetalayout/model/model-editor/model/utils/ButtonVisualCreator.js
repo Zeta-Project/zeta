@@ -40,9 +40,13 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             return ButtonVisualCreator.edgesForCurrentNode.map(edge => {
                 // ToDo: Is the concept element name for edges always "<node>.<edge-name>"? If not the next line must be adjusted
                 const conceptEdge = ButtonVisualCreator.concept.references.find(r => r.name === edge.conceptElement.split(".")[1]);
-                const model = new ModelEdgeModel(conceptEdge)
+                const model = new ModelEdgeModel({
+                    ...conceptEdge,
+                    // Currently only labels of type 'textfield' are supported as labels
+                    labels: edge.placings.filter(p => p.geoElement.type === "textfield")
+                })
 
-                return new CustomPolyEdgeStyle({edgeModel: model, placings: edge.placings}, edge);
+                return new CustomPolyEdgeStyle(model, edge);
             })
         }
         return [];
