@@ -283,6 +283,7 @@ export default {
               })
             }
             if (FirstEdge) {
+              window.currentEdge = FirstEdge.conceptElement.split(".").pop()
               this.registerPortCandidateProvider(graphComponent.graph, target)
             }
           }
