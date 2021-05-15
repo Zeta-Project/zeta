@@ -40,6 +40,7 @@
           :is-open="selectedItem !== null"
           :node="sharedData.focusedNodeData"
           :edge="sharedData.focusedEdgeData"
+          @on-edge-label-change="updateEdgeLabel"
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -59,8 +60,12 @@ import {
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size, TreeBuilder,
-  ShowFocusPolicy, ShapeNodeStyle, GraphItemTypes
+  Size,
+  TreeBuilder,
+  ShowFocusPolicy,
+  ShapeNodeStyle,
+  GraphItemTypes,
+  IEdge
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -104,6 +109,16 @@ export default {
       this.isGraphComponentLoaded = response;
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
+
+      // Handle inline edge label edits
+      this.$graphComponent.graph.addLabelTextChangedListener((sender, args) => {
+        // ToDo: Is a global listener the correct way to handle label text changes?
+
+        if (args.item.owner instanceof IEdge) {
+          const attribute = args.item.owner.tag.attributes.find(a => a.name === args.item.tag);
+          attribute.value = args.item.text;
+        }
+      });
     }).catch(error => {
       EventBus.$emit('errorMessage', error.toString())
       console.error(error)
@@ -447,6 +462,24 @@ export default {
     toggleDnd() {
       this.isDndExpanded = !this.isDndExpanded;
       this.$emit('on-toggle-dnd', this.isDndExpanded);
+    },
+
+    /**
+     * Updates the edge label for the given edge and ID
+     * @param edge
+     * @param labelId
+     * @param value
+     */
+    updateEdgeLabel(edge, labelId, value) {
+      const selectedEdges = this.$graphComponent.selection.selectedEdges;
+
+      selectedEdges.forEach(edge => {
+        edge.labels.forEach(label => {
+          console.log("tag", label.tag)
+          if (label.tag === labelId)
+            this.$graphComponent.graph.setLabelText(label, value)
+        })
+      });
     }
   }
 }

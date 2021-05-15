@@ -196,7 +196,18 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                                 wrapping: "word"
                             });
 
-                            dummyEdgeGraph.addLabel(dummyEdge, text, labelModel, labelStyle);
+                            dummyEdgeGraph.addLabel(dummyEdge,
+                                text,
+                                labelModel,
+                                labelStyle,
+                                null,
+                                lp.geoElement.identifier // Add identifier as tag
+                            );
+
+                            // Use the text for the given geo element (defined in shape) as value for the attribute
+                            const labelAttribute = edgeModel.attributes.find(a => a.name === lp.geoElement.identifier);
+                            if(labelAttribute)
+                                labelAttribute.value = text;
                         });
 
                         // start edge creation and hide buttons until the edge is finished
