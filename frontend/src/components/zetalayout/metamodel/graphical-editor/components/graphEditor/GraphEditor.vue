@@ -90,8 +90,8 @@ import {Grid} from "../../layout/grid/Grid";
 import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 import axios from "axios"
 import {EventBus} from "@/eventbus/eventbus";
-import { Attribute } from "../../uml/attributes/Attribute";
-import { Method } from "../../uml/methods/Method";
+import {Attribute} from "../../uml/attributes/Attribute";
+import {Method} from "../../uml/methods/Method";
 
 
 License.value = licenseData;
@@ -179,6 +179,7 @@ export default {
       methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
       methods.deleteOperationFromNode = this.deleteOperationFromNode;
       methods.changeInputMode = this.changeInputMode;
+      methods.getIsEditEnabled = this.getIsEditEnabled;
       const NodeConstructor = Vue.extend(Node);
       //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
       this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor, methods, this.$graphComponent.inputMode);
@@ -229,6 +230,7 @@ export default {
       methods.deleteAttributeFromNode = this.deleteAttributeFromNode;
       methods.deleteOperationFromNode = this.deleteOperationFromNode;
       methods.changeInputMode = this.changeInputMode;
+      methods.getIsEditEnabled = this.getIsEditEnabled;
       // Create nodes that can be appended to the graph by the builder
       const graphNodes = nodes.map(node => graph.createNode({
         tag: node,
@@ -405,6 +407,10 @@ export default {
       this.isEditEnabled = editable
     },
 
+    getIsEditEnabled() {
+      return this.isEditEnabled;
+    },
+
     /**
      * Toggles the grid and snapping to the grid.
      * Needs a parameter on which the toggle state of the grid is based on, since the decision
@@ -442,7 +448,9 @@ export default {
      * @param name: name of the attribute to add.
      */
     addAttributeToNode(node, name) {
-      node.attributes = node.attributes.concat(new Attribute({name: name}));
+      if (this.isEditEnabled) {
+        node.attributes = node.attributes.concat(new Attribute({name: name}));
+      }
     },
 
     /**
@@ -455,7 +463,9 @@ export default {
      * @param name: name of the attribute to delete.
      */
     deleteAttributeFromNode(node, name) {
-      node.attributes = node.attributes.filter(attribute => attribute.name !== name);
+      if (this.isEditEnabled) {
+        node.attributes = node.attributes.filter(attribute => attribute.name !== name);
+      }
     },
 
     /**
@@ -465,10 +475,12 @@ export default {
      * @param name: name of the operation to add.
      */
     addOperationToNode(node, name) {
-      node.methods = node.methods.concat(new Method({
-        name: name,
-        returnType: "String",
+      if (this.isEditEnabled) {
+        node.methods = node.methods.concat(new Method({
+          name: name,
+          returnType: "String",
         }));
+      }
     },
 
     /**
@@ -481,7 +493,9 @@ export default {
      * @param name: name of the operation to delete
      */
     deleteOperationFromNode(node, name) {
-      node.methods = node.methods.filter(attribute => attribute.name !== name);
+      if (this.isEditEnabled) {
+        node.methods = node.methods.filter(attribute => attribute.name !== name);
+      }
     },
 
     /**
@@ -515,9 +529,9 @@ export default {
      */
     addOperationToEdge(edge, name) {
       edge.methods = edge.methods.concat(new Method({
-        name: name,
-        returnType: "String"
-        })
+            name: name,
+            returnType: "String"
+          })
       );
     },
 

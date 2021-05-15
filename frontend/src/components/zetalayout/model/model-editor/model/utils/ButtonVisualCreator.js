@@ -102,6 +102,14 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             childg2.setAttribute('transform', 'translate(0 0)')
             childg3.setAttribute('transform', `rotate(${-first})`)
             animations.push(new ButtonAnimation(childg1, first, childg2))
+
+            // Tooltip on edge buttons (doesn't work properly yet)
+            const title = document.createElement("title")
+            title.style.setProperty("display", "inline")
+            const titleText = document.createTextNode(ButtonVisualCreator.edgesForCurrentNode[i].conceptElement)
+            title.appendChild(titleText)
+            child.appendChild(title)
+
             childg1.appendChild(child)
             childg2.appendChild(childg1)
             childg3.appendChild(childg2)
@@ -131,6 +139,8 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             interfaceToggle: this.node.tag.stereotype,
             constraintToggle: this.node.tag.constraint
         }
+
+        ButtonVisualCreator.buttons.reverse()
 
         return new SvgVisual(container)
     }
