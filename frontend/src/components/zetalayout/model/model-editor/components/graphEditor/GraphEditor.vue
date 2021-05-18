@@ -59,8 +59,12 @@ import {
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size, TreeBuilder,
-  ShowFocusPolicy, ShapeNodeStyle, GraphItemTypes
+  Size,
+  TreeBuilder,
+  ShowFocusPolicy,
+  ShapeNodeStyle,
+  GraphItemTypes,
+  NodeSizeConstraintProvider, ReshapeHandleProviderBase, HandlePositions
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -84,6 +88,38 @@ import {EventBus} from "@/eventbus/eventbus";
 import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/model/utils/NodeCandidateProvider";
 
 License.value = licenseData;
+
+class CustomReshapeHandlerProvider extends ReshapeHandleProviderBase {
+  constructor(originalProvider, horizontal, vertical, proportional) {
+    super()
+    this.originalProvider = originalProvider
+    this.horizontal = horizontal
+    this.vertical = vertical
+    this.proportional = proportional
+  }
+
+  getAvailableHandles(context) {
+    if (!this.horizontal && !this.vertical) {
+      return HandlePositions.NONE
+    } else if (this.horizontal && !this.vertical) {
+      return HandlePositions.HORIZONTAL
+    } else if (!this.horizontal && this.vertical) {
+      return HandlePositions.VERTICAL
+    } else if (this.horizontal && this.vertical) {
+      if (this.proportional) {
+        return HandlePositions.CORNERS
+      } else {
+        return HandlePositions.BORDER
+      }
+    } else {
+      return HandlePositions.NONE
+    }
+  }
+
+  getHandle(context, position) {
+    return this.originalProvider.getHandle(context, position)
+  }
+}
 
 /**
  * Comment from y-Files: Be aware not to pass y-Files properties (such as graphComponent) to other vue components.
@@ -302,6 +338,23 @@ export default {
         } else if (args.item.style instanceof CustomPolyEdgeStyle) {
           umlContextButtonsInputMode.hideButtons()
         }
+
+        graphComponent.graph.decorator.nodeDecorator.sizeConstraintProviderDecorator.setImplementation(
+            node => node.tag !== null,
+            new NodeSizeConstraintProvider(
+                new Size(args.item.tag.description.size.widthMin, args.item.tag.description.size.heightMin),
+                new Size(args.item.tag.description.size.widthMax, args.item.tag.description.size.heightMax)
+            )
+        )
+
+        graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.setImplementationWrapper(
+            (node, originalProvider) => new CustomReshapeHandlerProvider(
+                  originalProvider,
+                  args.item.tag.description.resizing.horizontal,
+                  args.item.tag.description.resizing.vertical,
+                  args.item.tag.description.resizing.proportional
+              )
+        )
       });
       mode.addItemRightClickedListener((src, args) => {
         if (graphComponent.graph.isGroupNode(args.item)) {
