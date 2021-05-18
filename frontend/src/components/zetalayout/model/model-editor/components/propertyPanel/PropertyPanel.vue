@@ -3,7 +3,8 @@
         <node-properties :node="node"/>
     </div>
     <div v-else-if="edge">
-        <edge-properties :edge="edge"/>
+        <edge-properties :edge="edge"
+                         @on-edge-label-change="(edge, labelId, value) => $emit('on-edge-label-change', edge, labelId, value)"/>
     </div>
     <div v-else>
         Error! Unknown item selected

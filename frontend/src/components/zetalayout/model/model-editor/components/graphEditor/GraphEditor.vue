@@ -17,18 +17,18 @@
         v-show="isEditEnabled"
         v-if="diagram !== null && shape !== null && concept !== null"
     >
-       <div v-if="this.concept.references !== null">
-      <DndPanel
-          v-if="graphComponent"
-          :graph-component="graphComponent"
-          :shape="shape"
-          :diagram="diagram"
-          :concept="concept"
-          :references="this.concept.references"
-          :styleModel="styleModel"
-          :is-expanded="isDndExpanded"
-          :passive-supported="true"
-      />
+      <div v-if="this.concept.references !== null">
+        <DndPanel
+            v-if="graphComponent"
+            :graph-component="graphComponent"
+            :shape="shape"
+            :diagram="diagram"
+            :concept="concept"
+            :references="this.concept.references"
+            :styleModel="styleModel"
+            :is-expanded="isDndExpanded"
+            :passive-supported="true"
+        />
       </div>
     </aside>
     <aside
@@ -40,6 +40,7 @@
           :is-open="selectedItem !== null"
           :node="sharedData.focusedNodeData"
           :edge="sharedData.focusedEdgeData"
+          @on-edge-label-change="updateEdgeLabel"
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -59,8 +60,12 @@ import {
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size, TreeBuilder,
-  ShowFocusPolicy, ShapeNodeStyle, GraphItemTypes
+  Size,
+  TreeBuilder,
+  ShowFocusPolicy,
+  ShapeNodeStyle,
+  GraphItemTypes,
+  IEdge
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -81,6 +86,7 @@ import {Grid} from "../../layout/grid/Grid";
 import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
+import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/model/utils/NodeCandidateProvider";
 
 License.value = licenseData;
 
@@ -103,6 +109,16 @@ export default {
       this.isGraphComponentLoaded = response;
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
+
+      // Handle inline edge label edits
+      this.$graphComponent.graph.addLabelTextChangedListener((sender, args) => {
+        // ToDo: Is a global listener the correct way to handle label text changes?
+
+        if (args.item.owner instanceof IEdge) {
+          const attribute = args.item.owner.tag.attributes.find(a => a.name === args.item.tag);
+          attribute.value = args.item.text;
+        }
+      });
     }).catch(error => {
       EventBus.$emit('errorMessage', error.toString())
       console.error(error)
@@ -149,9 +165,9 @@ export default {
             axios.get("http://localhost:9000/rest/v1/models/" + uuid + "/definition", {withCredentials: true})
                 .then(
                     response => {
-                      if(this.concept.graphicalDslId) {
-                              getMetaConcept(this.concept.graphicalDslId).then( metamodel => this.concept.references = metamodel.data.references) 
-                        }
+                      if (this.concept.graphicalDslId) {
+                        getMetaConcept(this.concept.graphicalDslId).then(metamodel => this.concept.references = metamodel.data.references)
+                      }
                       // this.plotDefaultGraph(this.concept)
                       this.executeLayout()
                           .then(() => {
@@ -223,6 +239,72 @@ export default {
       const umlContextButtonsInputMode = new ModelContextButtonsInputMode();
       umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1;
       mode.add(umlContextButtonsInputMode);
+
+      mode.createEdgeInputMode.startOverCandidateOnly = true;
+
+      mode.createEdgeInputMode.addEdgeCreationStartedListener((sender, args) => {
+        let CurrentEdge;
+
+        for (let i = 0; i < this.shape.nodes.length; i++) {
+          if (this.shape.nodes[i].name === args.sourcePortOwner.tag.className) {
+            if (this.shape.nodes[i].edges.length > 0) {
+              for (let j = 0; j < this.shape.nodes[i].edges.length; j++) {
+                let currentEdgeName = this.shape.nodes[i].edges[j].conceptElement.split(".").pop()
+                if (currentEdgeName === window.currentEdge) {
+                  CurrentEdge = this.shape.nodes[i].edges[j];
+                }
+              }
+              if (!window.currentEdge) {
+                CurrentEdge = this.shape.nodes[i].edges[0];
+              }
+            }
+          }
+        }
+        const createEdgeInputMode = sender
+
+        if (CurrentEdge) {
+          createEdgeInputMode.dummyEdgeGraph.edgeDefaults.style = new CustomPolyEdgeStyle(null, CurrentEdge)
+          createEdgeInputMode.dummyEdge.style = new CustomPolyEdgeStyle(null, CurrentEdge)
+        } else {
+          mode.createEdgeInputMode.cancel()
+        }
+      })
+
+      mode.createEdgeInputMode.addMovingListener((sender, args) => {
+        if (!window.currentEdge) {
+          const sourceNode = this.nodeByPoint(graphComponent, sender.startPoint);
+          const targetNode = this.nodeByPoint(graphComponent, sender.dragPoint);
+
+          if (targetNode?.tag?.className) {
+            let FirstEdge;
+            for (let i = 0; i < this.shape.nodes.length; i++) {
+              if (this.shape.nodes[i].name === sourceNode.tag.className) {
+                if (this.shape.nodes[i].edges.length > 0) {
+                  FirstEdge = this.shape.nodes[i].edges[0];
+                }
+              }
+            }
+            let target;
+            if (this.shape?.edges) {
+              this.shape.edges.forEach(edge => {
+                if (edge.conceptElement && FirstEdge.conceptElement === edge.conceptElement && edge.target) {
+                  const currentNodes = this.shape.nodes.filter(node => {
+                    return node.conceptElement === edge.target
+                  })
+                  if (currentNodes.length) {
+                    target = currentNodes[0].name
+                  }
+                }
+              })
+            }
+            if (FirstEdge) {
+              window.currentEdge = FirstEdge.conceptElement.split(".").pop()
+              this.registerPortCandidateProvider(graphComponent.graph, target)
+            }
+          }
+        }
+      })
+
       // execute a layout after certain gestures
       mode.moveInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
       mode.handleInputMode.addDragFinishedListener(() => this.routeEdgesAtSelectedNodes());
@@ -255,6 +337,21 @@ export default {
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
       return mode
+    },
+    registerPortCandidateProvider(graph, target) {
+      graph.decorator.nodeDecorator.portCandidateProviderDecorator.setFactory(node => {
+        // Obtain the tag from the edge
+        const nodeTag = node.tag
+
+        // Check if it is a known tag and choose the respective implementation
+        if (nodeTag) {
+          return new NodeCandidateProvider(node, target);
+        }
+      })
+    },
+    nodeByPoint(graphComponent, point) {
+      const allNodes = graphComponent.graph.nodes;
+      return allNodes.find(node => node.layout.contains(point));
     },
 
     /**
@@ -365,6 +462,24 @@ export default {
     toggleDnd() {
       this.isDndExpanded = !this.isDndExpanded;
       this.$emit('on-toggle-dnd', this.isDndExpanded);
+    },
+
+    /**
+     * Updates the edge label for the given edge and ID
+     * @param edge
+     * @param labelId
+     * @param value
+     */
+    updateEdgeLabel(edge, labelId, value) {
+      const selectedEdges = this.$graphComponent.selection.selectedEdges;
+
+      selectedEdges.forEach(edge => {
+        edge.labels.forEach(label => {
+          console.log("tag", label.tag)
+          if (label.tag === labelId)
+            this.$graphComponent.graph.setLabelText(label, value)
+        })
+      });
     }
   }
 }

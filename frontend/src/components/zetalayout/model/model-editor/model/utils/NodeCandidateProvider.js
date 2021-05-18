@@ -25,7 +25,11 @@ export default class NodeCandidateProvider extends PortCandidateProviderBase {
                 this.node,
                 FreeNodePortLocationModel.NODE_CENTER_ANCHORED
             )
-            item.validity = this.node.tag.className == this.target ? PortCandidateValidity.VALID : PortCandidateValidity.INVALID
+            if(window.currentEdge){
+                item.validity = this.node.tag.className == this.target ? PortCandidateValidity.VALID : PortCandidateValidity.INVALID
+            } else {
+                item.validity = PortCandidateValidity.VALID
+            }
 
             candidates.add(item)
         }

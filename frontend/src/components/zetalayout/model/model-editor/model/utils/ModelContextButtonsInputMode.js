@@ -2,7 +2,6 @@ import {
     ConcurrencyController,
     DefaultPortCandidate,
     DefaultSelectionModel,
-    Fill,
     FreeNodePortLocationModel,
     GraphEditorInputMode,
     ICanvasObjectDescriptor,
@@ -13,7 +12,14 @@ import {
     InputModeBase,
     ModelManager,
     Point,
-    SolidColorFill
+    EdgeSides,
+    DefaultLabelStyle,
+    Size,
+    SolidColorFill,
+    Font,
+    FontStyle,
+    FontWeight,
+    EdgePathLabelModel
 } from 'yfiles'
 
 import ButtonVisualCreator from './ButtonVisualCreator.js'
@@ -94,7 +100,7 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
     startEdgeCreation(location) {
         if (this.active && this.canRequestMutex()) {
             const graphComponent = this.inputModeContext.canvasComponent
-
+            window.currentEdge = undefined;
             // check which node currently has the buttons and invoke create edge input mode to create a new edge
             for (let enumerator = this.buttonNodes.getEnumerator(); enumerator.moveNext();) {
                 const buttonNode = enumerator.current
@@ -104,12 +110,14 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                     location
                 )
 
+                const edgeModel = styleButton?.model;
                 if (styleButton) {
-                    if (styleButton?.model?.name) {
+                    if (edgeModel?.name) {
                         const shape = JSON.parse(window.localStorage.getItem("shape"))
                         if (shape?.edges) {
                             shape.edges.forEach(edge => {
-                                if (edge.conceptElement && styleButton.model.name === edge.conceptElement.split(".").pop() && edge.target) {
+                                if (edge.conceptElement && edgeModel.name === edge.conceptElement.split(".").pop() && edge.target) {
+                                    window.currentEdge = edgeModel.name
                                     const currentNodes = shape.nodes.filter(node => {
                                         return node.conceptElement === edge.target
                                     })
@@ -133,10 +141,74 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
 
                         // Mirror the model content to the 'tag' property to be able to access the model via the 'tag'
                         // property (for consistency between node and edge handling)
-                        dummyEdge.tag = styleButton.model;
+                        dummyEdge.tag = edgeModel;
                         dummyEdgeGraph.setStyle(dummyEdge, modelEdgeType)
-                        dummyEdgeGraph.addLabel(dummyEdge, "")
                         dummyEdgeGraph.edgeDefaults.style = modelEdgeType
+
+                        /*
+                            Create the edge labels as they are given by the concept
+                         */
+
+                        edgeModel.labels.forEach(lp => {
+                            const position = lp.geoElement.position;
+                            const size = lp.geoElement.size;
+                            const style = lp.geoElement.style;
+
+                            const text = lp.geoElement.textBody;
+                            const segmentRatio = lp.position.offset;    // Position of label: '0' at source node, '1' at target node
+                            // const angle = Math.atan2(position.y, position.x);
+
+                            const labelModel = new EdgePathLabelModel({
+                                autoRotation: true,
+                                // angle: angle,
+                                distance: position.y    // Distance between Edge and Label
+                            }).createRatioParameter(segmentRatio, EdgeSides.ABOVE_EDGE);
+
+                            const font = new Font({
+                                fontFamily: style.font.name,
+                                fontSize: style.font.size
+                            });
+
+                            if (style.font.bold)
+                                font.fontWeight = FontWeight.BOLD;
+                            if (style.font.italic)
+                                font.fontStyle = FontStyle.ITALIC;
+
+                            const fontColor = new SolidColorFill(
+                                style.font.color.r,
+                                style.font.color.g,
+                                style.font.color.b,
+                                style.font.color.a * 255    // Y-Files uses 255 as max alpha, we're using 1
+                            )
+
+                            const backgroundColor = new SolidColorFill(
+                                style.background.color.r,
+                                style.background.color.g,
+                                style.background.color.b,
+                                style.background.color.a * 255  // Y-Files uses 255 as max alpha, we're using 1
+                            );
+
+                            const labelStyle = new DefaultLabelStyle({
+                                maximumSize: new Size(size.width, size.height),
+                                font: font,
+                                textFill: fontColor,
+                                backgroundFill: backgroundColor,
+                                wrapping: "word"
+                            });
+
+                            dummyEdgeGraph.addLabel(dummyEdge,
+                                text,
+                                labelModel,
+                                labelStyle,
+                                null,
+                                lp.geoElement.identifier // Add identifier as tag
+                            );
+
+                            // Use the text for the given geo element (defined in shape) as value for the attribute
+                            const labelAttribute = edgeModel.attributes.find(a => a.name === lp.geoElement.identifier);
+                            if(labelAttribute)
+                                labelAttribute.value = text;
+                        });
 
                         // start edge creation and hide buttons until the edge is finished
                         this.buttonNodes.clear()
@@ -153,6 +225,8 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
                         createEdgeInputMode.addGestureCanceledListener(listener)
                         return
                     }
+                } else {
+                    window.currentEdge = undefined;
                 }
             }
         }

@@ -222,7 +222,7 @@ export default {
       const nodeList = []
 
       graph.nodes.forEach(node => {
-        nodeList.push({element: node, tooltip: node.$f.description})
+        nodeList.push({element: node, tooltip: node.$f.className})
       });
 
       return nodeList

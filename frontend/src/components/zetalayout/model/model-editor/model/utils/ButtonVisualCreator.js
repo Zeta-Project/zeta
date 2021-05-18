@@ -41,16 +41,9 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
                 // ToDo: Is the concept element name for edges always "<node>.<edge-name>"? If not the next line must be adjusted
                 const conceptEdge = ButtonVisualCreator.concept.references.find(r => r.name === edge.conceptElement.split(".")[1]);
                 const model = new ModelEdgeModel({
-                    name: conceptEdge.name,
-                    description: conceptEdge.description,
-                    sourceDeletionDeletesTarget: conceptEdge.sourceDeletionDeletesTarget,
-                    targetDeletionDeletesSource: conceptEdge.targetDeletionDeletesSource,
-                    sourceLowerBounds: conceptEdge.sourceLowerBounds,
-                    sourceUpperBounds: conceptEdge.sourceUpperBounds,
-                    targetLowerBounds: conceptEdge.targetLowerBounds,
-                    targetUpperBounds: conceptEdge.targetUpperBounds,
-                    methods: conceptEdge.methods,
-                    attributes: conceptEdge.attributes
+                    ...conceptEdge,
+                    // Currently only labels of type 'textfield' are supported as labels
+                    labels: edge.placings.filter(p => p.geoElement.type === "textfield")
                 })
 
                 return new CustomPolyEdgeStyle(model, edge);
@@ -109,6 +102,14 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             childg2.setAttribute('transform', 'translate(0 0)')
             childg3.setAttribute('transform', `rotate(${-first})`)
             animations.push(new ButtonAnimation(childg1, first, childg2))
+
+            // Tooltip on edge buttons (doesn't work properly yet)
+            const title = document.createElement("title")
+            title.style.setProperty("display", "inline")
+            const titleText = document.createTextNode(ButtonVisualCreator.edgesForCurrentNode[i].conceptElement)
+            title.appendChild(titleText)
+            child.appendChild(title)
+
             childg1.appendChild(child)
             childg2.appendChild(childg1)
             childg3.appendChild(childg2)
@@ -138,6 +139,8 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
             interfaceToggle: this.node.tag.stereotype,
             constraintToggle: this.node.tag.constraint
         }
+
+        ButtonVisualCreator.buttons.reverse()
 
         return new SvgVisual(container)
     }

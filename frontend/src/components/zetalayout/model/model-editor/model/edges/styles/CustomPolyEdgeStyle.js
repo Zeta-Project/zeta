@@ -54,13 +54,21 @@ export class CustomPolyEdgeStyle extends EdgeStyleBase {
         super()
         this.$model = model || new ModelEdgeModel()
 
-        if (edge !== undefined && edge.placings.length > 0) {
+        // Currently we only allow "polygon" and "polyline" geo elements as edge arrow style
+        const allowedArrowGeoElements = ["polygon", "polyline"];
+        let arrowPlacings = [];
+        if (edge && edge.placings && edge.placings.length > 0) {
+            // Get all possible edge arrow styles from placings
+            arrowPlacings = edge.placings.filter(p => allowedArrowGeoElements.includes(p.geoElement.type));
+        }
+
+        if (arrowPlacings.length > 0) {
             this.customTargetArrow = new CustomSimpleArrow(edge.placings[0])
         } else {
             this.customTargetArrow = new Arrow({type: ArrowType.NONE})
         }
 
-        if (edge !== undefined && edge.placings.length > 1) {
+        if (arrowPlacings.length > 1) {
             this.customSourceArrow = new CustomSimpleArrow(edge.placings[1])
         } else {
             this.customSourceArrow = new Arrow({type: ArrowType.NONE})
