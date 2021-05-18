@@ -122,8 +122,37 @@ export default {
                 return
               }
 
+              let labelAlignX = 0;
+              let labelAlignY = 0;
+
+              if (element.align !== undefined) {
+                switch (element.align.horizontal) {
+                  case "left":
+                    labelAlignX = 0;
+                    break;
+                  case "middle":
+                    labelAlignX = 0.5;
+                    break;
+                  case "right":
+                    labelAlignX = 1;
+                    break;
+                }
+
+                switch (element.align.vertical) {
+                  case "top":
+                    labelAlignY = 0;
+                    break;
+                  case "middle":
+                    labelAlignY = 0.5;
+                    break;
+                  case "bottom":
+                    labelAlignY = 1;
+                    break;
+                }
+              }
+
               const labelModel = new FreeNodeLabelModel().createParameter(
-                  new Point(0, 0),
+                  new Point(labelAlignX, labelAlignY),
                   new Point(element.position.x, element.position.y),
                   new Point(0, 0)
               );
@@ -162,9 +191,13 @@ export default {
                 wrapping: "word"
               });
 
+              if (element.textBody === "") {
+                element.textBody = element.identifier;
+              }
+
               graph.addLabel(
                   node,
-                  element.identifier,
+                  element.textBody,
                   labelModel,
                   labelStyle,
                   null,

@@ -41,6 +41,7 @@
           :node="sharedData.focusedNodeData"
           :edge="sharedData.focusedEdgeData"
           @on-edge-label-change="updateEdgeLabel"
+          @on-node-label-change="updateNodeLabel"
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -48,38 +49,29 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import licenseData from '../../../../../../../../../yFiles-dev-key/license.json'
 import {
-  DefaultLabelStyle,
   EdgeRouter,
   EdgeRouterScope,
-  Font,
   GraphComponent,
   GraphViewerInputMode,
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size,
-  TreeBuilder,
-  ShowFocusPolicy,
   ShapeNodeStyle,
-  GraphItemTypes,
-  IEdge
+  IEdge,
+  INode
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
 import PropertyPanel from "../propertyPanel/PropertyPanel.vue";
 import DndPanel from "../dndPanel/DndPanel.vue"
-import Node from "../nodes/Node.vue"
 
 import {
   executeLayout,
   getDefaultGraphEditorInputMode,
-  getEdgesFromReferences,
-  getStyleForEdge, saveGraph
+  saveGraph
 } from "./GraphEditorUtils";
-import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
@@ -113,8 +105,9 @@ export default {
       // Handle inline edge label edits
       this.$graphComponent.graph.addLabelTextChangedListener((sender, args) => {
         // ToDo: Is a global listener the correct way to handle label text changes?
+        // Addition: Smartass
 
-        if (args.item.owner instanceof IEdge) {
+        if (args.item.owner instanceof IEdge || args.item.owner instanceof INode) {
           const attribute = args.item.owner.tag.attributes.find(a => a.name === args.item.tag);
           attribute.value = args.item.text;
         }
@@ -476,6 +469,22 @@ export default {
       selectedEdges.forEach(edge => {
         edge.labels.forEach(label => {
           console.log("tag", label.tag)
+          if (label.tag === labelId)
+            this.$graphComponent.graph.setLabelText(label, value)
+        })
+      });
+    },
+
+    /**
+     * Updates the node label for the given node and ID
+     * @param node
+     * @param labelId
+     * @param value
+     */
+    updateNodeLabel(node, labelId, value) {
+      const selectedNodes = this.$graphComponent.selection.selectedNodes;
+      selectedNodes.forEach(node => {
+        node.labels.forEach(label => {
           if (label.tag === labelId)
             this.$graphComponent.graph.setLabelText(label, value)
         })
