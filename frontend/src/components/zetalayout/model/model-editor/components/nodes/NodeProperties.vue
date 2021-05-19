@@ -41,7 +41,8 @@
             <v-col>
               <v-text-field
                   :label="attribute.name"
-                  v-model="attribute.value">
+                  v-model="attribute.value"
+                  @input="value => onAttributeValueChange(attribute.name, value)">
               </v-text-field>
             </v-col>
           </v-row>
@@ -86,7 +87,11 @@ export default {
       required: true
     }
   },
-  methods: {}
+  methods: {
+    onAttributeValueChange(attributeName, value) {
+      this.$emit('on-node-label-change', this.node, attributeName, value);
+    }
+  }
 }
 </script>
 

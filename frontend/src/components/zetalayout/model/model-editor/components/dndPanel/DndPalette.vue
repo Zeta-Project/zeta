@@ -12,13 +12,14 @@ import {
   DragDropItem,
   DragSource,
   Font,
+  FontStyle,
+  FontWeight,
+  FreeNodeLabelModel,
   GraphComponent,
   IEdge,
   ILabel,
-  IListEnumerable,
   INode,
   Insets,
-  InteriorLabelModel,
   IPort,
   IStripe,
   LabelDropInputMode,
@@ -30,6 +31,7 @@ import {
   ShapeNodeShape,
   ShapeNodeStyle,
   SimpleNode,
+  SolidColorFill,
   SvgExport,
   VoidNodeStyle
 } from "yfiles";
@@ -48,7 +50,7 @@ export default {
       type: Object,
       required: true,
     },
-     references: {
+    references: {
       type: Array,
       required: true,
     },
@@ -113,23 +115,95 @@ export default {
               })
             })
 
-            if (typeof shapeNode.childGeoElements[0] !== 'undefined') {
-              const fontStyle = new Font({
-                fontFamily: shapeNode.style.fontFamily,
-                fontSize: shapeNode.style.font.size
-              })
+            // Node labels (defined in shape-DSL)
+            shapeNode.childGeoElements.forEach(element => {
+              // Currently, only textfield is supported
+              if (element.type !== 'textfield') {
+                return
+              }
 
-              graph.addLabel({
-                owner: node,
-                text: shapeNode.childGeoElements[0].identifier,
-                layoutParameter: InteriorLabelModel.CENTER,
-                style: new DefaultLabelStyle({
-                  font: fontStyle,
-                  verticalTextAlignment: "center",
-                  horizontalTextAlignment: "center"
-                })
-              })
-            }
+              let labelAlignX = 0;
+              let labelAlignY = 0;
+
+              if (element.align !== undefined) {
+                switch (element.align.horizontal) {
+                  case "left":
+                    labelAlignX = 0;
+                    break;
+                  case "middle":
+                    labelAlignX = 0.5;
+                    break;
+                  case "right":
+                    labelAlignX = 1;
+                    break;
+                }
+
+                switch (element.align.vertical) {
+                  case "top":
+                    labelAlignY = 0;
+                    break;
+                  case "middle":
+                    labelAlignY = 0.5;
+                    break;
+                  case "bottom":
+                    labelAlignY = 1;
+                    break;
+                }
+              }
+
+              const labelModel = new FreeNodeLabelModel().createParameter(
+                  new Point(labelAlignX, labelAlignY),
+                  new Point(element.position.x, element.position.y),
+                  new Point(0, 0)
+              );
+
+              const style = element.style;
+
+              const font = new Font({
+                fontFamily: style.font.name,
+                fontSize: style.font.size
+              });
+
+              if (style.font.bold)
+                font.fontWeight = FontWeight.BOLD;
+              if (style.font.italic)
+                font.fontStyle = FontStyle.ITALIC;
+
+              const fontColor = new SolidColorFill(
+                  style.font.color.r,
+                  style.font.color.g,
+                  style.font.color.b,
+                  style.font.color.a * 255    // Y-Files uses 255 as max alpha, we're using 1
+              )
+
+              const backgroundColor = new SolidColorFill(
+                  style.background.color.r,
+                  style.background.color.g,
+                  style.background.color.b,
+                  style.background.color.a * 255  // Y-Files uses 255 as max alpha, we're using 1
+              );
+
+              const labelStyle = new DefaultLabelStyle({
+                maximumSize: element.size,
+                font: font,
+                textFill: fontColor,
+                backgroundFill: backgroundColor,
+                wrapping: "word"
+              });
+
+              if (element.textBody === "") {
+                element.textBody = element.identifier;
+              }
+
+              graph.addLabel(
+                  node,
+                  element.textBody,
+                  labelModel,
+                  labelStyle,
+                  null,
+                  element.identifier
+              );
+            })
           }
         }
       }
@@ -344,7 +418,7 @@ export default {
           simpleNode.layout = item.layout
           simpleNode.style = item.style.clone()
           simpleNode.tag = item.tag
-          simpleNode.labels = this.$copyNodeLabels ? item.labels : IListEnumerable.EMPTY
+          simpleNode.labels = item.labels
           if (item.ports.size > 0) {
             simpleNode.ports = new ListEnumerable(item.ports)
           }

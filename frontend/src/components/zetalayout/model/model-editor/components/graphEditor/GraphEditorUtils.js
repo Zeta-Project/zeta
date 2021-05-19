@@ -22,13 +22,8 @@ import '../../styles/style.css'
 import '../../styles/sidebar.css'
 import * as umlEdgeModel from '../../model/edges/ModelEdgeModel'
 import Exporter from "../../export/Exporter";
-import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
-import {Attribute} from "../../model/attributes/Attribute";
-import {Parameter} from "../../model/parameters/Parameter";
-import {Method} from "../../model/methods/Method";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../model/edges/styles/UMLEdgeStyleFactory";
-import VuejsNodeStyle from "../../model/nodes/styles/VuejsNodeStyle";
 import axios from "axios";
 import { EventBus } from "@/eventbus/eventbus";
 
@@ -167,38 +162,6 @@ export function getGroupId(edge, marker) {
     }
 
     return null
-}
-
-/**
- * Adds the default zeta node style to every node given
- * @param nodes: list of nodes
- * @returns {*}
- */
-export function addNodeStyleToNodes(vuejsComponent, nodes) {
-    return nodes.map(node => {
-        let style = new VuejsNodeStyle(
-            vuejsComponent,
-            new umlModel.ModelClassModel({
-                className: node.name,
-                description: node.description,
-                abstract: node.abstractness,
-                superTypeNames: node.superTypeNames,
-                attributes: node.attributes,
-                methods: node.methods
-            })
-        );
-
-        /*if (node.abstractness === true) {
-            style.model.constraint = 'abstract';
-            style.model.stereotype = '';
-            style.fill = Fill.CRIMSON;
-        }*/
-
-        return {
-            ...node,
-            style: style
-        };
-    })
 }
 
 /**
