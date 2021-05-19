@@ -41,16 +41,9 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
                 // ToDo: Is the concept element name for edges always "<node>.<edge-name>"? If not the next line must be adjusted
                 const conceptEdge = ButtonVisualCreator.concept.references.find(r => r.name === edge.conceptElement.split(".")[1]);
                 const model = new ModelEdgeModel({
-                    name: conceptEdge.name,
-                    description: conceptEdge.description,
-                    sourceDeletionDeletesTarget: conceptEdge.sourceDeletionDeletesTarget,
-                    targetDeletionDeletesSource: conceptEdge.targetDeletionDeletesSource,
-                    sourceLowerBounds: conceptEdge.sourceLowerBounds,
-                    sourceUpperBounds: conceptEdge.sourceUpperBounds,
-                    targetLowerBounds: conceptEdge.targetLowerBounds,
-                    targetUpperBounds: conceptEdge.targetUpperBounds,
-                    methods: conceptEdge.methods,
-                    attributes: conceptEdge.attributes
+                    ...conceptEdge,
+                    // Currently only labels of type 'textfield' are supported as labels
+                    labels: edge.placings.filter(p => p.geoElement.type === "textfield")
                 })
 
                 return new CustomPolyEdgeStyle(model, edge);

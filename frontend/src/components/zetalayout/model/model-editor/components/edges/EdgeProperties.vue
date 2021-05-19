@@ -44,7 +44,8 @@
             <v-col>
               <v-text-field
                   :label="attribute.name"
-                  v-model="attribute.value">
+                  v-model="attribute.value"
+                  @input="value => onAttributeValueChange(attribute.name, value)">
               </v-text-field>
             </v-col>
           </v-row>
@@ -89,7 +90,14 @@ export default {
       required: true
     }
   },
-  methods: {}
+  methods: {
+    onAttributeValueChange(attributeName, value) {
+      // Check if attribute is bound to an edge label
+      if(this.edge.labels.find(l => l.geoElement.identifier === attributeName)){
+        this.$emit('on-edge-label-change', this.edge, attributeName, value);
+      }
+    }
+  }
 }
 </script>
 
