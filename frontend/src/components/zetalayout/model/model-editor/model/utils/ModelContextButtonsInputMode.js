@@ -156,11 +156,9 @@ export default class ModelContextButtonsInputMode extends InputModeBase {
 
                             const text = lp.geoElement.textBody;
                             const segmentRatio = lp.position.offset;    // Position of label: '0' at source node, '1' at target node
-                            // const angle = Math.atan2(position.y, position.x);
 
                             const labelModel = new EdgePathLabelModel({
                                 autoRotation: true,
-                                // angle: angle,
                                 distance: position.y    // Distance between Edge and Label
                             }).createRatioParameter(segmentRatio, EdgeSides.ABOVE_EDGE);
 
