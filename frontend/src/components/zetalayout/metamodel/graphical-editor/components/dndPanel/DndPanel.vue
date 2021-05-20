@@ -63,6 +63,8 @@
                 methods.deleteAttributeFromNode = (node, attribute) => this.$emit('delete-attribute-from-node', node, attribute);
                 methods.deleteOperationFromNode = (node, attribute) => this.$emit('delete-operation-from-node', node, attribute);
                 methods.changeInputMode = () => this.$emit('change-input-mode');
+                methods.getIsEditEnabled = this.getIsEditEnabled;
+
                 const NodeConstructor = Vue.extend(Node);
                 // Create node and push them into the itemContainer
                 const node = new SimpleNode();
@@ -358,7 +360,8 @@
                 default: function () {
                     return 'Drag and Drop Panel'
                 }
-            }
+            },
+            getIsEditEnabled: Function
         }
     }
 </script>
