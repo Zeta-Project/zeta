@@ -20,7 +20,7 @@
                  v-on:click="()=>methods.addAttributeToNode(tag, 'default')"/>
           <g v-if="attributes_open">
             <g v-for="(attribute, index) in tag.attributes" :key="attribute.name">
-              <foreignObject x="20" y="38"
+              <foreignObject class="text-left" x="20" y="38"
                              :transform="`translate(${0} ${(index + 2)*25})`"
                              width="100%" height=" 50 ">
                 <VueInlineTextEditor
@@ -58,7 +58,7 @@
                  v-on:click="()=>methods.addOperationToNode(tag, 'default')"/>
           <g v-if="operations_open">
             <g v-for="(method, index) in tag.methods" :key="method.name">
-              <foreignObject x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
+              <foreignObject class="text-left" x="20" :y="68 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"
                              :transform="`translate(${0} ${(index + 2)*25})`"
                              width="100%" height=" 50 ">
                 <VueInlineTextEditor
