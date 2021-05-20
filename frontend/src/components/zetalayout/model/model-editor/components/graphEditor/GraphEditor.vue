@@ -45,6 +45,13 @@
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
+
+    <!-- Delete group node dialog -->
+    <DeleteGroupNodeDialog
+        :show-dialog="showDeleteDialog"
+        @cancel="toggleDeleteDialog"
+    />
+
   </div>
 </template>
 
@@ -79,6 +86,7 @@ import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
 import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/model/utils/NodeCandidateProvider";
+import DeleteGroupNodeDialog from "./DeleteGroupNodeDialog";
 
 License.value = licenseData;
 
@@ -94,7 +102,8 @@ export default {
   components: {
     Toolbar,
     PropertyPanel,
-    DndPanel
+    DndPanel,
+    DeleteGroupNodeDialog
   },
   mounted() {
     this.initGraphComponent().then(response => {
@@ -128,7 +137,9 @@ export default {
       sharedData: {focusedNodeData: null, focusedEdgeData: null},
       diagram: null,
       shape: null,
-      styleModel: null
+      styleModel: null,
+      showDeleteDialog: false,
+      currentGroupNode: null
     }
   },
   computed: {
@@ -329,6 +340,20 @@ export default {
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
+      // Check if parent node can be deleted or not (child nodes)
+      mode.deletablePredicate = item => {
+        if (graphComponent.graph.isGroupNode(item)) {
+          if (graphComponent.graph.getChildren(item).size !== 0) {
+            this.currentGroupNode = item;
+            this.toggleDeleteDialog();
+          } else {
+            return true
+          }
+        } else {
+          return true
+        }
+      };
+
       return mode
     },
     registerPortCandidateProvider(graph, target) {
@@ -489,6 +514,32 @@ export default {
             this.$graphComponent.graph.setLabelText(label, value)
         })
       });
+    },
+
+    toggleDeleteDialog() {
+      this.showDeleteDialog = !this.showDeleteDialog;
+    },
+
+    /**
+     * Delete all child nodes within a group node incl. the group node itself.
+     */
+    deleteGroupNode() {
+      this.deleteGroupNodeItem(this.currentGroupNode);
+      this.toggleDeleteDialog();
+    },
+
+    deleteGroupNodeItem(node) {
+      const children = this.$graphComponent.graph.getChildren(node).toArray();
+
+      // Check if node is itself a group node, if so delete its children
+      if (children.length !== 0) {
+        children.forEach((nodeItem) => {
+              this.deleteGroupNodeItem(nodeItem);
+            }
+        );
+      }
+
+      this.$graphComponent.graph.remove(node);
     }
   }
 }
