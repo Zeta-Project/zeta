@@ -21,6 +21,7 @@
           :graph-component="graphComponent"
           :is-expanded="isDndExpanded"
           :passive-supported="true"
+          :get-is-edit-enabled="getIsEditEnabled"
           @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
           @add-operation-to-node="(node, operationName) => addOperationToNode(node, operationName)"
           @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"

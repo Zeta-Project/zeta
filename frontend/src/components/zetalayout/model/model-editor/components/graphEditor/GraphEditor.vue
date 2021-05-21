@@ -40,45 +40,46 @@
           :is-open="selectedItem !== null"
           :node="sharedData.focusedNodeData"
           :edge="sharedData.focusedEdgeData"
+          @on-edge-label-change="updateEdgeLabel"
+          @on-node-label-change="updateNodeLabel"
       />
     </aside>
     <div class="graph-component-container" ref="GraphComponentElement"></div>
+
+    <!-- Delete group node dialog -->
+    <DeleteGroupNodeDialog
+        :show-dialog="showDeleteDialog"
+        @cancel="toggleDeleteDialog"
+    />
+
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
 import licenseData from '../../../../../../../../../yFiles-dev-key/license.json'
 import {
-  DefaultLabelStyle,
   EdgeRouter,
   EdgeRouterScope,
-  Font,
   GraphComponent,
   GraphViewerInputMode,
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size,
-  TreeBuilder,
-  ShowFocusPolicy,
   ShapeNodeStyle,
-  GraphItemTypes,
+  IEdge,
+  INode,
   NodeSizeConstraintProvider, ReshapeHandleProviderBase, HandlePositions
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
 import PropertyPanel from "../propertyPanel/PropertyPanel.vue";
 import DndPanel from "../dndPanel/DndPanel.vue"
-import Node from "../nodes/Node.vue"
 
 import {
   executeLayout,
   getDefaultGraphEditorInputMode,
-  getEdgesFromReferences,
-  getStyleForEdge, saveGraph
+  saveGraph
 } from "./GraphEditorUtils";
-import * as umlEdgeModel from "../../model/edges/ModelEdgeModel";
 import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
 import ModelContextButtonsInputMode from "../../model/utils/ModelContextButtonsInputMode";
 import {Grid} from "../../layout/grid/Grid";
@@ -86,6 +87,7 @@ import axios from "axios";
 import {CustomPolyEdgeStyle} from "../../model/edges/styles/CustomPolyEdgeStyle";
 import {EventBus} from "@/eventbus/eventbus";
 import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/model/utils/NodeCandidateProvider";
+import DeleteGroupNodeDialog from "./DeleteGroupNodeDialog";
 
 License.value = licenseData;
 
@@ -133,13 +135,25 @@ export default {
   components: {
     Toolbar,
     PropertyPanel,
-    DndPanel
+    DndPanel,
+    DeleteGroupNodeDialog
   },
   mounted() {
     this.initGraphComponent().then(response => {
       this.isGraphComponentLoaded = response;
       // Set the current edit mode to view only
       this.$graphComponent.inputMode = new GraphViewerInputMode();
+
+      // Handle inline edge label edits
+      this.$graphComponent.graph.addLabelTextChangedListener((sender, args) => {
+        // ToDo: Is a global listener the correct way to handle label text changes?
+        // Addition: Smartass
+
+        if (args.item.owner instanceof IEdge || args.item.owner instanceof INode) {
+          const attribute = args.item.owner.tag.attributes.find(a => a.name === args.item.tag);
+          attribute.value = args.item.text;
+        }
+      });
     }).catch(error => {
       EventBus.$emit('errorMessage', error.toString())
       console.error(error)
@@ -156,7 +170,9 @@ export default {
       sharedData: {focusedNodeData: null, focusedEdgeData: null},
       diagram: null,
       shape: null,
-      styleModel: null
+      styleModel: null,
+      showDeleteDialog: false,
+      currentGroupNode: null
     }
   },
   computed: {
@@ -374,6 +390,20 @@ export default {
       // Configure input mode for dndPanel actions
       mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
+      // Check if parent node can be deleted or not (child nodes)
+      mode.deletablePredicate = item => {
+        if (graphComponent.graph.isGroupNode(item)) {
+          if (graphComponent.graph.getChildren(item).size !== 0) {
+            this.currentGroupNode = item;
+            this.toggleDeleteDialog();
+          } else {
+            return true
+          }
+        } else {
+          return true
+        }
+      };
+
       return mode
     },
     registerPortCandidateProvider(graph, target) {
@@ -500,6 +530,66 @@ export default {
     toggleDnd() {
       this.isDndExpanded = !this.isDndExpanded;
       this.$emit('on-toggle-dnd', this.isDndExpanded);
+    },
+
+    /**
+     * Updates the edge label for the given edge and ID
+     * @param edge
+     * @param labelId
+     * @param value
+     */
+    updateEdgeLabel(edge, labelId, value) {
+      const selectedEdges = this.$graphComponent.selection.selectedEdges;
+
+      selectedEdges.forEach(edge => {
+        edge.labels.forEach(label => {
+          console.log("tag", label.tag)
+          if (label.tag === labelId)
+            this.$graphComponent.graph.setLabelText(label, value)
+        })
+      });
+    },
+
+    /**
+     * Updates the node label for the given node and ID
+     * @param node
+     * @param labelId
+     * @param value
+     */
+    updateNodeLabel(node, labelId, value) {
+      const selectedNodes = this.$graphComponent.selection.selectedNodes;
+      selectedNodes.forEach(node => {
+        node.labels.forEach(label => {
+          if (label.tag === labelId)
+            this.$graphComponent.graph.setLabelText(label, value)
+        })
+      });
+    },
+
+    toggleDeleteDialog() {
+      this.showDeleteDialog = !this.showDeleteDialog;
+    },
+
+    /**
+     * Delete all child nodes within a group node incl. the group node itself.
+     */
+    deleteGroupNode() {
+      this.deleteGroupNodeItem(this.currentGroupNode);
+      this.toggleDeleteDialog();
+    },
+
+    deleteGroupNodeItem(node) {
+      const children = this.$graphComponent.graph.getChildren(node).toArray();
+
+      // Check if node is itself a group node, if so delete its children
+      if (children.length !== 0) {
+        children.forEach((nodeItem) => {
+              this.deleteGroupNodeItem(nodeItem);
+            }
+        );
+      }
+
+      this.$graphComponent.graph.remove(node);
     }
   }
 }

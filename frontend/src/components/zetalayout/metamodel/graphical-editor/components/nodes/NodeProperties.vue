@@ -41,7 +41,7 @@
               :key="`${node.name}-properties-attributes-${index}`">
             <v-col>
               <v-text-field
-                  label="Name"
+                  :label="attribute.name"
                   v-model="attribute.name">
                 <v-btn slot="append-outer" icon @click="onDeleteAttribute(node, attribute.name)">
                   <v-icon color="red">mdi-trash-can-outline</v-icon>
