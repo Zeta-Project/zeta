@@ -109,7 +109,7 @@ export default {
                 attributes: conceptClass.attributes,
                 methods: conceptClass.methods,
                 name: conceptClass.name,
-                description: conceptClass.description,
+                description: { resizing: nodes[i].resizing, size: nodes[i].size },
                 abstractness: conceptClass.abstractness,
                 className: name
               })
