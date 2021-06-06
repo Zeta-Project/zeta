@@ -297,19 +297,7 @@ export default {
         style: originalNode.style,
         tag: new ModelClassModel()
       })
-      originalNode.labels.forEach(label => {
-        graph.addLabel(
-            node,
-            label.text,
-            label.layoutParameter,
-            label.style,
-            label.preferredSize,
-            label.tag
-        )
-      })
-      originalNode.ports.forEach(port => {
-        graph.addPort(node, port.locationParameter, port.style, port.tag)
-      })
+
       this.updateViewport(graphComponent)
 
       return this.exportAndWrap(graphComponent, original.tooltip)
