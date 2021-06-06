@@ -47,6 +47,17 @@ export default (function () {
     };
 
     /*
+      Returns the size info of the given node.
+     */
+    Graph.prototype.getSizeInfo = function (node) {
+        if (node.tag.sizeInfo !== null) {
+            return node.tag.sizeInfo;
+        } else {
+            return {}
+        }
+    };
+
+    /*
       Checks whether the element is abstract.
      */
     Graph.prototype.isAbstract = function (node) {

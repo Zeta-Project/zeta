@@ -354,26 +354,26 @@ export default {
 
         if (args.item.style instanceof ShapeNodeStyle) {
           umlContextButtonsInputMode.onCurrentItemChanged()
+
+          graphComponent.graph.decorator.nodeDecorator.sizeConstraintProviderDecorator.setImplementation(
+              node => node.tag !== null,
+              new NodeSizeConstraintProvider(
+                  new Size(args.item.tag.sizeInfo.size.widthMin, args.item.tag.sizeInfo.size.heightMin),
+                  new Size(args.item.tag.sizeInfo.size.widthMax, args.item.tag.sizeInfo.size.heightMax)
+              )
+          )
+
+          graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.setImplementationWrapper(
+              (node, originalProvider) => new CustomReshapeHandlerProvider(
+                  originalProvider,
+                  args.item.tag.sizeInfo.resizing.horizontal,
+                  args.item.tag.sizeInfo.resizing.vertical,
+                  args.item.tag.sizeInfo.resizing.proportional
+              )
+          )
         } else if (args.item.style instanceof CustomPolyEdgeStyle) {
           umlContextButtonsInputMode.hideButtons()
         }
-
-        graphComponent.graph.decorator.nodeDecorator.sizeConstraintProviderDecorator.setImplementation(
-            node => node.tag !== null,
-            new NodeSizeConstraintProvider(
-                new Size(args.item.tag.description.size.widthMin, args.item.tag.description.size.heightMin),
-                new Size(args.item.tag.description.size.widthMax, args.item.tag.description.size.heightMax)
-            )
-        )
-
-        graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.setImplementationWrapper(
-            (node, originalProvider) => new CustomReshapeHandlerProvider(
-                  originalProvider,
-                  args.item.tag.description.resizing.horizontal,
-                  args.item.tag.description.resizing.vertical,
-                  args.item.tag.description.resizing.proportional
-              )
-        )
       });
       mode.addItemRightClickedListener((src, args) => {
         if (graphComponent.graph.isGroupNode(args.item)) {

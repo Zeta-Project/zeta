@@ -68,7 +68,8 @@ export default (function () {
                 attributes: this.graph.getNodeAttributes(node),
                 methods: this.graph.getNodeMethods(node),
                 inputReferenceNames: this.graph.getInputReferenceNames(node),
-                outputReferenceNames: this.graph.getOutputReferenceNames(node)
+                outputReferenceNames: this.graph.getOutputReferenceNames(node),
+                sizeInfo: this.graph.getSizeInfo(node)
             });
         })
         return classes;
