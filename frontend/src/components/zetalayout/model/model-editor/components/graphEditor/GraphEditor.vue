@@ -68,7 +68,10 @@ import {
   ShapeNodeStyle,
   IEdge,
   INode,
-  NodeSizeConstraintProvider, ReshapeHandleProviderBase, HandlePositions
+  NodeSizeConstraintProvider,
+  ReshapeHandleProviderBase,
+  HandlePositions,
+  Size
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
