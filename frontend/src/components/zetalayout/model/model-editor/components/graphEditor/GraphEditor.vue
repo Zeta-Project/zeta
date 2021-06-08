@@ -546,7 +546,6 @@ export default {
 
       selectedEdges.forEach(edge => {
         edge.labels.forEach(label => {
-          console.log("tag", label.tag)
           if (label.tag === labelId)
             this.$graphComponent.graph.setLabelText(label, value)
         })

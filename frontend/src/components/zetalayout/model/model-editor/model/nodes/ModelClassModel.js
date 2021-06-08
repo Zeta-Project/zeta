@@ -49,7 +49,7 @@ export class ModelClassModel {
         clone.name = this.name
         clone.abstractness = this.abstractness
         clone.sizeInfo = this.sizeInfo
-        clone.attributes = Array.from(this.attributes)
+        clone.attributes = Array.from(this.attributes.map(a => a.clone()))
         clone.methods = Array.from(this.methods)
         clone.attributesOpen = this.attributesOpen
         clone.methodsOpen = this.methodsOpen

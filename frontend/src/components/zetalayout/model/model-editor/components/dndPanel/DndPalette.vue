@@ -37,6 +37,7 @@ import {
 } from "yfiles";
 import {ModelClassModel} from "@/components/zetalayout/model/model-editor/model/nodes/ModelClassModel";
 import {addClass, removeClass} from "@/components/zetalayout/model/model-editor/utils/Bindings";
+import {Attribute} from "../../model/attributes/Attribute";
 
 export default {
   name: "DndPalette",
@@ -106,7 +107,7 @@ export default {
                 stroke: shapeNode.style.line.color.hex
               }),
               tag: new ModelClassModel({
-                attributes: conceptClass.attributes,
+                attributes: conceptClass.attributes.map(a => new Attribute(a)),
                 methods: conceptClass.methods,
                 name: conceptClass.name,
                 description: conceptClass.description,
@@ -404,9 +405,9 @@ export default {
         } else {
           // Otherwise, we just use the node itself and let (hopefully) NodeDropInputMode take over
           const simpleNode = new SimpleNode()
-          simpleNode.layout = item.layout
+          simpleNode.layout = item.layout;
           simpleNode.style = item.style.clone()
-          simpleNode.tag = item.tag
+          simpleNode.tag = item.tag.clone();
           simpleNode.labels = item.labels
           if (item.ports.size > 0) {
             simpleNode.ports = new ListEnumerable(item.ports)
