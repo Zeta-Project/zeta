@@ -14,7 +14,7 @@ export class Attribute {
         this.value = (data && data.value) || {type: "String", value: ""}
     }
 
-    clone(){
+    clone() {
         return new Attribute({
             name: this.name,
             globalUnique: this.globalUnique,

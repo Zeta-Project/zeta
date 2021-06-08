@@ -38,6 +38,7 @@ import {
 import {ModelClassModel} from "@/components/zetalayout/model/model-editor/model/nodes/ModelClassModel";
 import {addClass, removeClass} from "@/components/zetalayout/model/model-editor/utils/Bindings";
 import {Attribute} from "../../model/attributes/Attribute";
+import {Method} from "../../model/methods/Method";
 
 export default {
   name: "DndPalette",
@@ -108,7 +109,7 @@ export default {
               }),
               tag: new ModelClassModel({
                 attributes: conceptClass.attributes.map(a => new Attribute(a)),
-                methods: conceptClass.methods,
+                methods: conceptClass.methods.map(m => new Method(m)),
                 name: conceptClass.name,
                 description: conceptClass.description,
                 abstractness: conceptClass.abstractness,
