@@ -37,6 +37,8 @@ import {
 } from "yfiles";
 import {ModelClassModel} from "@/components/zetalayout/model/model-editor/model/nodes/ModelClassModel";
 import {addClass, removeClass} from "@/components/zetalayout/model/model-editor/utils/Bindings";
+import {Attribute} from "../../model/attributes/Attribute";
+import {Method} from "../../model/methods/Method";
 
 export default {
   name: "DndPalette",
@@ -106,8 +108,8 @@ export default {
                 stroke: shapeNode.style.line.color.hex
               }),
               tag: new ModelClassModel({
-                attributes: conceptClass.attributes,
-                methods: conceptClass.methods,
+                attributes: conceptClass.attributes.map(a => new Attribute(a)),
+                methods: conceptClass.methods.map(m => new Method(m)),
                 name: conceptClass.name,
                 description: conceptClass.description,
                 abstractness: conceptClass.abstractness,
@@ -298,19 +300,7 @@ export default {
         style: originalNode.style,
         tag: new ModelClassModel()
       })
-      originalNode.labels.forEach(label => {
-        graph.addLabel(
-            node,
-            label.text,
-            label.layoutParameter,
-            label.style,
-            label.preferredSize,
-            label.tag
-        )
-      })
-      originalNode.ports.forEach(port => {
-        graph.addPort(node, port.locationParameter, port.style, port.tag)
-      })
+
       this.updateViewport(graphComponent)
 
       return this.exportAndWrap(graphComponent, original.tooltip)
@@ -416,9 +406,9 @@ export default {
         } else {
           // Otherwise, we just use the node itself and let (hopefully) NodeDropInputMode take over
           const simpleNode = new SimpleNode()
-          simpleNode.layout = item.layout
+          simpleNode.layout = item.layout;
           simpleNode.style = item.style.clone()
-          simpleNode.tag = item.tag
+          simpleNode.tag = item.tag.clone();
           simpleNode.labels = item.labels
           if (item.ports.size > 0) {
             simpleNode.ports = new ListEnumerable(item.ports)

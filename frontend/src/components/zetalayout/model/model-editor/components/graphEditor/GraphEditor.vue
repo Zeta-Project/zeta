@@ -473,7 +473,9 @@ export default {
           this.sharedData.focusedEdgeData = tag;
           this.sharedData.focusedNodeData = null;
         }
-        this.selectedItem = args;
+
+        if(type instanceof ShapeNodeStyle || type instanceof CustomPolyEdgeStyle)
+          this.selectedItem = args;
       }
     },
 
@@ -537,35 +539,27 @@ export default {
 
     /**
      * Updates the edge label for the given edge and ID
-     * @param edge
+     * @param edgeData
      * @param labelId
      * @param value
      */
-    updateEdgeLabel(edge, labelId, value) {
-      const selectedEdges = this.$graphComponent.selection.selectedEdges;
-
-      selectedEdges.forEach(edge => {
-        edge.labels.forEach(label => {
-          console.log("tag", label.tag)
-          if (label.tag === labelId)
-            this.$graphComponent.graph.setLabelText(label, value)
-        })
+    updateEdgeLabel(edgeData, labelId, value) {
+      this.selectedItem.item.labels.forEach(label => {
+        if (label.tag === labelId)
+          this.$graphComponent.graph.setLabelText(label, value)
       });
     },
 
     /**
      * Updates the node label for the given node and ID
-     * @param node
+     * @param nodeData
      * @param labelId
      * @param value
      */
-    updateNodeLabel(node, labelId, value) {
-      const selectedNodes = this.$graphComponent.selection.selectedNodes;
-      selectedNodes.forEach(node => {
-        node.labels.forEach(label => {
-          if (label.tag === labelId)
-            this.$graphComponent.graph.setLabelText(label, value)
-        })
+    updateNodeLabel(nodeData, labelId, value) {
+      this.selectedItem.item.labels.forEach(label => {
+        if (label.tag === labelId)
+          this.$graphComponent.graph.setLabelText(label, value)
       });
     },
 
