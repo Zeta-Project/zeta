@@ -68,7 +68,7 @@ import {
   LayoutExecutor,
   License,
   PolylineEdgeRouterData,
-  Size, TreeBuilder,
+  Size
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -93,6 +93,7 @@ import axios from "axios"
 import {EventBus} from "@/eventbus/eventbus";
 import {Attribute} from "../../uml/attributes/Attribute";
 import {Method} from "../../uml/methods/Method";
+import {SimpleTreeBuilder} from "@/components/zetalayout/metamodel/graphical-editor/components/graphEditor/SimpleGraphBuilder";
 
 
 License.value = licenseData;
@@ -238,7 +239,7 @@ export default {
         style: new VuejsNodeStyle(NodeConstructor, methods, this.$graphComponent.inputMode),
       }));
 
-      const treeBuilder = new TreeBuilder({
+      const treeBuilder = new SimpleTreeBuilder({
         graphNodes,
         childBinding: 'subordinates',
         nodesSource: nodes

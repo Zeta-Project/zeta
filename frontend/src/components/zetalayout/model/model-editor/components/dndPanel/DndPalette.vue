@@ -162,15 +162,33 @@ export default {
 
               const style = element.style;
 
-              const font = new Font({
-                fontFamily: style.font.name,
-                fontSize: style.font.size
-              });
+              let font
 
-              if (style.font.bold)
-                font.fontWeight = FontWeight.BOLD;
-              if (style.font.italic)
-                font.fontStyle = FontStyle.ITALIC;
+              if (style.font.bold && style.font.italic) {
+                font = new Font({
+                  fontFamily: style.font.name,
+                  fontSize: style.font.size,
+                  fontWeight: FontWeight.BOLD,
+                  fontStyle: FontStyle.ITALIC
+                });
+              } else if (style.font.bold && !style.font.italic) {
+                font = new Font({
+                  fontFamily: style.font.name,
+                  fontSize: style.font.size,
+                  fontWeight: FontWeight.BOLD
+                });
+              } else if (!style.font.bold && style.font.italic) {
+                font = new Font({
+                  fontFamily: style.font.name,
+                  fontSize: style.font.size,
+                  fontStyle: FontStyle.ITALIC
+                });
+              } else {
+                font = new Font({
+                  fontFamily: style.font.name,
+                  fontSize: style.font.size
+                });
+              }
 
               const fontColor = new SolidColorFill(
                   style.font.color.r,

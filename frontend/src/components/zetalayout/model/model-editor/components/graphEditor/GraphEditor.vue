@@ -69,9 +69,12 @@ import {
   IEdge,
   INode,
   NodeSizeConstraintProvider,
-  ReshapeHandleProviderBase,
   HandlePositions,
-  Size
+  Size,
+  IReshapeHandler,
+  NodeReshapeHandleProvider,
+  INodeSizeConstraintProvider,
+  EventRecognizers
 } from 'yfiles'
 // Custom components
 import Toolbar from '../toolbar/Toolbar.vue'
@@ -93,38 +96,6 @@ import NodeCandidateProvider from "@/components/zetalayout/model/model-editor/mo
 import DeleteGroupNodeDialog from "./DeleteGroupNodeDialog";
 
 License.value = licenseData;
-
-class CustomReshapeHandlerProvider extends ReshapeHandleProviderBase {
-  constructor(originalProvider, horizontal, vertical, proportional) {
-    super()
-    this.originalProvider = originalProvider
-    this.horizontal = horizontal
-    this.vertical = vertical
-    this.proportional = proportional
-  }
-
-  getAvailableHandles(context) {
-    if (!this.horizontal && !this.vertical) {
-      return HandlePositions.NONE
-    } else if (this.horizontal && !this.vertical) {
-      return HandlePositions.HORIZONTAL
-    } else if (!this.horizontal && this.vertical) {
-      return HandlePositions.VERTICAL
-    } else if (this.horizontal && this.vertical) {
-      if (this.proportional) {
-        return HandlePositions.CORNERS
-      } else {
-        return HandlePositions.BORDER
-      }
-    } else {
-      return HandlePositions.NONE
-    }
-  }
-
-  getHandle(context, position) {
-    return this.originalProvider.getHandle(context, position)
-  }
-}
 
 /**
  * Comment from y-Files: Be aware not to pass y-Files properties (such as graphComponent) to other vue components.
@@ -356,21 +327,46 @@ export default {
           umlContextButtonsInputMode.onCurrentItemChanged()
 
           graphComponent.graph.decorator.nodeDecorator.sizeConstraintProviderDecorator.setImplementation(
-              node => node.tag !== null,
               new NodeSizeConstraintProvider(
                   new Size(args.item.tag.sizeInfo.size.widthMin, args.item.tag.sizeInfo.size.heightMin),
                   new Size(args.item.tag.sizeInfo.size.widthMax, args.item.tag.sizeInfo.size.heightMax)
               )
           )
 
-          graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.setImplementationWrapper(
-              (node, originalProvider) => new CustomReshapeHandlerProvider(
-                  originalProvider,
-                  args.item.tag.sizeInfo.resizing.horizontal,
-                  args.item.tag.sizeInfo.resizing.vertical,
-                  args.item.tag.sizeInfo.resizing.proportional
-              )
-          )
+          graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.hideImplementation()
+
+          graphComponent.graph.decorator.nodeDecorator.reshapeHandleProviderDecorator.setFactory(node => {
+            const horizontal = args.item.tag.sizeInfo.resizing.horizontal
+            const vertical = args.item.tag.sizeInfo.resizing.vertical
+            const proportional = args.item.tag.sizeInfo.resizing.proportional
+
+            const reshapeHandler = node.lookup(IReshapeHandler.$class)
+            const constraintProvider = node.lookup(INodeSizeConstraintProvider.$class)
+
+            let nodeReshapeHandleProvider
+
+            if (!horizontal && !vertical) {
+              nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.NONE)
+            } else if (horizontal && !vertical) {
+              nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.HORIZONTAL)
+            } else if (!horizontal && vertical) {
+              nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.VERTICAL)
+            } else if (horizontal && vertical) {
+              if (proportional) {
+                nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.CORNERS)
+                nodeReshapeHandleProvider.ratioReshapeRecognizer = EventRecognizers.ALWAYS
+              } else {
+                nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.BORDER)
+              }
+            } else {
+              nodeReshapeHandleProvider = new NodeReshapeHandleProvider(node, reshapeHandler, HandlePositions.NONE)
+            }
+
+            nodeReshapeHandleProvider.minimumSize = constraintProvider.getMinimumSize(node)
+            nodeReshapeHandleProvider.maximumSize = constraintProvider.getMaximumSize(node)
+
+            return nodeReshapeHandleProvider
+          })
         } else if (args.item.style instanceof CustomPolyEdgeStyle) {
           umlContextButtonsInputMode.hideButtons()
         }
