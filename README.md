@@ -17,37 +17,28 @@ The basic structure is given by the DSLs which were defined specifically for the
 
 ## Find out more
 
-| **[Technical Docs][aboutZeta]**     | **[Setup Guide][setup]**     | **[About Zeta][aboutZeta]**           | **[Contributing][aboutZeta]**           |
-|-------------------------------------|-------------------------------|-----------------------------------|---------------------------------------------|
-| [![i1][techdocs-image]][aboutZeta] | [![i2][setup-image]][setup] | [![i3][roadmap-image]][aboutZeta] | [![i4][contributing-image]][aboutZeta] |
+| **[Technical Docs][aboutZeta]**     | **[Setup Guide][setup]**      | **[About Zeta][aboutZeta]**           |
+|-------------------------------------|-------------------------------|---------------------------------------|
+| [![i1][techdocs-image]][aboutZeta]  | [![i2][setup-image]][setup]   | [![i3][roadmap-image]][aboutZeta]     | 
+
 
 Model-driven generation of graphical editors. <br>
 The goal is to generate simulations from a graphical DSL.
 
-## DSL-Editor
+
+## Example of Shape-DSL, Style-DSL, Diagram and Concept-Editor
 The Graphical-Editor is configured via the textual DSL's by using the DSL-Editor.
 <br>
 The DSL-Editor supports auto-completion of keywords and the detection of possible parsing errors. 
-![DSL-Editor-Edit](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/dsl-editor.gif)
-
-## Outline
-To keep the overview, you can use the outline function, which displays all defined elements of the DSL and 
-<br>
-allows to select them within the DSL editor.
-![DSL-Editor-Outline](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/dsl-editor-2.gif)
+![DSL-Editor-Edit](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/ConceptEditor_DSLs.gif)
 
 ## Model-Editor
 With the graphical editor configured by the DSL's, you can create and edit any model you want.
-![Model-Editor](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/model-editor.gif)
-
-## Code-Generator
-Now scala code can be generated and downloaded from a previously created and saved model.
-![Code-Generator](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/code-generator.gif)
+![Model-Editor](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/Model-Editor-zeta.gif.gif)
 
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
-[contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
 
 [aboutZeta]: https://github.com/Zeta-Project/zeta/wiki
 [setup]: https://github.com/Zeta-Project/zeta/wiki/Installation
