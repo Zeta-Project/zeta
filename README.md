@@ -34,7 +34,7 @@ The DSL-Editor supports auto-completion of keywords and the detection of possibl
 
 ## Model-Editor
 With the graphical editor configured by the DSL's, you can create and edit any model you want.
-![Model-Editor](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/Model-Editor-zeta.gif.gif)
+![Model-Editor](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/Model-Editor-zeta.gif)
 
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
