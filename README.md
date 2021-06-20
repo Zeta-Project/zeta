@@ -40,5 +40,5 @@ With the graphical editor configured by the DSL's, you can create and edit any m
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
 
-[aboutZeta]: https://github.com/Zeta-Project/zeta/wiki
+[aboutZeta]: https://github.com/Zeta-Project/zeta/wiki/Table-of-Content
 [setup]: https://github.com/Zeta-Project/zeta/wiki/Installation
